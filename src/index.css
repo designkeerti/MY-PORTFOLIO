@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('https://fonts.cdnfonts.com/css/satoshi');
+}
+
+body {
+  margin: 0;
+  font-family: 'Satoshi', sans-serif;
+  background-color: rgb(255, 255, 255);
+  overflow-x: hidden;
+}
+
+/* Remove background from Lottie animations */
+.lottie-animation canvas,
+.lottie-animation svg {
+  background: transparent !important;
+}
+
+/* Also target any Lottie container */
+[class*="lottie"] canvas,
+[class*="lottie"] svg {
+  background: transparent !important;
+}
+
+/* Scroll Snap */
+html {
+  scroll-snap-type: y mandatory;
+}
+
+section {
+  scroll-snap-align: start;
+  scroll-margin-top: 80px; /* Offset for fixed header */
+}
