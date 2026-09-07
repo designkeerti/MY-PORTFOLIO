@@ -36,12 +36,12 @@ export const CbsLive = ({ id }: { id: LiveId }) => {
     case 'cbs-cards': return <CardsPanel />;
     case 'cbs-stacks': return (
       <Panel label="pre-built stacks" href="https://crossbordersupps.com/product-category/stack/">
-        <LiveFrame src="/cbs/live/stacks.html" w={1280} h={1400} mobile={{ w: 390, h: 1000 }} />
+        <LiveFrame src="/cbs/live/stacks.html" w={1280} h={1400} mobile={{ w: 390, h: 1000, src: '/cbs/live/stacks.html?scroll=1' }} />
       </Panel>
     );
     case 'cbs-stamps': return (
       <Panel label="shop by brand, the stamp sheet" href="https://crossbordersupps.com/#brands" right={hint('hover a stamp')}>
-        <LiveFrame src="/cbs/live/brands.html" w={1440} h={1140} mobile={{ w: 390, h: 900 }} />
+        <LiveFrame src="/cbs/live/brands.html" w={1440} h={1140} mobile={{ w: 390, h: 900, src: '/cbs/live/brands.html?scroll=1' }} />
       </Panel>
     );
     case 'cbs-vault': return <VaultPanel />;
@@ -53,7 +53,7 @@ export const CbsLive = ({ id }: { id: LiveId }) => {
     );
     case 'cbs-buy': return (
       <Panel label="product page, the buy column" href="https://crossbordersupps.com/product/combat-fuel-omega-3-fish-oil/" wide={false}>
-        <LiveFrame src="/cbs/live/buy.html" w={900} h={600} mobile={{ w: 390, h: 760 }} />
+        <LiveFrame src="/cbs/live/buy.html" w={900} h={600} mobile={{ w: 390, h: 700 }} />
       </Panel>
     );
     case 'cbs-cathead': return (
@@ -63,7 +63,7 @@ export const CbsLive = ({ id }: { id: LiveId }) => {
     );
     case 'cbs-parts': return (
       <Panel label="the small parts, on one sheet" href="https://crossbordersupps.com/" right={hint('the toast fires itself')}>
-        <LiveFrame src="/cbs/live/parts.html" w={1280} h={1613} mobile={{ w: 390, h: 1500 }} />
+        <LiveFrame src="/cbs/live/parts.html" w={1280} h={1613} mobile={{ w: 390, h: 1100, src: '/cbs/live/parts.html?scroll=1' }} />
       </Panel>
     );
     case 'cbs-tokens': return <TokensPanel />;
@@ -74,7 +74,7 @@ const CardsPanel = () => {
   const [oos, setOos] = useState(false);
   return (
     <Panel label="boarding-pass product cards" href="https://crossbordersupps.com/product-category/new-arrival/" right={<><span className="hidden md:inline">{hint('tap ⓘ for the benefits, ♡ to save')}</span><button className={btn} onClick={() => setOos(o => !o)}>{oos ? 'Show in stock' : 'Show sold out'}</button></>}>
-      <LiveFrame key={String(oos)} src={`/cbs/live/cards.html?center=1${oos ? '&oos=1' : ''}`} w={1280} h={850} mobile={{ w: 390, h: 900 }} />
+      <LiveFrame key={String(oos)} src={`/cbs/live/cards.html?center=1${oos ? '&oos=1' : ''}`} w={1280} h={850} mobile={{ w: 390, h: 900, src: `/cbs/live/cards.html?scroll=1${oos ? '&oos=1' : ''}` }} />
     </Panel>
   );
 };
@@ -93,8 +93,8 @@ const VaultPanel = () => {
 
 const phones: { src: string; label: string; note: string }[] = [
   { src: '/cbs/live/hero.html?first=1&still=1', label: 'Home hero', note: 'one top pill, the wall composition, a white primary and a flag secondary, three-cell stats' },
-  { src: '/cbs/live/brands.html', label: 'Shop by brand', note: 'no hover on a phone, so the flag reveals as a stamp crosses the centre. Scroll it.' },
-  { src: '/cbs/live/cards.html', label: 'Product cards', note: 'one full-width boarding pass per row; ⓘ opens the benefits' },
+  { src: '/cbs/live/brands.html?scroll=1', label: 'Shop by brand', note: 'no hover on a phone, so the flag reveals as a stamp crosses the centre. Scroll it.' },
+  { src: '/cbs/live/cards.html?scroll=1', label: 'Product cards', note: 'one full-width boarding pass per row; ⓘ opens the benefits' },
 ];
 
 const MobilePanel = () => (

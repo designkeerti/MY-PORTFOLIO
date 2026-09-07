@@ -758,7 +758,7 @@ body.theme-cbs a, body.theme-cbs button{-webkit-tap-highlight-color: transparent
 .cbs-nav__appchip{font-family:var(--cbs-font-mono,'JetBrains Mono',monospace);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--cbs-fg-3,rgba(255,255,255,.55));transition:background .14s ease,color .14s ease,border-color .14s ease}
 .cbs-nav__appchip:hover{background:rgba(74,163,204,.14);border-color:rgba(74,163,204,.4);color:#fff}
 .cbs-nav__mobile-sub{padding-left:24px!important;font-size:13px!important;opacity:.72}
-.cbs-nav__mobile-acc{font-weight:600}</style><style>html,body{margin:0;background:#000}html{overflow-x:hidden}html.cbs-center body{min-height:100vh;display:flex;flex-direction:column;justify-content:center}html.cbs-center body>*{width:100%}body{min-height:100vh}</style></head><body class="home wp-singular page-template page-template-home-page-template page-template-home-page-template-php page page-id-16 wp-custom-logo wp-theme-cbs cbs-body theme-cbs woocommerce-no-js is-ready"><header id="masthead" class="cbs-nav" data-cbs-nav role="banner">
+.cbs-nav__mobile-acc{font-weight:600}</style><style>html,body{margin:0;background:#000}html{overflow:hidden;overscroll-behavior:auto}html.cbs-scroll{overflow-x:hidden;overflow-y:auto}body.cbs-body{padding-bottom:0!important}html.cbs-center body{min-height:100vh;display:flex;flex-direction:column;justify-content:center}html.cbs-center body>*{width:100%}body{min-height:100vh}</style></head><body class="home wp-singular page-template page-template-home-page-template page-template-home-page-template-php page page-id-16 wp-custom-logo wp-theme-cbs cbs-body theme-cbs woocommerce-no-js is-ready"><header id="masthead" class="cbs-nav" data-cbs-nav role="banner">
 
   <style id="cbs-nav-app-css">
     .cbs-nav__app{display:flex;flex-direction:column;gap:2px}
@@ -1102,7 +1102,13 @@ body.theme-cbs a, body.theme-cbs button{-webkit-tap-highlight-color: transparent
         <span>100% COMPLIANCE CERT</span><span>•</span>
         
           </div>
-  </section><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script><script src="/cbs/live/assets/js/theme.js"></script><script>
+  </section><script>
+(function(){var q=new URLSearchParams(location.search);var f=parseInt(q.get('first')||'0',10);
+ if(f&&window.cbsHeroStates&&window.cbsHeroStates[f]){var s=window.cbsHeroStates;window.cbsHeroStates=[s[f]].concat(s.filter(function(_,k){return k!==f;}));}
+ if(q.get('center')==='1'){document.documentElement.classList.add('cbs-center');}
+ if(q.get('scroll')==='1'){document.documentElement.classList.add('cbs-scroll');}
+})();
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script><script src="/cbs/live/assets/js/theme.js"></script><script>
 (function(){var q=new URLSearchParams(location.search);
  // ?state=N jumps the hero to a brand; ?still=1 stops the auto-cycle (the store pauses it on hover, so we send that event)
  window.addEventListener('load',function(){setTimeout(function(){var n=parseInt(q.get('state')||'0',10);

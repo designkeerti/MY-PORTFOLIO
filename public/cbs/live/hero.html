@@ -737,7 +737,7 @@ body.theme-cbs a, body.theme-cbs button{-webkit-tap-highlight-color: transparent
 .write-review span:hover{color: rgb(57,137,178) !important;}
 .write-review span svg{width: 12px !important; height: 12px !important; opacity: 0.5 !important;}
 .write-review span:hover svg{opacity: 1 !important;}
-.write-review span svg path{stroke: currentColor !important;}</style><style>html,body{margin:0;background:#000}html{overflow-x:hidden}html.cbs-center body{min-height:100vh;display:flex;flex-direction:column;justify-content:center}html.cbs-center body>*{width:100%}</style></head><body class="home wp-singular page-template page-template-home-page-template page-template-home-page-template-php page page-id-16 wp-custom-logo wp-theme-cbs cbs-body theme-cbs woocommerce-no-js is-ready"><div id="page" class="site"><div id="content" class="site-content cbs-main"><main id="content" class="cbs-home"><section class="cbs-hero hero" id="hero">
+.write-review span svg path{stroke: currentColor !important;}</style><style>html,body{margin:0;background:#000}html{overflow:hidden;overscroll-behavior:auto}html.cbs-scroll{overflow-x:hidden;overflow-y:auto}body.cbs-body{padding-bottom:0!important}html.cbs-center body{min-height:100vh;display:flex;flex-direction:column;justify-content:center}html.cbs-center body>*{width:100%}</style></head><body class="home wp-singular page-template page-template-home-page-template page-template-home-page-template-php page page-id-16 wp-custom-logo wp-theme-cbs cbs-body theme-cbs woocommerce-no-js is-ready"><div id="page" class="site"><div id="content" class="site-content cbs-main"><main id="content" class="cbs-home"><section class="cbs-hero hero" id="hero">
   <!-- Full-bleed BROKEN BRICK WALL — uses brickbanner.svg as the actual asset.
        Brand-color glow sits behind it; SVG drop-shadow filter chain makes the
        broken edges radiate brand-color light. -->
@@ -939,6 +939,7 @@ body.theme-cbs a, body.theme-cbs button{-webkit-tap-highlight-color: transparent
 (function(){var q=new URLSearchParams(location.search);var f=parseInt(q.get('first')||'0',10);
  if(f&&window.cbsHeroStates&&window.cbsHeroStates[f]){var s=window.cbsHeroStates;window.cbsHeroStates=[s[f]].concat(s.filter(function(_,k){return k!==f;}));}
  if(q.get('center')==='1'){document.documentElement.classList.add('cbs-center');}
+ if(q.get('scroll')==='1'){document.documentElement.classList.add('cbs-scroll');}
 })();
 </script><script>
 (function cbsHeroChromeMeasure(){
