@@ -14,12 +14,14 @@ export const heroStates: HeroState[] = [
   { h1a: 'PURE FOCUS.', h1b: 'OPTIMISE.', lead: 'Combat Fuel’s nootropic pre-workout. Strawberry lime.', btn1: 'Shop Optimise', btn2: 'Shop Combat Fuel', img: '/cbs/products/hero-CF-Optimise-Strawberry-Lime-Front-2-1024x1024.webp', glow: 'rgba(80,190,120,.38)', crackHue: 120, stats: [{ n: 'FOCUS', l: 'Nootropic blend' }, { n: '30', l: 'Servings' }, { n: 'GBR', l: 'Origin' }, { n: 'SEALED', l: 'Authentic' }], brand: 'Combat Fuel', country: '· UK' },
 ];
 
-/* Debris: the store's own broken-brick pieces, thrown outward from the hole. */
+/* Debris: the store's own broken-brick pieces, thrown outward from the hole. x/y are offsets from
+   the hole's centre in % of the hole, kept outside the product's box (|x| >= 40 or |y| >= 34). */
 const PIECES = [
-  { src: 1, x: -46, y: -40, r: -24, s: 0.92, d: 0.00 }, { src: 3, x: 42, y: -46, r: 20, s: 0.66, d: 0.10 },
-  { src: 2, x: -56, y: 22, r: 34, s: 0.80, d: 0.06 }, { src: 4, x: 52, y: 34, r: -18, s: 0.86, d: 0.16 },
-  { src: 3, x: -26, y: 52, r: 12, s: 0.58, d: 0.22 }, { src: 1, x: 30, y: 56, r: -30, s: 0.72, d: 0.12 },
-  { src: 2, x: -64, y: -14, r: -12, s: 0.54, d: 0.26 }, { src: 4, x: 64, y: -12, r: 26, s: 0.60, d: 0.20 },
+  { src: 1, x: -44, y: -34, r: -24, s: 0.92, d: 0.00 }, { src: 3, x: 40, y: -42, r: 20, s: 0.66, d: 0.10 },
+  { src: 2, x: -54, y: 6, r: 34, s: 0.80, d: 0.06 }, { src: 4, x: 47, y: 14, r: -18, s: 0.86, d: 0.16 },
+  { src: 3, x: -40, y: 44, r: 12, s: 0.58, d: 0.22 }, { src: 1, x: 36, y: 46, r: -30, s: 0.72, d: 0.12 },
+  { src: 2, x: -8, y: -48, r: -12, s: 0.54, d: 0.26 }, { src: 4, x: 12, y: 50, r: 26, s: 0.60, d: 0.20 },
+  { src: 3, x: 48, y: -22, r: 40, s: 0.50, d: 0.30 }, { src: 2, x: -56, y: -18, r: -36, s: 0.52, d: 0.24 },
 ];
 
 /**
@@ -51,22 +53,27 @@ export const WallHero = ({ state = heroStates[0], enterDelay = 0, compact = fals
 
         {/* the product coming through */}
         <motion.img src={state.img} alt="" draggable={false}
-          style={{ position: 'absolute', left: '50%', top: '50%', height: '58%', width: 'auto', maxWidth: '58%', objectFit: 'contain', x: '-50%', filter: 'drop-shadow(0 24px 34px rgba(0,0,0,.75))', zIndex: 2 }}
+          style={{ position: 'absolute', left: '50%', top: '50%', height: '60%', width: 'auto', maxWidth: '60%', objectFit: 'contain', x: '-50%', filter: 'drop-shadow(0 24px 34px rgba(0,0,0,.75))', zIndex: 4 }}
           initial={{ opacity: 0, y: '-24%', scale: .84 }}
           animate={{ opacity: 1, y: ['-24%', '-50%', '-54%', '-50%'], scale: 1 }}
           transition={{ opacity: { delay: d + .5, duration: .5 }, scale: { delay: d + .5, duration: 1.1, ease: [0.22, 0.61, 0.36, 1] }, y: { delay: d + .5, duration: 4.4, times: [0, .3, .66, 1], ease: 'easeOut' } }} />
 
         <motion.img src="/cbs/wall/wall-cracks-and-bricks.svg" alt="" aria-hidden
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', filter: crackFilter, zIndex: 3 }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', filter: crackFilter, zIndex: 2 }}
           initial={{ opacity: 0, scale: .9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: d + .2, duration: .85, ease: [0.22, 0.61, 0.36, 1] }} />
 
-        {/* debris thrown out of the wall */}
+        {/* debris thrown out of the wall: each piece lands on a ring around the product, then floats */}
         {pieces.map((p, i) => (
-          <motion.img key={i} src={`/cbs/wall/piece${p.src}.svg`} alt="" aria-hidden
-            style={{ position: 'absolute', left: '50%', top: '50%', width: `${9 * p.s}%`, zIndex: 4, filter: 'drop-shadow(0 6px 10px rgba(0,0,0,.6))' }}
-            initial={{ opacity: 0, x: '-50%', y: '-50%', rotate: 0, scale: .4 }}
-            animate={{ opacity: [0, 1, 1], x: `calc(-50% + ${p.x}%)`, y: `calc(-50% + ${p.y}%)`, rotate: p.r, scale: 1 }}
-            transition={{ delay: d + .3 + p.d, duration: 1.2, ease: [0.16, 0.8, 0.3, 1] }} />
+          <div key={i} style={{ position: 'absolute', left: `calc(50% + ${p.x}%)`, top: `calc(50% + ${p.y}%)`, width: `${9 * p.s}%`, transform: 'translate(-50%, -50%)', zIndex: 5 }}>
+            <motion.div initial={{ opacity: 0, x: -p.x * 6, y: -p.y * 6, rotate: 0, scale: .4 }}
+              animate={{ opacity: 1, x: 0, y: 0, rotate: p.r, scale: 1 }}
+              transition={{ delay: d + .3 + p.d, duration: 1.3, ease: [0.16, 0.8, 0.3, 1] }}>
+              <motion.img src={`/cbs/wall/piece${p.src}.svg`} alt="" aria-hidden draggable={false}
+                style={{ display: 'block', width: '100%', filter: 'drop-shadow(0 6px 10px rgba(0,0,0,.6))' }}
+                animate={{ y: [0, -5 - (i % 3) * 2, 0] }}
+                transition={{ delay: d + 1.6 + p.d, duration: 3.2 + (i % 4) * .5, repeat: Infinity, ease: 'easeInOut' }} />
+            </motion.div>
+          </div>
         ))}
       </div>
 

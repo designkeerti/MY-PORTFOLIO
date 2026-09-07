@@ -28,7 +28,7 @@ export const ekaiScenes = (): Scene[] => [
             </div>
             <Mono color="rgba(255,255,255,.7)" style={{ marginTop: 6 }}>mobile bounce rate</Mono>
           </div>
-          <div className="flex flex-col gap-3 md:gap-5">
+          <div className="flex flex-col" style={{ gap: 20 }}>
             {[['12s', 'spent on the website'], ['<2%', 'ever touched the CTA'], ['<0.5%', 'saw the features']].map(([n, l], i) => (
               <Slide key={n} delay={0.5 + i * 0.18} from="right" distance={40}>
                 <div style={{ color: orange, fontWeight: 900, fontSize: 'clamp(22px, calc(var(--fw) * 0.0400), 46px)', letterSpacing: '-.03em', lineHeight: 1 }}>{n}</div>
@@ -45,7 +45,7 @@ export const ekaiScenes = (): Scene[] => [
     render: () => (
       <Bg color={cream}>
         <div className="absolute inset-0 flex items-center justify-center gap-[3%] px-[5%]">
-          {[['A', 'vy77NpmDiVnpU2AD.png'], ['B', 'iAwUppv898zbQLku.png'], ['C', 'DP3DEoZ5bpzZdh0u.png']].map(([k, f], i) => (
+          {[['A', 'vy77NpmDiVnpU2ADI5CXSs59I0.png'], ['B', 'iAwUppv898zbQLkutd3qpf7Cdo.png'], ['C', 'DP3DEoZ5bpzZdh0ul8K1wtFjopQ.png']].map(([k, f], i) => (
             <Slide key={k} delay={0.15 + i * 0.16} from="bottom" distance={50} style={{ width: '30%' }}>
               <div style={{ position: 'relative' }}>
                 <div className="fig" style={{ aspectRatio: '4/3', overflow: 'hidden', outline: k === 'B' ? `3px solid ${orange}` : '3px solid transparent', outlineOffset: 4, transition: 'outline-color .4s' }}>
@@ -63,11 +63,11 @@ export const ekaiScenes = (): Scene[] => [
     id: 'alive', duration: 3200, caption: 'Micro-interactions that remove hesitation',
     render: () => (
       <Bg color="#111">
-        <div className="absolute inset-0 grid grid-cols-2 gap-[2%] p-[3%]">
-          <Slide delay={0.1} from="left" distance={40} style={{ overflow: 'hidden', borderRadius: 14 }}>
+        <div className="absolute inset-0 flex items-center justify-center gap-[3%] px-[4%]">
+          <Slide delay={0.1} from="left" distance={40} style={{ width: '47%', aspectRatio: '1280/896', overflow: 'hidden', borderRadius: 16, boxShadow: '0 30px 60px -30px rgba(0,0,0,.8)' }}>
             <Clip src={A + 'yvCOXE3FsehpZbAYAz4FgDbfhUc.mp4'} />
           </Slide>
-          <Slide delay={0.3} from="right" distance={40} style={{ overflow: 'hidden', borderRadius: 14 }}>
+          <Slide delay={0.3} from="right" distance={40} style={{ width: '47%', aspectRatio: '1280/896', overflow: 'hidden', borderRadius: 16, boxShadow: '0 30px 60px -30px rgba(0,0,0,.8)' }}>
             <Clip src={A + 'qJlWawcCzXTwNSh3ZDbm19udE.mp4'} />
           </Slide>
         </div>

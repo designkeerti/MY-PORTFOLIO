@@ -29,7 +29,7 @@ export const CbsLive = ({ id }: { id: 'cbs-cards' | 'cbs-stacks' | 'cbs-stamps' 
   );
   if (id === 'cbs-stamps') return (
     <Panel label="brand rail" right={<span className="kicker text-white/40">hover a stamp</span>}>
-      <div className="cbs p-6 md:p-8"><StampSheet /></div>
+      <div className="cbs cbs-live p-6 md:p-8"><StampSheet /></div>
     </Panel>
   );
   if (id === 'cbs-vault') return <VaultPanel />;
@@ -51,8 +51,8 @@ const VaultPanel = () => {
   const { phase, replay } = useVaultTimeline(1400, true);
   return (
     <Panel label="first-visit vault" right={<button className={btn} onClick={replay}>↺ Open again</button>}>
-      <div className="relative m-6 md:m-8 rounded-2xl overflow-hidden" style={{ aspectRatio: '16/8' }}>
-        <WallHero state={heroStates[0]} enterDelay={1.6} compact />
+      <div className="relative m-6 md:m-8 rounded-2xl overflow-hidden" style={{ aspectRatio: '16/8', containerType: 'inline-size' }}>
+        <div className="absolute inset-0" style={{ ['--fw' as string]: '100cqw' }}><WallHero state={heroStates[0]} enterDelay={1.6} /></div>
         <Vault phase={phase} />
       </div>
     </Panel>
@@ -64,8 +64,8 @@ const WallPanel = () => {
   const s = heroStates[i];
   return (
     <Panel label="home hero, brand cycle" right={<span className="flex gap-2"><button className={btn} onClick={() => setI((i + heroStates.length - 1) % heroStates.length)}>←</button><button className={btn} onClick={() => setI((i + 1) % heroStates.length)}>→</button></span>}>
-      <div className="relative m-6 md:m-8 rounded-2xl overflow-hidden" style={{ aspectRatio: '16/8' }}>
-        <WallHero key={i} state={s} enterDelay={0} />
+      <div className="relative m-6 md:m-8 rounded-2xl overflow-hidden" style={{ aspectRatio: '16/8', containerType: 'inline-size' }}>
+        <div className="absolute inset-0" style={{ ['--fw' as string]: '100cqw' }}><WallHero key={i} state={s} enterDelay={0} /></div>
       </div>
     </Panel>
   );

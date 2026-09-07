@@ -87,8 +87,8 @@ export const dmrcScenes = (): Scene[] => [
         <Shot src={A + 'RN2r3DBw4Fvr4fT8Ek9HKSrPvU.webp'} alt="AR path following inside a metro station" fit="cover" position="center" from={{ scale: 1.12 }} to={{ scale: 1.0 }} duration={5} style={{ opacity: .55 }} />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(10,20,36,.2), rgba(10,20,36,.85) 70%)' }} />
         <div className="absolute right-[6%] bottom-0 flex items-end gap-[3%]">
-          <Slide delay={0.2} from="bottom" distance={120}><Device src={A + 'Q2EbMIFM5Pvi5w33Cy9OZJt0h7U.png'} alt="You can exit from Gate No. 3" width="clamp(110px, calc(var(--fw) * 0.1400), 190px)" /></Slide>
-          <Slide delay={0.45} from="bottom" distance={140}><Device src={A + 'YijBlctGzn0Mk4J6rFwf6TL43P0.png'} alt="Plan your journey" width="clamp(120px, calc(var(--fw) * 0.1600), 220px)" style={{ marginBottom: '-6%' }} /></Slide>
+          <Slide delay={0.2} from="bottom" distance={120}><Device src={A + 'Q2EbMIFM5Pvi5w33Cy9OZJt0h7U.png'} alt="You can exit from Gate No. 3" width="calc(var(--fw) * 0.165)" /></Slide>
+          <Slide delay={0.45} from="bottom" distance={140}><Device src={A + 'YijBlctGzn0Mk4J6rFwf6TL43P0.png'} alt="Plan your journey" width="calc(var(--fw) * 0.19)" style={{ marginBottom: '-6%' }} /></Slide>
         </div>
         <div className="absolute left-[5%] top-[14%] max-w-[40%]">
           <Words text={'Find\nYour Way.'} size="clamp(28px, calc(var(--fw) * 0.0560), 80px)" delay={0.2} />

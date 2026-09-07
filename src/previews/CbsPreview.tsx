@@ -19,10 +19,13 @@ const VaultScene = () => {
 
 const StampScene = () => {
   const [lit, setLit] = useState<number[]>([]);
+  // a slow wave: one stamp lights, its neighbour joins it, then it hands off
   useEffect(() => {
     let i = 0;
-    const id = setInterval(() => { setLit([i % brands.length, (i + 4) % brands.length]); i++; }, 260);
-    return () => clearInterval(id);
+    const step = () => { setLit([i % brands.length, (i + 1) % brands.length]); i++; };
+    const t0 = setTimeout(step, 500);
+    const id = setInterval(step, 1500);
+    return () => { clearTimeout(t0); clearInterval(id); };
   }, []);
   return (
     <Bg color="#06080b">
@@ -31,7 +34,7 @@ const StampScene = () => {
           <Slide delay={0.05} from="bottom" distance={20}><h2 className="cbs-home__h" style={{ fontSize: 'clamp(22px, calc(var(--fw) * 0.0400), 52px)' }}>11 BRANDS.<span className="cbs-home__h-rest"> ONE STORE.</span></h2></Slide>
         </div>
         <Slide delay={0.2} from="bottom" distance={30}>
-          <StampSheet lit={lit} cols={6} style={{ gap: 10 }} />
+          <StampSheet lit={lit} className="stamps-6" />
         </Slide>
       </div>
     </Bg>
@@ -70,7 +73,7 @@ export const cbsScenes = (): Scene[] => [
       </Bg>
     ),
   },
-  { id: 'stamps', duration: 3400, caption: 'Eleven brands on a sheet of stamps, each hiding its country', render: () => <StampScene /> },
+  { id: 'stamps', duration: 6200, caption: 'Eleven brands on a sheet of stamps, each hiding its country', render: () => <StampScene /> },
   {
     id: 'live', duration: 3400, caption: 'Built on a live store taking real orders. No git, no staging, one change at a time.',
     render: () => (
@@ -78,7 +81,7 @@ export const cbsScenes = (): Scene[] => [
         <div className="absolute inset-0 flex items-center justify-center gap-[7%] px-[6%]" >
           {[[81, ' ms', 'blocking long tasks on the home page, from 1,249'], [321, '', 'URLs audited at four widths, zero failures'], [76, ' MB', 'decoded image memory on a phone, from 144']].map(([n, s, l], i) => (
             <Slide key={String(l)} delay={0.15 + i * 0.2} from="bottom" distance={40} style={{ maxWidth: '28%' }}>
-              <div style={{ fontFamily: 'var(--cbs-font-display, Anton)', color: '#fff', fontSize: 'clamp(40px, calc(var(--fw) * 0.0800), 110px)', lineHeight: 1, letterSpacing: '.01em' }}><Counter to={n as number} duration={1.4} delay={0.15 + i * 0.2} /><span style={{ fontSize: '.45em', color: '#6cbde0' }}>{s as string}</span></div>
+              <div style={{ fontFamily: "'Anton', Impact, sans-serif", color: '#fff', fontSize: 'clamp(40px, calc(var(--fw) * 0.0800), 110px)', lineHeight: 1, letterSpacing: '.01em' }}><Counter to={n as number} duration={1.4} delay={0.15 + i * 0.2} /><span style={{ fontSize: '.45em', color: '#6cbde0' }}>{s as string}</span></div>
               <Mono color="rgba(255,255,255,.55)" style={{ marginTop: 10, textTransform: 'none', letterSpacing: '.02em', fontSize: 12, fontFamily: 'Satoshi, sans-serif' }}>{l as string}</Mono>
             </Slide>
           ))}

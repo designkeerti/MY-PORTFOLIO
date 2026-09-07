@@ -41,7 +41,7 @@ export const infinityScenes = (): Scene[] => [
         <div className="absolute inset-0 flex items-end justify-center gap-[4%] px-[6%]">
           {[['2oIQ5vxAoAawlGTcs38j8m8ejYA.png', 'CRM dashboard', -7, '4%'], ['z83VUveSouF2uuCiEumjf7RQxYQ.png', 'Payment milestones', 0, '12%'], ['Wph8fnmXv9WM4agA4LiMhm1Cc8.png', 'Messages with the team', 7, '4%']].map(([f, alt, r, mb], i) => (
             <Slide key={f as string} delay={0.15 + i * 0.18} from="bottom" distance={120} rotate={r as number} style={{ marginBottom: mb as string }}>
-              <Device src={A + (f as string)} alt={alt as string} width="clamp(110px, calc(var(--fw) * 0.1500), 200px)" />
+              <Device src={A + (f as string)} alt={alt as string} width="calc(var(--fw) * 0.235)" />
             </Slide>
           ))}
         </div>
@@ -52,7 +52,7 @@ export const infinityScenes = (): Scene[] => [
     id: 'features', duration: 2800, caption: 'Transparency, as features',
     render: () => (
       <Bg color={ink}>
-        <div className="absolute inset-0 flex flex-col justify-center px-[8%] gap-2 md:gap-4">
+        <div className="absolute inset-0 flex flex-col justify-center px-[8%]" style={{ gap: 16 }}>
           {['Live video from your site.', 'Payment milestones you can see.', 'Moodboards you build together.'].map((t, i) => (
             <Words key={t} text={t} size="clamp(18px, calc(var(--fw) * 0.0360), 50px)" color={i === 1 ? gold : '#fff'} delay={0.2 + i * 0.5} stagger={0.05} />
           ))}

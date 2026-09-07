@@ -26,7 +26,8 @@ export const BoardingCard = ({ code, from, to = { flag: '🇮🇳', iso: 'IND' }
       const path = card.querySelector('.cbs-bp__shape-path') as SVGPathElement | null;
       const inner = card.querySelector('.cbs-bp__inner') as HTMLElement | null;
       if (!svg || !path) return;
-      const r = card.getBoundingClientRect(); const W = Math.round(r.width), H = Math.round(r.height);
+      // layout size, not the transformed rect: previews render inside a scaled stage
+      const W = Math.round(card.offsetWidth), H = Math.round(card.offsetHeight);
       if (W < 1 || H < 1) return;
       const d = buildPath(W, H);
       svg.setAttribute('viewBox', `0 0 ${W} ${H}`); path.setAttribute('d', d);

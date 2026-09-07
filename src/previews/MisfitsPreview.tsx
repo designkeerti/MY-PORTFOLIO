@@ -28,7 +28,7 @@ export const misfitsScenes = (): Scene[] => [
         <div className="absolute inset-0 flex items-end justify-center gap-[3%] px-[6%]">
           {[['ohaffIRt0xglZU0U2rKGdrcYD5o.webp', 'Explore Misfits', -8, '2%'], ['Yqrk26djw5tgPKy7Ix365qrk3s.webp', 'Club detail', 0, '10%'], ['XpJNlpQXMaQtWyVGkRLhMl174.png', 'Club chat', 8, '2%']].map(([f, alt, r, mb], i) => (
             <Slide key={f as string} delay={0.15 + i * 0.18} from="bottom" distance={120} rotate={r as number} style={{ marginBottom: mb as string }}>
-              <Device src={A + (f as string)} alt={alt as string} width="clamp(110px, calc(var(--fw) * 0.1500), 200px)" />
+              <Device src={A + (f as string)} alt={alt as string} width="calc(var(--fw) * 0.235)" />
             </Slide>
           ))}
         </div>
