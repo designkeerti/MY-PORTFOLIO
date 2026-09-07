@@ -2,6 +2,9 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion';
 import type { Scene } from './types';
 
+/** Every scene is composed at this width, then scaled to whatever the frame is. */
+const DESIGN_W = 1280;
+
 type Props = {
   scenes: Scene[];
   accent?: string;
@@ -26,7 +29,6 @@ export const PreviewPlayer = ({ scenes, accent = '#DF95FF', loop = true, classNa
   const [paused, setPaused] = useState(false);
   const [started, setStarted] = useState(false);
   const [stopped, setStopped] = useState(false);
-  const [compact, setCompact] = useState(false);
   const [box, setBox] = useState({ w: 0, h: 0 });
   const barRefs = useRef<(HTMLElement | null)[]>([]);
   const elapsedRef = useRef(0);
@@ -34,18 +36,17 @@ export const PreviewPlayer = ({ scenes, accent = '#DF95FF', loop = true, classNa
   const rafRef = useRef<number | null>(null);
 
   const scene = scenes[Math.min(idx, scenes.length - 1)];
+  const scale = box.w ? box.w / DESIGN_W : 1;
+  const stageH = box.w ? Math.round(DESIGN_W * (box.h / box.w)) : 960;
   const playing = started && inView && !paused && !stopped && !reduce;
 
   useEffect(() => { if (reduce) { setIdx(scenes.length - 1); setStopped(true); } }, [reduce, scenes.length]);
   useEffect(() => { if (inView && !started) setStarted(true); }, [inView, started]);
 
-  // narrow frames get simplified scene layouts
+  // measure the frame so the stage can be scaled into it
   useEffect(() => {
     const el = frameRef.current; if (!el) return;
-    const ro = new ResizeObserver(([e]) => {
-      setCompact(e.contentRect.width < 700);
-      setBox({ w: Math.round(e.contentRect.width), h: Math.round(e.contentRect.height) });
-    });
+    const ro = new ResizeObserver(([e]) => setBox({ w: Math.round(e.contentRect.width), h: Math.round(e.contentRect.height) }));
     ro.observe(el); return () => ro.disconnect();
   }, []);
 
@@ -87,7 +88,7 @@ export const PreviewPlayer = ({ scenes, accent = '#DF95FF', loop = true, classNa
     <div
       ref={frameRef}
       className={`preview-frame group ${className}`}
-      style={{ ['--accent' as string]: accent, ['--fw' as string]: `${box.w}px`, ['--fh' as string]: `${box.h}px` }}
+      style={{ ['--accent' as string]: accent }}
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPaused(p => !p); }}
       role="button"
       tabIndex={-1}
@@ -102,7 +103,13 @@ export const PreviewPlayer = ({ scenes, accent = '#DF95FF', loop = true, classNa
       <AnimatePresence mode="sync">
         <motion.div key={scene.id} className="scene"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.28 } }} transition={{ duration: 0.32 }}>
-          {started || reduce ? scene.render({ active: true, compact, w: box.w }) : null}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, width: DESIGN_W, height: stageH,
+            transform: `scale(${scale})`, transformOrigin: '0 0',
+            ['--fw' as string]: `${DESIGN_W}px`, ['--fh' as string]: `${stageH}px`,
+          }}>
+            {started || reduce ? scene.render({ active: true, compact: false, w: DESIGN_W }) : null}
+          </div>
         </motion.div>
       </AnimatePresence>
 

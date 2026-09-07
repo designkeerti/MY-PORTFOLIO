@@ -39,7 +39,7 @@ export const CaseStudy = ({ onDarkModeChange }: { onDarkModeChange: (d: boolean)
 
         <div className="max-w-[1240px] mx-auto px-4 md:px-8">
           <div className="kicker text-white/50 px-2 md:px-0 mb-4">{meta.company} · {meta.year}</div>
-          <PreviewPlayer scenes={scenes} accent={meta.accent} className="md:!aspect-[2.1/1] md:rounded-[28px]" />
+          <PreviewPlayer scenes={scenes} accent={meta.accent} className="md:rounded-[28px]" />
         </div>
 
         <div className="max-w-[1000px] mx-auto px-6 pt-12 md:pt-16">

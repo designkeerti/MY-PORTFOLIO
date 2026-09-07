@@ -1,15 +1,11 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Navigation } from './components/Navigation';
 import { Home } from './pages/Home';
 import { CaseStudy } from './pages/CaseStudy';
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
-  // Turn the home page's mandatory scroll-snap off for long reads, before anything scrolls.
-  useLayoutEffect(() => {
-    document.documentElement.classList.toggle('no-snap', pathname.startsWith('/work/'));
-  }, [pathname]);
   useEffect(() => {
     if (hash) {
       const el = document.querySelector(hash);
