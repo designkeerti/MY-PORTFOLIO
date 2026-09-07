@@ -13,10 +13,10 @@ const Reveal = ({ children, className = '', style }: { children: ReactNode; clas
 const widths = { text: 'max-w-[760px]', wide: 'max-w-[1100px]', full: 'max-w-[1400px]' } as const;
 
 /** images, or silent looping clips for .mp4 sources */
-const Media = ({ src, alt, style }: { src: string; alt: string; style?: React.CSSProperties }) =>
+const Media = ({ src, alt, style, ratio }: { src: string; alt: string; style?: React.CSSProperties; ratio?: string }) =>
   src.endsWith('.mp4')
     ? <video src={src} autoPlay muted loop playsInline preload="metadata" aria-label={alt} style={{ display: 'block', width: '100%', height: 'auto', ...style }} />
-    : <img src={src} alt={alt} loading="lazy" style={style} />;
+    : <img src={src} alt={alt} loading="lazy" style={{ ...(ratio ? { aspectRatio: ratio, width: '100%', height: 'auto', objectFit: 'cover' } : {}), ...style }} />;
 
 export const BlockView = ({ b, accent }: { b: Block; accent: string }) => {
   switch (b.type) {
@@ -69,7 +69,7 @@ export const BlockView = ({ b, accent }: { b: Block; accent: string }) => {
       <figure className={`w-full ${widths[b.size ?? 'wide']} mx-auto px-6`}>
         <Reveal>
           <div className="fig" style={{ background: b.bg, padding: b.pad ? 'clamp(16px, 4vw, 48px)' : 0 }}>
-            <Media src={b.src} alt={b.alt} style={b.pad ? { borderRadius: 12 } : undefined} />
+            <Media src={b.src} alt={b.alt} ratio={b.ratio} style={b.pad ? { borderRadius: 12 } : undefined} />
           </div>
           {b.caption && <figcaption className="text-[14px] text-[#666] mt-3 max-w-[70ch]">{b.caption}</figcaption>}
         </Reveal>
@@ -85,7 +85,7 @@ export const BlockView = ({ b, accent }: { b: Block; accent: string }) => {
               <div className={`grid gap-4 md:gap-6 ${cls} ${b.phone ? 'items-end' : ''}`}>
                 {b.images.map((im, i) => (
                   <div key={i} className={b.phone ? 'flex flex-col items-center gap-3' : ''}>
-                    <div className={b.phone ? 'phone w-full max-w-[260px]' : 'fig'}><Media src={im.src} alt={im.alt} /></div>
+                    <div className={b.phone ? 'phone w-full max-w-[260px]' : 'fig'}><Media src={im.src} alt={im.alt} ratio={im.ratio} /></div>
                     {im.caption && <div className={`text-[13.5px] mt-2 leading-snug ${b.bg ? 'text-white/70 text-center' : 'text-[#666]'}`}>{im.caption}</div>}
                   </div>
                 ))}

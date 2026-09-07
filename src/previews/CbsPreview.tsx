@@ -1,79 +1,53 @@
-import { useEffect, useState } from 'react';
 import type { Scene } from './types';
 import { Bg, Slide, Counter, Mono, Words } from './kit';
 import { Vault, useVaultTimeline } from '../cbs/Vault';
-import { WallHero, heroStates } from '../cbs/WallHero';
-import { BoardingCard, sampleCards } from '../cbs/BoardingCard';
-import { StackTicket, stacks } from '../cbs/StackTicket';
-import { StampSheet, brands } from '../cbs/StampSheet';
+import { LiveFrame } from '../cbs/LiveFrame';
+
+/* Every scene here is the store's own page, embedded as it is on crossbordersupps.com:
+   the hero with its brick wall, the boarding-pass cards, the stack tickets, the stamp sheet. */
 
 const VaultScene = () => {
-  const { phase } = useVaultTimeline(1150, true);
+  const { phase } = useVaultTimeline(1350, true);
   return (
     <Bg color="#000">
-      <WallHero state={heroStates[0]} enterDelay={1.25} />
+      <LiveFrame src="/cbs/live/hero.html?first=1&still=1" w={1280} h={960} fit="contain" lazy={false} interactive={false} />
       <Vault phase={phase} />
     </Bg>
   );
 };
 
-const StampScene = () => {
-  const [lit, setLit] = useState<number[]>([]);
-  // a slow wave: one stamp lights, its neighbour joins it, then it hands off
-  useEffect(() => {
-    let i = 0;
-    const step = () => { setLit([i % brands.length, (i + 1) % brands.length]); i++; };
-    const t0 = setTimeout(step, 500);
-    const id = setInterval(step, 1500);
-    return () => { clearTimeout(t0); clearInterval(id); };
-  }, []);
-  return (
-    <Bg color="#06080b">
-      <div className="cbs" style={{ position: 'absolute', inset: 0, padding: '4% 5% 58px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <div className="cbs-trust__intro cbs-trust__intro--noeyebrow" style={{ marginBottom: 14 }}>
-          <Slide delay={0.05} from="bottom" distance={20}><h2 className="cbs-home__h" style={{ fontSize: 'clamp(22px, calc(var(--fw) * 0.0400), 52px)' }}>11 BRANDS.<span className="cbs-home__h-rest"> ONE STORE.</span></h2></Slide>
-        </div>
-        <Slide delay={0.2} from="bottom" distance={30}>
-          <StampSheet lit={lit} className="stamps-6" />
-        </Slide>
-      </div>
-    </Bg>
-  );
-};
-
 export const cbsScenes = (): Scene[] => [
-  { id: 'vault', duration: 5200, caption: 'A first visit starts behind a steel door', render: () => <VaultScene /> },
+  { id: 'vault', duration: 5600, caption: 'A first visit starts behind a steel door', render: () => <VaultScene /> },
   {
-    id: 'cards', duration: 3600, caption: 'Every product is a boarding pass: reference, route, perforation. Hover one.',
+    id: 'cards', duration: 3800, caption: 'Every product is a boarding pass: reference, route, perforation',
     render: () => (
-      <Bg color="#06080b">
-        <div className="cbs" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2.5%', padding: '4% 4% 8%' }}>
-          {sampleCards.map((c, i) => (
-            <Slide key={c.code} delay={0.1 + i * 0.14} from="bottom" distance={90}
-              style={{ width: '23%', flex: '0 0 auto' }}>
-              <BoardingCard {...c} />
-            </Slide>
-          ))}
-        </div>
+      <Bg color="#000">
+        <Slide delay={0.05} from="bottom" distance={60} style={{ position: 'absolute', inset: 0 }}>
+          <LiveFrame src="/cbs/live/cards.html?center=1" w={1280} h={960} fit="contain" interactive={false} />
+        </Slide>
       </Bg>
     ),
   },
   {
-    id: 'stacks', duration: 3400, caption: 'Curated bundles are full tickets, barcode and all',
+    id: 'stacks', duration: 3600, caption: 'Curated bundles are full tickets, barcode and all',
     render: () => (
-      <Bg color="#06080b">
-        <div className="cbs" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3%', padding: '4% 5% 8%' }}>
-          {stacks.slice(0, 2).map((s, i) => (
-            <Slide key={s.num} delay={0.1 + i * 0.22} from="bottom" distance={110} rotate={i ? 2 : -2}
-              style={{ width: '44%', flex: '0 0 auto' }}>
-              <StackTicket {...s} />
-            </Slide>
-          ))}
-        </div>
+      <Bg color="#000">
+        <Slide delay={0.05} from="bottom" distance={60} style={{ position: 'absolute', inset: 0 }}>
+          <LiveFrame src="/cbs/live/stacks.html?n=2&center=1" w={1280} h={960} fit="contain" interactive={false} />
+        </Slide>
       </Bg>
     ),
   },
-  { id: 'stamps', duration: 6200, caption: 'Eleven brands on a sheet of stamps, each hiding its country', render: () => <StampScene /> },
+  {
+    id: 'stamps', duration: 6400, caption: 'Eleven brands on a sheet of stamps, each hiding its country',
+    render: () => (
+      <Bg color="#000">
+        <Slide delay={0.05} from="bottom" distance={40} style={{ position: 'absolute', inset: 0 }}>
+          <LiveFrame src="/cbs/live/brands.html?wave=1&center=1" w={1466} h={1100} fit="contain" interactive={false} />
+        </Slide>
+      </Bg>
+    ),
+  },
   {
     id: 'live', duration: 3400, caption: 'Built on a live store taking real orders. No git, no staging, one change at a time.',
     render: () => (

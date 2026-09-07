@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
-import './cbs/cbs.css'
+import './cbs/vault.css'
 import App from './App.tsx'
 import { SmoothScroll } from './components/SmoothScroll.tsx'
 
