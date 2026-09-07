@@ -1,5 +1,8 @@
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { PreviewPlayer } from '../previews/PreviewPlayer';
+import { projects as content } from '../content/projects';
 
 interface ProjectProps {
   title: string;
@@ -8,17 +11,32 @@ interface ProjectProps {
   color: string;
   image: string;
   link: string;
+  /** matches a project in src/content, which supplies the animated preview */
+  slug: string;
+  /** true when the case study lives on this site rather than on Framer */
+  internal?: boolean;
   index?: number;
 }
 
-const projects = [
+const projects: ProjectProps[] = [
+  {
+    title: "Cross Border Supps: An E-Commerce Storefront",
+    subtitle: "Art Direction / Design System / Interaction Design",
+    category: "E-Commerce",
+    color: "rgb(222, 241, 250)",
+    image: "/cbs/shots/home-hero.jpg",
+    link: "/work/cbs",
+    slug: "cbs",
+    internal: true
+  },
   {
     title: "Website Design and Product Experience for ekai",
     subtitle: "Interaction Design / Product Design",
     category: "B2B SaaS",
     color: "rgb(248, 242, 248)",
     image: "https://framerusercontent.com/images/Pe50ywX86rDfidaxqEPq1hHV4W4.png",
-    link: "https://keerthivardhan.framer.website/Work/appproject11"
+    link: "https://keerthivardhan.framer.website/Work/appproject11",
+    slug: "ekai"
   },
   {
     title: "Misfits: Connecting Through Communities",
@@ -26,7 +44,8 @@ const projects = [
     category: "Mobile App",
     color: "rgb(222, 241, 250)",
     image: "https://framerusercontent.com/images/ohaffIRt0xglZU0U2rKGdrcYD5o.png",
-    link: "https://keerthivardhan.framer.website/Work/AppProject2"
+    link: "https://keerthivardhan.framer.website/Work/AppProject2",
+    slug: "misfits"
   },
   {
     title: "Redesigning the Delhi Metro Experience",
@@ -34,7 +53,8 @@ const projects = [
     category: "Public Transport",
     color: "rgb(252, 235, 239)",
     image: "https://framerusercontent.com/images/YijBlctGzn0Mk4J6rFwf6TL43P0.png",
-    link: "https://keerthivardhan.framer.website/Work/AppProject1"
+    link: "https://keerthivardhan.framer.website/Work/AppProject1",
+    slug: "dmrc"
   },
   {
     title: "Empowering Real Estate",
@@ -42,7 +62,8 @@ const projects = [
     category: "Real Estate",
     color: "rgb(244, 237, 255)",
     image: "https://framerusercontent.com/images/Sk5TswNLO6gk2IJhTVRELrLDT08.png",
-    link: "https://keerthivardhan.framer.website/Work/AppProject1"
+    link: "https://keerthivardhan.framer.website/Work/AppProject1",
+    slug: "infinity"
   }
 ];
 
@@ -125,6 +146,13 @@ const StarryBackground = ({ progress }: { progress: any }) => {
 };
 
 const ProjectCard = ({ project, index }: { project: ProjectProps; index: number }) => {
+  const scenes = useMemo(() => content.find(p => p.meta.slug === project.slug)?.preview() ?? [], [project.slug]);
+  const ctaClass = "group w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 bg-white text-black hover:bg-[#DF95FF] hover:scale-105";
+  const arrow = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 md:w-5 h-4 md:h-5 group-hover:translate-x-1 transition-transform">
+      <path d="M5 12h14M12 5l7 7-7 7"/>
+    </svg>
+  );
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -150,37 +178,23 @@ const ProjectCard = ({ project, index }: { project: ProjectProps; index: number 
           </h2>
         </div>
         <div className="flex gap-4">
-          <a 
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 bg-white text-black hover:bg-[#DF95FF] hover:scale-105"
-          >
-            View Case Study
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 md:w-5 h-4 md:h-5 group-hover:translate-x-1 transition-transform">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </a>
+          {project.internal
+            ? <Link to={project.link} className={ctaClass}>View Case Study{arrow}</Link>
+            : <a href={project.link} target="_blank" rel="noopener noreferrer" className={ctaClass}>View Case Study{arrow}</a>}
         </div>
       </div>
 
-      {/* Image/Preview - Floating Glass Effect */}
+      {/* Preview - an animated look at the work, built from the real product */}
       <div className="w-full md:w-1/2 h-full relative min-h-[240px] md:min-h-full flex items-center justify-center z-10">
-         <motion.a 
-           href={project.link}
-           target="_blank"
-           rel="noopener noreferrer"
-           className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden border border-white/10 shadow-2xl block cursor-pointer"
+         <motion.div
+           className="relative w-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
            whileHover={{ scale: 1.02, rotateY: 5 }}
            transition={{ type: "spring", stiffness: 100 }}
          >
-            <img 
-              src={project.image} 
-              alt={project.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-         </motion.a>
+            {scenes.length > 0
+              ? <PreviewPlayer scenes={scenes} accent={project.color} />
+              : <img src={project.image} alt={project.title} className="w-full aspect-[4/3] object-cover" />}
+         </motion.div>
       </div>
     </motion.div>
   );

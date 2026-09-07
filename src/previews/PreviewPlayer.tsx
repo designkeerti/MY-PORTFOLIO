@@ -1,0 +1,123 @@
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion';
+import type { Scene } from './types';
+
+type Props = {
+  scenes: Scene[];
+  accent?: string;
+  /** loop forever (thumbnails) or stop on the last scene */
+  loop?: boolean;
+  className?: string;
+  /** hide the caption strip */
+  bare?: boolean;
+};
+
+/**
+ * An animated project preview: a timed sequence of scenes built from the real product.
+ * Plays when at least half of it is on screen, pauses when it scrolls away, click to hold.
+ * Under prefers-reduced-motion it simply shows the last scene and never animates.
+ */
+export const PreviewPlayer = ({ scenes, accent = '#DF95FF', loop = true, className = '', bare = false }: Props) => {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(frameRef, { amount: 0.4 });
+  const reduce = useReducedMotion();
+
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [stopped, setStopped] = useState(false);
+  const [compact, setCompact] = useState(false);
+  const [box, setBox] = useState({ w: 0, h: 0 });
+  const barRefs = useRef<(HTMLElement | null)[]>([]);
+  const elapsedRef = useRef(0);
+  const lastRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
+
+  const scene = scenes[Math.min(idx, scenes.length - 1)];
+  const playing = started && inView && !paused && !stopped && !reduce;
+
+  useEffect(() => { if (reduce) { setIdx(scenes.length - 1); setStopped(true); } }, [reduce, scenes.length]);
+  useEffect(() => { if (inView && !started) setStarted(true); }, [inView, started]);
+
+  // narrow frames get simplified scene layouts
+  useEffect(() => {
+    const el = frameRef.current; if (!el) return;
+    const ro = new ResizeObserver(([e]) => {
+      setCompact(e.contentRect.width < 700);
+      setBox({ w: Math.round(e.contentRect.width), h: Math.round(e.contentRect.height) });
+    });
+    ro.observe(el); return () => ro.disconnect();
+  }, []);
+
+  const paint = useCallback((i: number, t: number) => {
+    barRefs.current.forEach((b, k) => {
+      if (!b) return;
+      b.style.width = k < i ? '100%' : k === i ? `${Math.min(100, t * 100)}%` : '0%';
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!playing) { lastRef.current = null; if (rafRef.current) cancelAnimationFrame(rafRef.current); return; }
+    const tick = (now: number) => {
+      if (lastRef.current == null) lastRef.current = now;
+      // cap the step so a backgrounded tab cannot skip whole scenes on return
+      elapsedRef.current += Math.min(100, now - lastRef.current);
+      lastRef.current = now;
+      paint(idx, elapsedRef.current / scene.duration);
+      if (elapsedRef.current >= scene.duration) {
+        elapsedRef.current = 0;
+        if (idx + 1 < scenes.length) setIdx(idx + 1);
+        else if (loop) { setIdx(0); paint(0, 0); }
+        else { setStopped(true); paint(scenes.length - 1, 1); }
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [playing, idx, scene, scenes.length, loop, paint]);
+
+  const jump = (i: number, e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    elapsedRef.current = 0; lastRef.current = null;
+    setStopped(false); setPaused(false); setIdx(i); paint(i, 0);
+  };
+
+  return (
+    <div
+      ref={frameRef}
+      className={`preview-frame group ${className}`}
+      style={{ ['--accent' as string]: accent, ['--fw' as string]: `${box.w}px`, ['--fh' as string]: `${box.h}px` }}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPaused(p => !p); }}
+      role="button"
+      tabIndex={-1}
+      aria-label={paused ? 'Resume preview' : 'Pause preview'}
+    >
+      <div className="preview-progress">
+        {scenes.map((s, k) => (
+          <i key={s.id} onClick={(e) => jump(k, e)}><b ref={(el) => { barRefs.current[k] = el; }} /></i>
+        ))}
+      </div>
+
+      <AnimatePresence mode="sync">
+        <motion.div key={scene.id} className="scene"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.28 } }} transition={{ duration: 0.32 }}>
+          {started || reduce ? scene.render({ active: true, compact, w: box.w }) : null}
+        </motion.div>
+      </AnimatePresence>
+
+      {!bare && scene.caption && (
+        <AnimatePresence>
+          <motion.div key={scene.id + '-cap'} className="scene-caption"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, delay: 0.15 }}>
+            {scene.caption}
+          </motion.div>
+        </AnimatePresence>
+      )}
+
+      {paused && (
+        <div className="preview-paused"><span>Paused</span></div>
+      )}
+    </div>
+  );
+};

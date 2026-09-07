@@ -1,11 +1,19 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
 import { LottieAnimation } from './LottieAnimation';
 
 export const Navigation = ({ revealStep, isDarkMode = false }: { revealStep: number; isDarkMode?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isNameHovered, setIsNameHovered] = useState(false);
   const lottieRef = useRef<{ handleHoverStart: () => void; handleHoverEnd: () => void } | null>(null);
+  const onHome = useLocation().pathname === '/';
+  // On the home page these stay plain anchors so the existing scroll behaviour is untouched;
+  // from a case study they route home first.
+  const SectionLink = ({ to, className, onClick, children }: { to: string; className?: string; onClick?: () => void; children: React.ReactNode }) =>
+    onHome
+      ? <a href={`#${to}`} className={className} onClick={onClick}>{children}</a>
+      : <Link to={`/#${to}`} className={className} onClick={onClick}>{children}</Link>;
 
   const textColor = isDarkMode ? 'text-white' : 'text-text-primary';
   const menuBg = isDarkMode ? 'bg-white/10 border-white/10' : 'bg-white/80 border-white/50';
@@ -26,7 +34,8 @@ export const Navigation = ({ revealStep, isDarkMode = false }: { revealStep: num
           ease: [0.25, 0.1, 0.25, 1],
         }}
       >
-        <div 
+        <Link
+          to="/"
           className="inline-block font-bold text-xl tracking-tight cursor-pointer group relative"
           style={{ 
             backgroundColor: 'transparent',
@@ -56,13 +65,13 @@ export const Navigation = ({ revealStep, isDarkMode = false }: { revealStep: num
               className="bg-transparent pointer-events-auto"
             />
           </div>
-        </div>
+        </Link>
 
         {/* Desktop Menu */}
         <div className={`hidden md:flex items-center gap-8 px-6 py-3 rounded-full border shadow-sm backdrop-blur-md transition-colors duration-300 ${menuBg}`}>
-          <a href="#work" className={`text-sm font-medium transition-colors ${textColor} ${hoverColor}`}>Work</a>
-          <a href="#about" className={`text-sm font-medium transition-colors ${textColor} ${hoverColor}`}>About</a>
-          <a href="#contact" className={`text-sm font-medium transition-colors ${textColor} ${hoverColor}`}>Contact</a>
+          <SectionLink to="work" className={`text-sm font-medium transition-colors ${textColor} ${hoverColor}`}>Work</SectionLink>
+          <SectionLink to="about" className={`text-sm font-medium transition-colors ${textColor} ${hoverColor}`}>About</SectionLink>
+          <SectionLink to="about" className={`text-sm font-medium transition-colors ${textColor} ${hoverColor}`}>Contact</SectionLink>
         </div>
 
         {/* Mobile Toggle */}
@@ -87,9 +96,9 @@ export const Navigation = ({ revealStep, isDarkMode = false }: { revealStep: num
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-0 z-40 bg-white flex flex-col items-center justify-center gap-8"
           >
-            <a href="#work" onClick={() => setIsOpen(false)} className="text-2xl font-bold">Work</a>
-            <a href="#about" onClick={() => setIsOpen(false)} className="text-2xl font-bold">About</a>
-            <a href="#contact" onClick={() => setIsOpen(false)} className="text-2xl font-bold">Contact</a>
+            <SectionLink to="work" onClick={() => setIsOpen(false)} className="text-2xl font-bold">Work</SectionLink>
+            <SectionLink to="about" onClick={() => setIsOpen(false)} className="text-2xl font-bold">About</SectionLink>
+            <SectionLink to="about" onClick={() => setIsOpen(false)} className="text-2xl font-bold">Contact</SectionLink>
           </motion.div>
         )}
       </AnimatePresence>

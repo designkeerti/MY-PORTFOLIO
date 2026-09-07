@@ -1,13 +1,17 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import './index.css'
+import './cbs/cbs.css'
 import App from './App.tsx'
 import { SmoothScroll } from './components/SmoothScroll.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <SmoothScroll>
-      <App />
-    </SmoothScroll>
+    <BrowserRouter>
+      <SmoothScroll>
+        <App />
+      </SmoothScroll>
+    </BrowserRouter>
   </StrictMode>,
 )

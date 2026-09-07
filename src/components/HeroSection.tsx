@@ -16,6 +16,9 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   const [revealStep, setRevealStep] = useState(0); // 0: hidden, 1: rive, 2: pill+text, 3: tools+nav
   const [autoExpandPill, setAutoExpandPill] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  // Returning within the same browser session (e.g. back from a case study) skips the intro.
+  const [skipIntro] = useState<boolean>(() => { try { return sessionStorage.getItem('introSeen') === '1'; } catch { return false; } });
+  useEffect(() => { try { sessionStorage.setItem('introSeen', '1'); } catch { /* private mode */ } }, []);
 
   useEffect(() => {
     if (hiddenTextRef.current) {
@@ -33,9 +36,13 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    if (skipIntro) { setRevealStep(3); onRevealStepChange?.(3); }
+  }, [skipIntro, onRevealStepChange]);
+
   // Handle animation completion sequence
   useEffect(() => {
-    if (dpAnimationComplete) {
+    if (dpAnimationComplete && !skipIntro) {
       setTimeout(() => {
         setRevealStep(1);
         onRevealStepChange?.(1);
@@ -60,7 +67,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
         }, 500);
       }, 1400);
     }
-  }, [dpAnimationComplete, onRevealStepChange, isMobile]);
+  }, [dpAnimationComplete, onRevealStepChange, isMobile, skipIntro]);
 
   return (
     <div className="relative w-full flex flex-col items-center">
@@ -121,7 +128,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
             </motion.div>
 
             {/* Profile Image */}
-            <ProfilePicture3D onAnimationComplete={() => setDpAnimationComplete(true)} />
+            <ProfilePicture3D instant={skipIntro} onAnimationComplete={() => setDpAnimationComplete(true)} />
 
             {/* Text Block */}
             <motion.div 

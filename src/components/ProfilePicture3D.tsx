@@ -272,7 +272,7 @@ const CursorAnimation = ({
   );
 };
 
-export const ProfilePicture3D = ({ onAnimationComplete }: { onAnimationComplete?: () => void }) => {
+export const ProfilePicture3D = ({ onAnimationComplete, instant = false }: { onAnimationComplete?: () => void; instant?: boolean }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const [animationComplete, setAnimationComplete] = useState(false);
@@ -292,8 +292,18 @@ export const ProfilePicture3D = ({ onAnimationComplete }: { onAnimationComplete?
     damping: 20,
   });
 
+  // Settled state straight away, for a returning visitor
+  useEffect(() => {
+    if (!instant) return;
+    setCurrentRotation(-5); rotateZ.set(-5);
+    controls.set({ rotateZ: -5, opacity: 1, scale: 1 });
+    setAnimationComplete(true);
+    onAnimationComplete?.();
+  }, [instant, controls, rotateZ, onAnimationComplete]);
+
   // Initial load animation
   useEffect(() => {
+    if (instant) return;
     const sequence = async () => {
       // Start at -45 degrees
       setCurrentRotation(-45);
@@ -420,11 +430,11 @@ export const ProfilePicture3D = ({ onAnimationComplete }: { onAnimationComplete?
       }}
     >
       {/* Cursor - Animates from right side to bottom-right corner */}
-      <CursorAnimation 
+      {!instant && <CursorAnimation 
         containerRef={containerRef}
         animationComplete={animationComplete}
         onAnimationComplete={onAnimationComplete}
-      />
+      />}
 
       <motion.div
         className="w-full h-full relative"

@@ -35,3 +35,55 @@ section {
   scroll-snap-align: start;
   scroll-margin-top: 80px; /* Offset for fixed header */
 }
+
+/* ---------- project previews ---------- */
+.preview-frame {
+  position: relative; width: 100%; background: #000; border-radius: 20px; overflow: hidden;
+  aspect-ratio: 4 / 3; cursor: pointer; isolation: isolate;
+}
+.scene { position: absolute; inset: 0; overflow: hidden; }
+
+.preview-progress { position: absolute; left: 14px; right: 14px; top: 12px; z-index: 6; display: flex; gap: 5px; }
+.preview-progress i { flex: 1; height: 2px; border-radius: 2px; background: rgba(255,255,255,.22); overflow: hidden; cursor: pointer; }
+.preview-progress i b { display: block; height: 100%; width: 0; background: #fff; }
+
+.scene-caption {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; padding: 96px 16px 14px;
+  background: linear-gradient(0deg, #000 0%, rgba(0,0,0,.92) 22%, rgba(0,0,0,.55) 52%, rgba(0,0,0,0) 100%);
+  font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace; font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(255,255,255,.85); pointer-events: none; line-height: 1.5;
+}
+@media (min-width: 900px) { .scene-caption { padding: 48px 20px 16px; font-size: 11px; } }
+
+.preview-paused { position: absolute; inset: 0; z-index: 7; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.preview-paused span {
+  background: rgba(255,255,255,.92); color: #000; font-size: 12px; font-weight: 700;
+  padding: 8px 16px; border-radius: 999px; letter-spacing: .02em;
+}
+
+.kicker { font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+
+/* ---------- case study ---------- */
+.cs-prose p { font-size: 17px; line-height: 1.7; color: #3a3a3a; margin: 0 0 1.1em; }
+.cs-prose p:last-child { margin-bottom: 0; }
+.cs-prose strong { color: rgb(11,11,11); font-weight: 700; }
+@media (min-width: 900px) { .cs-prose p { font-size: 18.5px; } }
+
+.fig { border-radius: 18px; overflow: hidden; background: #f3f3f5; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 20px 50px -30px rgba(0,0,0,.25); }
+.fig img { display: block; width: 100%; height: auto; }
+.phone { border-radius: 26px; overflow: hidden; background: #111; box-shadow: 0 30px 60px -30px rgba(0,0,0,.6), 0 0 0 6px #111, 0 0 0 7px rgba(255,255,255,.12); }
+.phone img { display: block; width: 100%; height: auto; }
+
+.cs-btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 999px;
+  background: rgba(255,255,255,.12); color: #fff; font-size: 13px; font-weight: 600;
+  border: 1px solid rgba(255,255,255,.18); cursor: pointer; transition: background .2s, transform .2s;
+}
+.cs-btn:hover { background: rgba(255,255,255,.22); transform: translateY(-1px); }
+.cs-btn--solid { background: #fff; color: #000; border-color: #fff; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+
+/* A case study is a long read; the home page's mandatory scroll-snap fights it. */
+html.no-snap { scroll-snap-type: none; }
+html.no-snap section { scroll-snap-align: none; }

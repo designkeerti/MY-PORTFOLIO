@@ -1,36 +1,43 @@
-import { HeroSection } from './components/HeroSection';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Navigation } from './components/Navigation';
-import { WorkSection } from './components/WorkSection';
-import { SkillsSection } from './components/SkillsSection';
-import { AboutSection } from './components/AboutSection';
-import { useState, useEffect } from 'react';
-import { useScrollControl } from './components/SmoothScroll';
+import { Home } from './pages/Home';
+import { CaseStudy } from './pages/CaseStudy';
+
+function ScrollToTop() {
+  const { pathname, hash } = useLocation();
+  // Turn the home page's mandatory scroll-snap off for long reads, before anything scrolls.
+  useLayoutEffect(() => {
+    document.documentElement.classList.toggle('no-snap', pathname.startsWith('/work/'));
+  }, [pathname]);
+  useEffect(() => {
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) { el.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' }); return; }
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, [pathname, hash]);
+  return null;
+}
 
 function App() {
   const [revealStep, setRevealStep] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { stopScroll, startScroll } = useScrollControl();
+  const location = useLocation();
+  const isHome = location.pathname === '/';
 
-  // Lock scroll until hero animation is complete (revealStep >= 3)
-  useEffect(() => {
-    if (revealStep < 3) {
-      stopScroll();
-    } else {
-      startScroll();
-    }
-  }, [revealStep, stopScroll, startScroll]);
+  const handleReveal = useCallback((n: number) => setRevealStep(n), []);
+  const handleDark = useCallback((d: boolean) => setIsDarkMode(d), []);
 
   return (
-    <main className="w-full min-h-screen bg-white overflow-x-hidden selection:bg-[#DF95FF]/30 relative">
-      <Navigation revealStep={revealStep} isDarkMode={isDarkMode} />
-      <HeroSection onRevealStepChange={setRevealStep} />
-      {revealStep >= 3 && (
-        <>
-          <WorkSection onDarkModeChange={setIsDarkMode} />
-          <SkillsSection />
-          <AboutSection />
-        </>
-      )}
+    <main className="w-full min-h-screen bg-white selection:bg-[#DF95FF]/30 relative" style={{ overflowX: 'clip' }}>
+      <ScrollToTop />
+      <Navigation revealStep={isHome ? revealStep : 3} isDarkMode={isDarkMode} />
+      <Routes>
+        <Route path="/" element={<Home onReveal={handleReveal} onDarkModeChange={handleDark} />} />
+        <Route path="/work/:slug" element={<CaseStudy onDarkModeChange={handleDark} />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </main>
   );
 }
