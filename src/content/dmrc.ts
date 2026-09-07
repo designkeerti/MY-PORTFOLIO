@@ -8,6 +8,7 @@ export const dmrc: Project = {
   externalLink: 'https://keerthivardhan.framer.website/Work/AppProject1',
   timeline: 'Explorations to low-fidelity designs in 4 weeks, alongside other projects',
   expertise: 'UX research · System design',
+  facts: ['UX researcher', '5.5M riders a day', '72% cite overcrowding', 'Three proposals'],
   summary: 'The Delhi Metro provides maps, signage and announcements in English and Hindi, plus a handful of apps. Yet tourists, first-time travellers and daily commuters all struggle to navigate a well-structured but complex system of colour-coded lines and multi-level stations. This project set out to understand the system’s shortcomings and its strengths, research travellers’ needs and grievances, and propose a mobile-first solution for navigating within it.',
   preview: dmrcScenes,
   chapters: [

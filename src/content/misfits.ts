@@ -8,6 +8,7 @@ export const misfits: Project = {
   externalLink: 'https://keerthivardhan.framer.website/Work/AppProject2',
   timeline: 'Explorations to final designs in 5 weeks, alongside other projects',
   expertise: 'UX/UI design',
+  facts: ['UX/UI designer', '200+ people surveyed', 'Personas, flows, hi-fi app', '5 weeks'],
   summary: 'Misfits connects individuals with like-minded people by joining communities and clubs built around shared interests. The app bridges the gap between online and offline interaction, creating real connections through tailored events, chats and group activities.',
   preview: misfitsScenes,
   chapters: [

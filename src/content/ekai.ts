@@ -8,6 +8,7 @@ export const ekai: Project = {
   externalLink: 'https://keerthivardhan.framer.website/Work/appproject11',
   timeline: 'Explorations to high-fidelity in 4 weeks, alongside other projects',
   expertise: 'Interaction design · Product design',
+  facts: ['Product designer', '63% mobile bounce, before', 'Research to final motion', 'Live at yourekai.com'],
   summary: 'Ekai builds an AI twin inside Slack that answers your team’s questions using your existing context, so work keeps moving even when you are not online. The team had a strong product and an early website. As the product grew, the site needed a clearer story and a more trustworthy presence. I partnered with the founders to redesign the full experience and shaped the UX and UI from research to final visuals.',
   link: { href: 'https://yourekai.com', label: 'Visit yourekai.com' },
   preview: ekaiScenes,

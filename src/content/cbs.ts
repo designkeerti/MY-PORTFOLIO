@@ -7,6 +7,7 @@ export const cbs: Project = {
   cover: S + 'home-hero.jpg',
   timeline: 'May to September 2026, on a live store the whole time',
   expertise: 'Art direction · Design system · Interaction design',
+  facts: ['Design lead', 'Live and selling', '11 brands, one system', 'Three mobile passes'],
   summary: 'Cross Border Supps sells genuine imported supplements and apparel into India, a market where the customer’s first question is not “do I want this” but “is this real”. I designed the entire storefront: the design language, every surface, the interactions, and three dedicated mobile passes. Built with an AI assistant doing the implementation, directly on a live store taking daily orders. Everything on this page is the store itself, embedded.',
   link: { href: 'https://crossbordersupps.com', label: 'Visit crossbordersupps.com' },
   preview: cbsScenes,

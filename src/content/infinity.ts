@@ -8,6 +8,7 @@ export const infinity: Project = {
   externalLink: 'https://keerthivardhan.framer.website/Work/DesktopProject1',
   timeline: 'Explorations to final designs in 8 weeks',
   expertise: 'UX/UI design · CRM application · Website',
+  facts: ['UX designer', 'Website + CRM app', 'Quotation calculator', '8 weeks to final designs'],
   summary: 'Infinity Lifespaces is a Gurugram design-and-build company focused on real estate: interior and exterior design for housing, and several residential projects. Their reputation is built on comprehensive solutions, client contentment and openness. Their digital experience was not keeping up.',
   preview: infinityScenes,
   chapters: [

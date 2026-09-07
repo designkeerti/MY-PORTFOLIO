@@ -23,6 +23,8 @@ export type Project = {
   cover: string;
   timeline: string;
   expertise: string;
+  /** three or four short, true things for the project card on the home page */
+  facts?: string[];
   summary: string;
   link?: { href: string; label: string };
   /** the Framer case study, for projects not yet rebuilt on this site */

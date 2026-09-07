@@ -146,10 +146,12 @@ const StarryBackground = ({ progress }: { progress: any }) => {
 };
 
 const ProjectCard = ({ project, index }: { project: ProjectProps; index: number }) => {
-  const scenes = useMemo(() => content.find(p => p.meta.slug === project.slug)?.preview() ?? [], [project.slug]);
-  const ctaClass = "group w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 bg-white text-black hover:bg-[#DF95FF] hover:scale-105";
+  const entry = useMemo(() => content.find(p => p.meta.slug === project.slug), [project.slug]);
+  const scenes = useMemo(() => entry?.preview() ?? [], [entry]);
+  const meta = entry?.meta;
+  const ctaClass = "group inline-flex shrink-0 whitespace-nowrap items-center justify-center gap-2 rounded-full bg-white text-black font-medium text-[14px] md:text-[15px] px-5 py-2.5 md:px-6 md:py-3 transition-all duration-300 hover:bg-[#DF95FF] hover:scale-105";
   const arrow = (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 md:w-5 h-4 md:h-5 group-hover:translate-x-1 transition-transform">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
       <path d="M5 12h14M12 5l7 7-7 7"/>
     </svg>
   );
@@ -159,42 +161,49 @@ const ProjectCard = ({ project, index }: { project: ProjectProps; index: number 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
-      className="sticky top-24 w-full max-w-[1240px] min-h-[500px] md:min-h-[620px] rounded-[32px] md:rounded-[40px] p-8 md:p-16 flex flex-col-reverse md:flex-row gap-8 md:gap-10 items-center justify-between overflow-hidden border border-white/10"
-      style={{ 
-        backgroundColor: 'rgba(17, 17, 17, 0.95)', // Increased opacity to avoid heavy backdrop blur
-        boxShadow: `0 0 40px -10px ${project.color}22` // Reduced spread and opacity for performance
+      className="sticky top-24 w-full max-w-[1240px] rounded-[28px] md:rounded-[36px] p-5 md:p-8 lg:p-10 flex flex-col md:flex-row gap-6 md:gap-10 items-stretch overflow-hidden border border-white/10"
+      style={{
+        backgroundColor: 'rgba(17, 17, 17, 0.95)',
+        boxShadow: `0 0 40px -10px ${project.color}22`
       }}
     >
-      {/* Performance optimization: Removed blur-[120px] glow div and backdrop-blur */}
-
-      {/* Text Content */}
-      <div className="flex flex-col gap-6 md:gap-10 w-full md:w-1/2 z-10">
-        <div className="flex flex-col gap-4 md:gap-6">
-          <span 
-            className="text-xs md:text-sm font-bold tracking-widest uppercase text-white/60"
-          >{project.subtitle}</span>
-          <h2 className="text-3xl md:text-6xl font-bold leading-tight text-white">
-            {project.title}
-          </h2>
-        </div>
-        <div className="flex gap-4">
-          {project.internal
-            ? <Link to={project.link} className={ctaClass}>View Case Study{arrow}</Link>
-            : <a href={project.link} target="_blank" rel="noopener noreferrer" className={ctaClass}>View Case Study{arrow}</a>}
-        </div>
+      {/* The reel comes first and takes the larger share of the card */}
+      <div className="w-full md:w-[60%] lg:w-[62%] relative z-10">
+        <motion.div
+          className="relative w-full rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
+          whileHover={{ scale: 1.015 }}
+          transition={{ type: "spring", stiffness: 120 }}
+        >
+          {scenes.length > 0
+            ? <PreviewPlayer scenes={scenes} accent={project.color} />
+            : <img src={project.image} alt={project.title} className="w-full aspect-[4/3] object-cover" />}
+        </motion.div>
       </div>
 
-      {/* Preview - an animated look at the work, built from the real product */}
-      <div className="w-full md:w-1/2 h-full relative min-h-[240px] md:min-h-full flex items-center justify-center z-10">
-         <motion.div
-           className="relative w-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
-           whileHover={{ scale: 1.02, rotateY: 5 }}
-           transition={{ type: "spring", stiffness: 100 }}
-         >
-            {scenes.length > 0
-              ? <PreviewPlayer scenes={scenes} accent={project.color} />
-              : <img src={project.image} alt={project.title} className="w-full aspect-[4/3] object-cover" />}
-         </motion.div>
+      {/* What the project is, in a glance */}
+      <div className="flex flex-col justify-center gap-7 w-full md:w-[40%] lg:w-[38%] z-10 md:py-1">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-x-2 text-[11px] md:text-[12px] font-bold tracking-[0.16em] uppercase text-white/50">
+            {meta ? <><span>{meta.company}</span><span className="text-white/25">·</span><span>{meta.year}</span><span className="text-white/25">·</span><span>{meta.tag}</span></> : <span>{project.category}</span>}
+          </div>
+          <h2 className="text-[24px] md:text-[26px] lg:text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-white">
+            {project.title}
+          </h2>
+          {meta && <p className="text-[14.5px] md:text-[15px] leading-[1.55] text-white/65">{meta.oneLiner}</p>}
+          {entry?.facts && (
+            <ul className="flex flex-wrap gap-2 pt-1" aria-label="Project facts">
+              {entry.facts.map(f => (
+                <li key={f} className="rounded-full border border-white/15 bg-white/[.04] px-3 py-1.5 text-[12px] md:text-[12.5px] leading-none text-white/80">{f}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div className="flex items-center gap-4">
+          {project.internal
+            ? <Link to={project.link} className={ctaClass}>View case study{arrow}</Link>
+            : <a href={project.link} target="_blank" rel="noopener noreferrer" className={ctaClass}>View case study{arrow}</a>}
+          <span className="text-[12px] leading-snug text-white/40 min-w-0">{project.subtitle}</span>
+        </div>
       </div>
     </motion.div>
   );
