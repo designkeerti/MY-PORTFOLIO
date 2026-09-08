@@ -1,0 +1,76 @@
+/* ---------- the dashboard: light, quiet, hairlines and one accent ---------- */
+.dash {
+  --ink: #141416;
+  --ink-2: #5f5f66;
+  --ink-3: #8f8f97;
+  --line: #e7e7ea;
+  --line-2: #f0f0f2;
+  --paper: #f5f5f4;
+  --card: #ffffff;
+  --accent: #c47cff;
+  --accent-ink: #7a3fb0;
+  --accent-soft: #f3e9fb;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+.dash > .dash-body { position: relative; z-index: 1; }
+
+.d-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+.d-h { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+.d-meta { font-size: 12.5px; color: var(--ink-3); }
+.d-label { font-size: 12px; font-weight: 500; color: var(--ink-3); }
+
+.d-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
+  border-radius: 10px; padding: 9px 14px; font-size: 13.5px; font-weight: 500; color: var(--ink);
+  background: #fff; border: 1px solid var(--line); transition: background .15s, border-color .15s, color .15s;
+}
+.d-btn:hover { background: #fafafa; border-color: #d9d9de; }
+.d-btn--ink { background: var(--ink); color: #fff; border-color: var(--ink); }
+.d-btn--ink:hover { background: #2a2a2e; border-color: #2a2a2e; }
+.d-link { font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; }
+.d-link:hover { border-color: var(--ink); }
+
+/* sidebar nav rows */
+.d-nav a, .d-nav button {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  padding: 8px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink-2);
+  transition: background .15s, color .15s;
+}
+.d-nav a:hover, .d-nav button:hover { background: var(--line-2); color: var(--ink); }
+.d-nav .is-active { background: var(--line-2); color: var(--ink); }
+.d-nav i { font-size: 17px; width: 20px; text-align: center; color: var(--ink-3); }
+.d-nav .is-active i { color: var(--ink); }
+
+/* library rows */
+.d-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border-radius: 10px; text-align: left; transition: background .15s; }
+.d-row:hover { background: var(--line-2); }
+.d-row.is-active { background: var(--line-2); }
+.d-row img { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; background: #eee; flex: 0 0 auto; }
+
+/* horizontal shelf */
+.d-shelf { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x proximity; padding: 2px 2px 8px; scrollbar-width: none; }
+.d-shelf::-webkit-scrollbar { display: none; }
+.d-shelf > * { scroll-snap-align: start; flex: 0 0 auto; }
+
+/* transport */
+.d-transport { display: flex; align-items: center; gap: 10px; }
+.d-transport > button { width: 34px; height: 34px; border-radius: 999px; display: grid; place-items: center; background: transparent; color: var(--ink); transition: background .15s; }
+.d-transport > button:hover { background: var(--line-2); }
+.d-transport > button.play { background: var(--ink); color: #fff; width: 38px; height: 38px; }
+.d-transport > button.play:hover { background: #2a2a2e; }
+.d-seg { position: relative; display: block; height: 3px; min-width: 0; border-radius: 2px; background: var(--line); overflow: hidden; flex: 1 1 0; padding: 0; border: 0; }
+.d-seg:hover { background: #d9d9de; }
+.d-seg > i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--ink); }
+
+.d-scroll::-webkit-scrollbar { width: 6px; }
+.d-scroll::-webkit-scrollbar-thumb { background: #dcdce0; border-radius: 999px; }
+
+/* the equaliser next to what is playing */
+@keyframes d-eq { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
+.d-eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+.d-eq i { display: block; width: 2px; height: 100%; background: var(--accent-ink); transform-origin: bottom; animation: d-eq .8s ease-in-out infinite alternate; }
+.d-eq i:nth-child(2) { animation-delay: .15s; } .d-eq i:nth-child(3) { animation-delay: .3s; }

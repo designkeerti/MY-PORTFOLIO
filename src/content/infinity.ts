@@ -4,7 +4,7 @@ const A = '/work/realestate/';
 
 export const infinity: Project = {
   meta: { slug: 'infinity', title: 'Empowering real estate through digital', oneLiner: 'A website and a CRM app for a design-and-build firm, with a quotation calculator, moodboards, live site video and payment milestones. Transparency, turned into features.', role: 'UX Designer', year: '2024', company: 'Infinity Lifespaces', accent: '#C9A96E', accent2: '#0E1418', tag: 'Real estate · CRM' },
-  cover: A + 'Sk5TswNLO6gk2IJhTVRELrLDT08.webp',
+  cover: '/work/realestate/poster.jpg',
   externalLink: 'https://keerthivardhan.framer.website/Work/DesktopProject1',
   timeline: 'Explorations to final designs in 8 weeks',
   expertise: 'UX/UI design · CRM application · Website',

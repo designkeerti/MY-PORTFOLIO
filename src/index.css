@@ -87,3 +87,10 @@ section {
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
 
+
+/* light theme for the case-study buttons */
+.cs-btn { border-color: rgba(27,21,48,.12); color: #1b1530; background: rgba(255,255,255,.7); }
+.cs-btn:hover { background: #fff; }
+.cs-btn--solid { background: #1b1530; color: #fff; border-color: #1b1530; }
+.cs-btn--solid:hover { background: #2a2244; }
+@keyframes d-eq { from { transform: scaleY(.35); } to { transform: scaleY(1); } }

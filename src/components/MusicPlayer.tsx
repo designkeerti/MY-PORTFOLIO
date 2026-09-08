@@ -19,11 +19,11 @@ export const MusicPlayer = () => {
 
   return (
     <motion.div
-      className="relative w-full max-w-[300px] h-[80px] rounded-[12px] overflow-hidden shadow-lg border border-[#DF95FF]/30 bg-[#DF95FF]/10 backdrop-blur-md"
+      className="relative w-full max-w-[300px] h-[80px] rounded-[12px] overflow-hidden"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 1.5 }}
-      whileHover={!isMobile ? { scale: 1.02, borderColor: 'rgba(223, 149, 255, 0.6)' } : undefined}
+      whileHover={undefined}
     >
       <iframe 
         style={{ borderRadius: '12px' }} 

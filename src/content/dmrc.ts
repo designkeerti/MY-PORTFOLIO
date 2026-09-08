@@ -4,7 +4,7 @@ const A = '/work/dmrc/';
 
 export const dmrc: Project = {
   meta: { slug: 'dmrc', title: 'Redesigning the Delhi Metro experience', oneLiner: 'One of the busiest metro systems on earth, 5.5 million riders a day, and a crowd-management problem at its interchanges. Research, global benchmarks, structured ideation and three proposals.', role: 'UX Researcher', year: '2024', company: 'DMRC', accent: '#E53935', accent2: '#0A1424', tag: 'Public transport' },
-  cover: A + 'YijBlctGzn0Mk4J6rFwf6TL43P0.png',
+  cover: '/work/dmrc/poster.jpg',
   externalLink: 'https://keerthivardhan.framer.website/Work/AppProject1',
   timeline: 'Explorations to low-fidelity designs in 4 weeks, alongside other projects',
   expertise: 'UX research · System design',
