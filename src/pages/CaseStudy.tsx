@@ -34,7 +34,7 @@ export const CaseStudy = ({ onDarkModeChange }: { onDarkModeChange: (d: boolean)
 
   return (
     <article className="bg-white">
-      <div ref={heroRef} className="bg-[#0b0b0b] text-white pt-24 md:pt-28 pb-16 md:pb-24 relative">
+      <div ref={heroRef} className="bg-[#0f0d16] text-white pt-24 md:pt-28 pb-16 md:pb-24 relative">
         <div className="absolute inset-x-0 top-0 h-[2px] bg-white/10"><motion.div className="h-full" style={{ width: bar, background: meta.accent }} /></div>
 
         <div className="max-w-[1240px] mx-auto px-4 md:px-8">
@@ -98,11 +98,11 @@ export const CaseStudy = ({ onDarkModeChange }: { onDarkModeChange: (d: boolean)
       </div>
 
       {nextIsHere ? (
-        <Link to={`/work/${next.slug}`} className="block bg-[#0b0b0b] text-white group">
+        <Link to={`/work/${next.slug}`} className="block bg-[#0f0d16] text-white group">
           <NextCard label={next.title} accent={next.accent} sub={`${next.company} · ${next.year}`} />
         </Link>
       ) : (
-        <a href={projects[(idx + 1) % projects.length].externalLink ?? '/'} target="_blank" rel="noreferrer" className="block bg-[#0b0b0b] text-white group">
+        <a href={projects[(idx + 1) % projects.length].externalLink ?? '/'} target="_blank" rel="noreferrer" className="block bg-[#0f0d16] text-white group">
           <NextCard label={next.title} accent={next.accent} sub={`${next.company} · ${next.year}`} />
         </a>
       )}
