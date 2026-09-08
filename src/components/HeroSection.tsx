@@ -153,7 +153,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
                  <GridItem><img src="https://framerusercontent.com/images/W07nH8VDiwrgbmo4r8CmiIChg.png" className="w-10 h-10 object-contain" /></GridItem>
                  <GridItem><span className="font-bold text-lg">RIVE</span></GridItem>
                  <GridItem><img src="https://framerusercontent.com/images/FRggyEbUloy2PxkUIkcfqmFkXoM.png" className="w-10 h-10 object-contain" /></GridItem>
-                 <GridItem><svg viewBox="0 0 24 24" className="w-8 h-8 fill-black" xmlns="http://www.w3.org/2000/svg"><path d="M19.07 10.93C16.83 11.42 15.08 13.17 14.59 15.41C14.38 16.35 13.12 16.35 12.96 15.41C12.47 13.17 10.72 11.42 8.48 10.93C7.54 10.72 7.54 9.46 8.48 9.25C10.72 8.76 12.47 7.01 12.96 4.77C13.17 3.83 14.43 3.83 14.59 4.77C15.08 7.01 16.83 8.76 19.07 9.25C20.01 9.46 20.01 10.72 19.07 10.93ZM9.93 18.07C8.81 18.31 7.93 19.19 7.69 20.31C7.58 20.78 6.95 20.78 6.87 20.31C6.63 19.19 5.75 18.31 4.63 18.07C4.16 17.96 4.16 17.33 4.63 17.23C5.75 16.99 6.63 16.11 6.87 14.99C6.98 14.52 7.61 14.52 7.69 14.99C7.93 16.11 8.81 16.99 9.93 17.23C10.4 17.33 10.4 17.96 9.93 18.07Z"/></svg></GridItem>
+                 <GridItem><img src="/icons/claude.svg" alt="Claude" className="w-9 h-9 object-contain" /></GridItem>
                  <GridItem><img src="https://framerusercontent.com/images/nWQ4pwGhNTr4aeYi8lUshZsc.png" className="w-10 h-10 object-contain" /></GridItem>
               </motion.div>
 
