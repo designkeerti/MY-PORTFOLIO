@@ -1,16 +1,12 @@
-/** About me, compacted from the about section so it fits beside the screen. */
-const Interest = ({ icon, bg, title, desc }: { icon: string; bg: string; title: string; desc: string }) => (
-  <div className="flex items-center gap-3">
-    <div className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center text-base shadow-sm shrink-0`}>{icon}</div>
-    <div className="min-w-0">
-      <p className="font-bold text-gray-800 text-[13.5px] leading-tight">{title}</p>
-      <p className="about-hide-2 text-[11.5px] text-gray-500 leading-tight mt-0.5">{desc}</p>
-    </div>
-  </div>
-);
+import { Hoops } from './Hoops';
 
+/** About me as one card: a game on top, the person underneath. */
 const Social = ({ href, label, icon }: { href: string; label: string; icon: string }) => (
   <a href={href} target={href.startsWith('mailto') ? undefined : '_blank'} rel="noreferrer" aria-label={label} title={label} className="about-social"><i className={`ph-bold ${icon}`} aria-hidden="true" /></a>
+);
+
+const Interest = ({ icon, label }: { icon: string; label: string }) => (
+  <span className="about-pill"><span aria-hidden="true">{icon}</span>{label}</span>
 );
 
 export const AboutColumn = () => (
@@ -27,39 +23,31 @@ export const AboutColumn = () => (
       </div>
     </div>
 
-    <div className="about-photo rounded-[22px] overflow-hidden relative shadow-lg border border-white/20 shrink-0 bg-[#f1ece8]">
-      <img src="https://framerusercontent.com/images/HJQw8ElsRLJCST5Te5LibBGNdY.jpeg" alt="Keerthi" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: '50% 0%' }} />
-    </div>
+    <div className="about-one flex-1 min-h-0 flex flex-col overflow-hidden rounded-[22px] bg-white/90 shadow-lg border border-white/60">
+      <Hoops />
 
-    <div className="about-card bg-white/90 rounded-[22px] shadow-lg border border-white/50 flex flex-col gap-2.5 shrink-0">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-        <h3 className="about-h3 font-bold text-gray-900 leading-tight">I'm Keerthi Vardhan.</h3>
-        <span className="px-2.5 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full border border-green-200 flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-green-500 rounded-full" />OPEN TO WORK</span>
-      </div>
-      <p className="about-hide-1 text-[13.5px] text-gray-500 font-medium -mt-1">Designing with purpose, heart, &amp; <span className="text-[#DF95FF]">rhythm.</span></p>
-      <p className="about-text text-gray-600 leading-relaxed">
-        I’m an Experience Designer who blends empathy, creativity, and a touch of fun. With a <span className="about-chip text-black font-semibold bg-[#DF95FF]/20 px-1 rounded">B.Tech in Aerospace Engineering</span> and a <span className="about-chip text-black font-semibold bg-[#FFAA95]/20 px-1 rounded">Master’s in UX Design</span>, my journey has been anything but ordinary.
-      </p>
-      <div className="flex gap-2 pt-0.5">
-        <button type="button" className="px-4 py-2 bg-black text-white rounded-full text-[12.5px] font-medium hover:bg-[#DF95FF] transition-colors duration-300 shadow-lg shadow-[#DF95FF]/20 whitespace-nowrap">Download Resume</button>
-        <a href="mailto:design.keerti@gmail.com" className="px-4 py-2 bg-white text-black border border-gray-200 rounded-full text-[12.5px] font-medium hover:bg-gray-50 transition-colors duration-300 whitespace-nowrap">Send me a message</a>
-      </div>
-    </div>
-
-    <div className="grid grid-cols-[1fr_1.2fr] gap-3 shrink-0">
-      <div className="about-card bg-gradient-to-br from-[#DF95FF] to-[#FFAA95] rounded-[22px] flex flex-col justify-center items-center text-center shadow-lg shadow-[#FFAA95]/30 border border-white/20">
-        <span className="about-hide-2 text-xl mb-1.5 drop-shadow-md">✨</span>
-        <p className="about-text font-bold text-white leading-snug drop-shadow-sm">“Great design isn’t just about how it works, it’s about how it feels.”</p>
-      </div>
-      <div className="about-card bg-white/90 rounded-[22px] flex flex-col gap-2.5 shadow-lg border border-white/50">
-        <h4 className="text-gray-400 font-bold uppercase tracking-widest text-[10px] flex items-center gap-2"><span className="w-1.5 h-1.5 bg-gray-400 rounded-full" />Offline mode</h4>
-        <Interest icon="🏀" bg="bg-orange-100" title="Basketball" desc="Teamwork & Rhythm" />
-        <Interest icon="✍️" bg="bg-purple-100" title="Poetry" desc="Finding clarity in verse" />
-        <Interest icon="📚" bg="bg-blue-100" title="Novels" desc="Exploring new worlds" />
+      <div className="about-card flex flex-col gap-2.5 shrink-0 border-t border-black/5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <h3 className="about-h3 font-bold text-gray-900 leading-tight">I'm Keerthi Vardhan.</h3>
+          <span className="px-2.5 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full border border-green-200 flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-green-500 rounded-full" />OPEN TO WORK</span>
+        </div>
+        <p className="about-hide-1 text-[13.5px] text-gray-500 font-medium -mt-1">Designing with purpose, heart, &amp; <span className="text-[#DF95FF]">rhythm.</span></p>
+        <p className="about-text text-gray-600 leading-relaxed">
+          I’m an Experience Designer who blends empathy, creativity, and a touch of fun. With a <span className="about-chip text-black font-semibold bg-[#DF95FF]/20 px-1 rounded">B.Tech in Aerospace Engineering</span> and a <span className="about-chip text-black font-semibold bg-[#FFAA95]/20 px-1 rounded">Master’s in UX Design</span>, my journey has been anything but ordinary.
+        </p>
+        <div className="flex gap-2 pt-0.5">
+          <button type="button" className="px-4 py-2 bg-black text-white rounded-full text-[12.5px] font-medium hover:bg-[#DF95FF] transition-colors duration-300 shadow-lg shadow-[#DF95FF]/20 whitespace-nowrap">Download Resume</button>
+          <a href="mailto:design.keerti@gmail.com" className="px-4 py-2 bg-white text-black border border-gray-200 rounded-full text-[12.5px] font-medium hover:bg-gray-50 transition-colors duration-300 whitespace-nowrap">Send me a message</a>
+        </div>
+        <div className="about-hide-2 flex flex-wrap items-center gap-1.5 pt-1.5" aria-label="Offline mode">
+          <Interest icon="🏀" label="Basketball" />
+          <Interest icon="✍️" label="Poetry" />
+          <Interest icon="📚" label="Novels" />
+        </div>
       </div>
     </div>
 
-    <div className="mt-auto pt-2.5 border-t border-gray-200">
+    <div className="pt-2.5 border-t border-gray-200">
       <p className="text-gray-400 text-[11px] leading-tight whitespace-nowrap">© 2025 · Vibecoded the shit out of this.</p>
     </div>
   </div>

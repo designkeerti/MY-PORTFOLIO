@@ -115,7 +115,6 @@ section {
 .about-card { padding: var(--pad); }
 .about-text { font-size: var(--fs); }
 .about-h3 { font-size: var(--h3); }
-.about-photo { width: 100%; max-height: var(--photo-max); aspect-ratio: 3 / 4; }
 @media (max-height: 960px) { .about-hide-1 { display: none !important; } }
 @media (max-height: 780px) { .about-hide-2 { display: none !important; } }
 
@@ -145,6 +144,20 @@ section {
 .about-social { width: 28px; height: 28px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; color: #5f5f68; background: #fff;
   border: 1px solid rgba(20,20,30,.09); font-size: 13px; transition: color .25s, background-color .25s, border-color .25s, transform .25s; }
 .about-social:hover { color: #fff; background: #0b0b0b; border-color: #0b0b0b; transform: translateY(-1px); }
+.about-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: #f6f4f9; border: 1px solid rgba(20,20,30,.06); font-size: 12px; font-weight: 600; color: #3a3a44; }
+
+/* hoops: the game in the top half of the about card */
+.hoops { position: relative; flex: 1 1 auto; min-height: 0; container-type: size; background: linear-gradient(180deg, #f8f7fb 0%, #f1eff6 100%); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.hoops.is-dragging { cursor: grabbing; }
+.hoops canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hoops__ghost { position: absolute; left: 46%; top: 52%; transform: translate(-50%, -50%); font-size: 46cqh; font-weight: 900; line-height: 1; letter-spacing: -0.05em; color: rgba(11,11,11,.055); font-variant-numeric: tabular-nums; pointer-events: none; user-select: none; }
+.hoops__hud { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; align-items: flex-start; justify-content: space-between; pointer-events: none; }
+.hoops__tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: #fff; border: 1px solid rgba(20,20,30,.08); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #5f5f68; }
+.hoops__best { display: inline-flex; align-items: baseline; gap: 5px; padding: 6px 10px; border-radius: 999px; background: #fff; border: 1px solid rgba(20,20,30,.08); font-size: 11px; font-weight: 600; color: #8a8a93; }
+.hoops__best b { font-size: 12px; font-weight: 800; color: #0b0b0b; font-variant-numeric: tabular-nums; }
+.hoops__best em { font-style: normal; font-size: 11px; color: #d97757; margin-right: 4px; }
+.hoops__hint { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; font-size: 12px; font-weight: 500; color: #8a8a93; pointer-events: none; transition: opacity .5s; }
+.hoops__hint.is-gone { opacity: 0; }
 
 /* the screen: a bezel with a soft light spill on the wall, and the strip aligned to it */
 .theatre-main { --screen-w: min(100%, calc((100vh - 236px) * 4 / 3)); }
