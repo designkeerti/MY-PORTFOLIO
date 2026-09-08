@@ -22,6 +22,8 @@ type Props = {
   onState?: (s: PlayerState) => void;
   /** progress of the current scene, 0..1, every frame; write it to the DOM, do not set state with it */
   onTick?: (t: number) => void;
+  /** the last scene finished (only when not looping) */
+  onEnd?: () => void;
 };
 
 /**
@@ -29,7 +31,7 @@ type Props = {
  * Plays when at least half of it is on screen, pauses when it scrolls away, click to hold.
  * Under prefers-reduced-motion it simply shows the last scene and never animates.
  */
-export const PreviewPlayer = forwardRef<PlayerHandle, Props>(({ scenes, accent = '#DF95FF', loop = true, className = '', bare = false, chromeless = false, onState, onTick }, ref) => {
+export const PreviewPlayer = forwardRef<PlayerHandle, Props>(({ scenes, accent = '#DF95FF', loop = true, className = '', bare = false, chromeless = false, onState, onTick, onEnd }, ref) => {
   const frameRef = useRef<HTMLDivElement>(null);
   const inView = useInView(frameRef, { amount: 0.4 });
   const reduce = useReducedMotion();
@@ -80,14 +82,14 @@ export const PreviewPlayer = forwardRef<PlayerHandle, Props>(({ scenes, accent =
         elapsedRef.current = 0;
         if (idx + 1 < scenes.length) setIdx(idx + 1);
         else if (loop) { setIdx(0); paint(0, 0); }
-        else { setStopped(true); paint(scenes.length - 1, 1); }
+        else { setStopped(true); paint(scenes.length - 1, 1); onEnd?.(); }
         return;
       }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [playing, idx, scene, scenes.length, loop, paint]);
+  }, [playing, idx, scene, scenes.length, loop, paint, onEnd]);
 
   const jumpTo = useCallback((i: number) => {
     const k = ((i % scenes.length) + scenes.length) % scenes.length;

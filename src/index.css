@@ -94,3 +94,70 @@ section {
 .cs-btn--solid { background: #1b1530; color: #fff; border-color: #1b1530; }
 .cs-btn--solid:hover { background: #2a2244; }
 @keyframes d-eq { from { transform: scaleY(.35); } to { transform: scaleY(1); } }
+
+/* ---------- the theatre: one viewport, three columns ---------- */
+.theatre { position: fixed; inset: 0; overflow: hidden; background: #fff; }
+.theatre::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(0,0,0,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.045) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 45%, black 0%, transparent 75%); mask-image: radial-gradient(ellipse 70% 80% at 50% 45%, black 0%, transparent 75%);
+}
+.theatre-grid { position: relative; height: 100%; display: grid; grid-template-columns: 340px minmax(0, 1fr) 380px; }
+@media (min-width: 1536px) { .theatre-grid { grid-template-columns: 380px minmax(0, 1fr) 420px; } }
+.theatre-col { min-height: 0; overflow: hidden; }
+.theatre-main { --screen-w: min(100%, calc((100vh - 250px) * 4 / 3)); }
+
+/* the screen on the wall: a dark bezel, a soft light spill around it, grain over it */
+.screen-wall { position: relative; width: var(--screen-w); max-width: 100%; }
+.screen-wall::before {
+  content: ""; position: absolute; inset: -12% -10%; border-radius: 50%; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at 50% 45%, rgba(223,149,255,.22), rgba(255,170,149,.12) 45%, transparent 70%);
+  filter: blur(30px);
+}
+.screen-frame {
+  position: relative; z-index: 1; background: #0a0a0c; border-radius: 22px; padding: 10px;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08) inset, 0 1px 0 rgba(255,255,255,.06) inset;
+}
+.screen-frame .preview-frame { border-radius: 14px; }
+.screen-grain {
+  position: absolute; inset: 10px; border-radius: 14px; pointer-events: none; opacity: .07; mix-blend-mode: screen; z-index: 8;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.screen-link { font-size: 13.5px; font-weight: 600; color: #111; white-space: nowrap; border-bottom: 1.5px solid #ddd; padding-bottom: 2px; transition: border-color .2s, color .2s; }
+.screen-link:hover { border-color: #DF95FF; color: #a04ad6; }
+
+/* the filmstrip: sprocket holes above and below a row of frames */
+.filmstrip {
+  position: relative; display: flex; gap: 10px; padding: 18px 16px; background: #141416; border-radius: 12px;
+  box-shadow: 0 20px 50px -30px rgba(0,0,0,.6);
+}
+.filmstrip::before, .filmstrip::after {
+  content: ""; position: absolute; left: 14px; right: 14px; height: 6px; border-radius: 2px;
+  background-image: radial-gradient(rgba(255,255,255,.55) 0 2px, transparent 2.5px);
+  background-size: 14px 6px; background-repeat: repeat-x; opacity: .8;
+}
+.filmstrip::before { top: 6px; } .filmstrip::after { bottom: 6px; }
+.filmstrip-frame {
+  width: 96px; aspect-ratio: 4 / 3; border-radius: 4px; overflow: hidden; background: #000; padding: 0; border: 0;
+  opacity: .45; transition: opacity .25s, transform .25s, box-shadow .25s; box-shadow: 0 0 0 1px rgba(255,255,255,.08);
+}
+.filmstrip-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.filmstrip-frame:hover { opacity: .85; }
+.filmstrip-frame.is-on { opacity: 1; box-shadow: 0 0 0 2px #fff, 0 0 24px rgba(223,149,255,.5); transform: translateY(-2px); }
+
+/* the side columns scale with the viewport height so the page never needs to scroll */
+.theatre-col { --gap: 24px; --tile: 68px; --dp: 1; --photo: 21vh; --pad: 20px; --fs: 13.5px; --h3: 22px; }
+@media (max-height: 960px) { .theatre-col { --gap: 16px; --tile: 60px; --dp: .88; --photo: 17vh; --pad: 16px; --fs: 12.5px; --h3: 19px; } }
+@media (max-height: 780px) { .theatre-col { --gap: 11px; --tile: 52px; --dp: .74; --photo: 14vh; --pad: 13px; --fs: 12px; --h3: 17px; } }
+.hero-stack { gap: var(--gap); }
+.hero-dp { zoom: var(--dp); }
+.hero-tile { width: var(--tile); height: var(--tile); }
+.hero-tiles { gap: calc(var(--gap) * .7); }
+.about-col { gap: calc(var(--gap) * .55); }
+.about-photo { height: var(--photo); }
+.about-card { padding: var(--pad); }
+.about-text { font-size: var(--fs); }
+.about-h3 { font-size: var(--h3); }
+@media (max-height: 960px) { .about-hide-1 { display: none !important; } }
+@media (max-height: 780px) { .about-hide-2 { display: none !important; } .hero-hide-2 { display: none !important; } }

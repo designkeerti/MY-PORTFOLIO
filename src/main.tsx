@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import './cbs/vault.css'
-import './dash/dash.css'
 import App from './App.tsx'
 import { SmoothScroll } from './components/SmoothScroll.tsx'
 
