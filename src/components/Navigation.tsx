@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { LottieAnimation } from './LottieAnimation';
 
-export const Navigation = ({ revealStep, isDarkMode = false }: { revealStep: number; isDarkMode?: boolean }) => {
+export const Navigation = ({ revealStep, isDarkMode = true }: { revealStep: number; isDarkMode?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isNameHovered, setIsNameHovered] = useState(false);
   const lottieRef = useRef<{ handleHoverStart: () => void; handleHoverEnd: () => void } | null>(null);
@@ -94,7 +94,7 @@ export const Navigation = ({ revealStep, isDarkMode = false }: { revealStep: num
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-white flex flex-col items-center justify-center gap-8"
+            className="fixed inset-0 z-40 bg-[#0f0d16] text-white flex flex-col items-center justify-center gap-8"
           >
             <SectionLink to="work" onClick={() => setIsOpen(false)} className="text-2xl font-bold">Work</SectionLink>
             <SectionLink to="about" onClick={() => setIsOpen(false)} className="text-2xl font-bold">About</SectionLink>

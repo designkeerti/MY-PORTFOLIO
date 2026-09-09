@@ -18,20 +18,18 @@ function ScrollToTop() {
 
 function App() {
   const [revealStep, setRevealStep] = useState(0);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === '/';
 
   const handleReveal = useCallback((n: number) => setRevealStep(n), []);
-  const handleDark = useCallback((d: boolean) => setIsDarkMode(d), []);
 
   return (
-    <main className="w-full min-h-screen bg-white selection:bg-[#DF95FF]/30 relative" style={{ overflowX: 'clip' }}>
+    <main className="w-full min-h-screen bg-[#0f0d16] text-[#f4f2f8] selection:bg-[#DF95FF]/30 relative" style={{ overflowX: 'clip' }}>
       <ScrollToTop />
-      <Navigation revealStep={isHome ? revealStep : 3} isDarkMode={isDarkMode} />
+      <Navigation revealStep={isHome ? revealStep : 3} />
       <Routes>
-        <Route path="/" element={<Home onReveal={handleReveal} onDarkModeChange={handleDark} />} />
-        <Route path="/work/:slug" element={<CaseStudy onDarkModeChange={handleDark} />} />
+        <Route path="/" element={<Home onReveal={handleReveal} />} />
+        <Route path="/work/:slug" element={<CaseStudy />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </main>

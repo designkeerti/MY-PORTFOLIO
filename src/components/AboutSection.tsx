@@ -17,11 +17,11 @@ export const AboutSection = () => {
         >
           {/* Section Header */}
           <div className="flex flex-col items-center text-center gap-4 mb-4 md:mb-8">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/40 shadow-sm">
+            <div className="inline-flex items-center gap-2 bg-white/[.06] backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10">
               <span>👋</span>
-              <span className="text-sm font-bold text-gray-600 uppercase tracking-wider">About Me</span>
+              <span className="text-sm font-bold text-white/65 uppercase tracking-wider">About Me</span>
             </div>
-            <h2 className="text-3xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-600 pb-2">
+            <h2 className="text-3xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/55 pb-2">
               More than just pixels.
             </h2>
           </div>
@@ -32,34 +32,34 @@ export const AboutSection = () => {
             {/* 1. Main Bio Card - Optimized: No blur, high opacity */}
             <motion.div 
               whileHover={{ y: -5 }}
-              className="md:col-span-2 bg-white/90 rounded-[32px] p-6 md:p-12 flex flex-col justify-between gap-8 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-300 group relative overflow-hidden"
+              className="md:col-span-2 bg-white/[.05] rounded-[32px] p-6 md:p-12 flex flex-col justify-between gap-8 border border-white/10 hover:border-white/20 transition-all duration-300 group relative overflow-hidden"
             >
                <div className="relative z-10">
                  <div className="flex flex-wrap items-center gap-3 mb-4 md:mb-6">
-                   <h3 className="text-2xl md:text-4xl font-bold text-gray-900 leading-tight">
+                   <h3 className="text-2xl md:text-4xl font-bold text-white leading-tight">
                      I'm Keerthi Vardhan.
                    </h3>
-                   <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 flex items-center gap-1.5 animate-pulse">
+                   <span className="px-3 py-1 bg-green-400/15 text-green-300 text-xs font-bold rounded-full border border-green-400/30 flex items-center gap-1.5 animate-pulse">
                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                      OPEN TO WORK
                    </span>
                  </div>
                  
-                 <h4 className="text-lg md:text-xl text-gray-500 font-medium mb-4 md:mb-6">
+                 <h4 className="text-lg md:text-xl text-white/55 font-medium mb-4 md:mb-6">
                    Designing with purpose, heart, & <span className="text-[#DF95FF]">rhythm.</span>
                  </h4>
 
-                 <p className="text-gray-600 text-base md:text-lg leading-relaxed max-w-2xl">
+                 <p className="text-white/65 text-base md:text-lg leading-relaxed max-w-2xl">
                    I’m an Experience Designer who blends empathy, creativity, and a touch of fun. 
-                   With a <span className="text-black font-semibold bg-[#DF95FF]/20 px-1 rounded">B.Tech in Aerospace Engineering</span> and a <span className="text-black font-semibold bg-[#FFAA95]/20 px-1 rounded">Master’s in UX Design</span>, my journey has been anything but ordinary.
+                   With a <span className="text-white font-semibold bg-[#DF95FF]/25 px-1 rounded">B.Tech in Aerospace Engineering</span> and a <span className="text-white font-semibold bg-[#FFAA95]/25 px-1 rounded">Master’s in UX Design</span>, my journey has been anything but ordinary.
                  </p>
                </div>
                
                <div className="flex flex-col md:flex-row gap-3 md:gap-4 relative z-10">
-                 <button className="w-full md:w-auto px-6 py-3 bg-black text-white rounded-full font-medium hover:bg-[#DF95FF] hover:scale-105 transition-all duration-300 shadow-lg shadow-[#DF95FF]/20">
+                 <button className="w-full md:w-auto px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-[#DF95FF] hover:scale-105 transition-all duration-300 shadow-lg shadow-[#DF95FF]/20">
                    Download Resume
                  </button>
-                 <button className="w-full md:w-auto px-6 py-3 bg-white text-black border border-gray-200 rounded-full font-medium hover:bg-gray-50 hover:scale-105 transition-all duration-300">
+                 <button className="w-full md:w-auto px-6 py-3 bg-white/[.06] text-white border border-white/15 rounded-full font-medium hover:bg-white/10 hover:scale-105 transition-all duration-300">
                    Send me a message
                  </button>
                </div>
@@ -101,29 +101,29 @@ export const AboutSection = () => {
             {/* 4. Personal Interests - Optimized: No blur */}
             <motion.div 
               whileHover={{ y: -5 }}
-              className="bg-white/90 rounded-[32px] p-8 flex flex-col shadow-lg border border-white/50 hover:border-[#FFAA95]/50 transition-colors group"
+              className="bg-white/[.05] rounded-[32px] p-8 flex flex-col border border-white/10 hover:border-[#FFAA95]/50 transition-colors group"
             >
-               <h3 className="text-gray-400 font-bold mb-6 uppercase tracking-widest text-xs flex items-center gap-2">
-                 <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+               <h3 className="text-white/45 font-bold mb-6 uppercase tracking-widest text-xs flex items-center gap-2">
+                 <span className="w-1.5 h-1.5 bg-white/40 rounded-full"></span>
                  Offline Mode
                </h3>
                
                <div className="flex flex-col gap-5 justify-center flex-1">
                  <InterestRow 
                    icon="🏀" 
-                   bg="bg-orange-100" 
+                   bg="bg-orange-400/20" 
                    title="Basketball" 
                    desc="Teamwork & Rhythm" 
                  />
                  <InterestRow 
                    icon="✍️" 
-                   bg="bg-purple-100" 
+                   bg="bg-purple-400/20" 
                    title="Poetry" 
                    desc="Finding clarity in verse" 
                  />
                  <InterestRow 
                    icon="📚" 
-                   bg="bg-blue-100" 
+                   bg="bg-blue-400/20" 
                    title="Novels" 
                    desc="Exploring new worlds" 
                  />
@@ -132,11 +132,11 @@ export const AboutSection = () => {
 
             {/* 5. Footer Integration - Sleek & Full Width */}
             <motion.div 
-              className="md:col-span-3 mt-4 md:mt-8 border-t border-gray-200 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 opacity-60 hover:opacity-100 transition-opacity duration-500 pb-12 md:pb-0"
+              className="md:col-span-3 mt-4 md:mt-8 border-t border-white/10 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 opacity-60 hover:opacity-100 transition-opacity duration-500 pb-12 md:pb-0"
             >
                <div className="flex flex-col gap-1 text-center md:text-left order-2 md:order-1">
-                 <span className="text-lg md:text-xl font-bold text-gray-900">Keerthi Vardhan</span>
-                 <p className="text-gray-500 text-xs md:text-sm">© 2025. Vibecoded the shit out of this.</p>
+                 <span className="text-lg md:text-xl font-bold text-white">Keerthi Vardhan</span>
+                 <p className="text-white/55 text-xs md:text-sm">© 2025. Vibecoded the shit out of this.</p>
                </div>
 
                <div className="flex flex-wrap justify-center gap-4 md:gap-8 order-1 md:order-2">
@@ -160,8 +160,8 @@ const InterestRow = ({ icon, bg, title, desc }: { icon: string, bg: string, titl
       {icon}
     </div>
     <div>
-      <p className="font-bold text-gray-800 text-lg leading-tight">{title}</p>
-      <p className="text-sm text-gray-500">{desc}</p>
+      <p className="font-bold text-white/90 text-lg leading-tight">{title}</p>
+      <p className="text-sm text-white/55">{desc}</p>
     </div>
   </div>
 );
@@ -169,7 +169,7 @@ const InterestRow = ({ icon, bg, title, desc }: { icon: string, bg: string, titl
 const SocialLink = ({ href, label }: { href: string; label: string }) => (
   <a 
     href={href} 
-    className="text-gray-500 hover:text-[#DF95FF] font-medium transition-colors relative group"
+    className="text-white/55 hover:text-[#DF95FF] font-medium transition-colors relative group"
   >
     {label}
     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#DF95FF] transition-all duration-300 group-hover:w-full" />

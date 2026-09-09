@@ -5,7 +5,7 @@ import { SkillsSection } from '../components/SkillsSection';
 import { AboutSection } from '../components/AboutSection';
 import { useScrollControl } from '../components/SmoothScroll';
 
-export const Home = ({ onReveal, onDarkModeChange }: { onReveal: (n: number) => void; onDarkModeChange: (d: boolean) => void }) => {
+export const Home = ({ onReveal }: { onReveal: (n: number) => void }) => {
   const [revealStep, setRevealStep] = useState(0);
   const { stopScroll, startScroll } = useScrollControl();
 
@@ -22,7 +22,7 @@ export const Home = ({ onReveal, onDarkModeChange }: { onReveal: (n: number) => 
       <HeroSection onRevealStepChange={setRevealStep} />
       {revealStep >= 3 && (
         <>
-          <WorkFlow onDarkModeChange={onDarkModeChange} />
+          <WorkFlow />
           <SkillsSection />
           <AboutSection />
         </>

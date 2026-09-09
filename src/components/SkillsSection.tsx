@@ -82,11 +82,11 @@ export const SkillsSection = () => {
         
         {/* Header - Centered & Clean */}
         <div className="flex flex-col items-center text-center gap-6 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-white/50 backdrop-blur-md px-5 py-2 rounded-full border border-white/60 shadow-sm">
+          <div className="inline-flex items-center gap-2 bg-white/[.06] backdrop-blur-md px-5 py-2 rounded-full border border-white/10">
              <span className="text-lg">💡</span>
-             <span className="font-bold text-gray-800 text-sm uppercase tracking-wide">My Toolkit</span>
+             <span className="font-bold text-white/80 text-sm uppercase tracking-wide">My Toolkit</span>
           </div>
-          <h2 className="text-3xl md:text-6xl font-bold leading-tight bg-clip-text text-transparent bg-gradient-to-b from-gray-900 to-gray-500">
+          <h2 className="text-3xl md:text-6xl font-bold leading-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/55">
             Skills tailored for <br/> world-class products.
           </h2>
         </div>
@@ -105,20 +105,20 @@ export const SkillsSection = () => {
                 style={{ willChange: 'transform' }}
               >
                 {/* Inner Card (Optimized: No blur, high opacity) */}
-                <div className={`relative h-full p-6 md:p-8 rounded-[32px] flex flex-col justify-between min-h-[200px] md:min-h-[240px] overflow-hidden border border-white/60 bg-white/90 shadow-lg hover:shadow-2xl transition-all duration-300 ${skill.border}`}>
+                <div className={`relative h-full p-6 md:p-8 rounded-[32px] flex flex-col justify-between min-h-[200px] md:min-h-[240px] overflow-hidden border border-white/10 bg-white/[.05] shadow-lg hover:shadow-2xl transition-all duration-300 ${skill.border}`}>
                     
                     {/* Gradient Orb Background */}
                     <div className={`absolute -top-20 -right-20 w-64 h-64 rounded-full bg-gradient-to-br ${skill.gradient} blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-500`} />
                     
                     {/* Icon */}
-                    <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/80 backdrop-blur-md flex items-center justify-center text-2xl md:text-3xl shadow-sm border border-white/50 group-hover:scale-110 transition-transform duration-300">
+                    <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-2xl md:text-3xl border border-white/10 group-hover:scale-110 transition-transform duration-300">
                         {skill.icon}
                     </div>
 
                     {/* Text */}
                     <div className="relative z-10 flex flex-col gap-2 mt-6">
-                        <h3 className="text-xl md:text-2xl font-bold text-gray-900">{skill.title}</h3>
-                        <p className="text-sm md:text-base text-gray-600 font-medium leading-relaxed">
+                        <h3 className="text-xl md:text-2xl font-bold text-white">{skill.title}</h3>
+                        <p className="text-sm md:text-base text-white/60 font-medium leading-relaxed">
                         {skill.desc}
                         </p>
                     </div>

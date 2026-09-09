@@ -10,7 +10,9 @@
 body {
   margin: 0;
   font-family: 'Satoshi', sans-serif;
-  background-color: rgb(255, 255, 255);
+  background-color: #0f0d16;
+  color: #f4f2f8;
+  color-scheme: dark;
   overflow-x: hidden;
 }
 
@@ -67,12 +69,12 @@ section {
 .kicker { font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
 
 /* ---------- case study ---------- */
-.cs-prose p { font-size: 17px; line-height: 1.7; color: #3a3a3a; margin: 0 0 1.1em; }
+.cs-prose p { font-size: 17px; line-height: 1.7; color: rgba(244,242,248,.74); margin: 0 0 1.1em; }
 .cs-prose p:last-child { margin-bottom: 0; }
-.cs-prose strong { color: rgb(11,11,11); font-weight: 700; }
+.cs-prose strong { color: #fff; font-weight: 700; }
 @media (min-width: 900px) { .cs-prose p { font-size: 18.5px; } }
 
-.fig { border-radius: 18px; overflow: hidden; background: #f3f3f5; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 20px 50px -30px rgba(0,0,0,.25); }
+.fig { border-radius: 18px; overflow: hidden; background: #17151f; box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 20px 50px -30px rgba(0,0,0,.6); }
 .fig img { display: block; width: 100%; height: auto; }
 .phone { border-radius: 26px; overflow: hidden; background: #111; box-shadow: 0 30px 60px -30px rgba(0,0,0,.6), 0 0 0 6px #111, 0 0 0 7px rgba(255,255,255,.12); }
 .phone img { display: block; width: 100%; height: auto; }
@@ -94,11 +96,11 @@ section {
 .work-more { background: #0f0d16; color: #fff; }
 .gallery-wrap { position: relative; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .gallery { position: relative; width: 100%; height: 100%; flex: none; }
-.gallery__item { position: relative; flex: none; overflow: hidden; border-radius: 16px; background: #eeecf3; box-shadow: 0 0 0 1px rgba(11,11,11,.06); }
+.gallery__item { position: relative; flex: none; overflow: hidden; border-radius: 16px; background: #17151f; box-shadow: 0 0 0 1px rgba(255,255,255,.08); }
 .gallery__item > img, .gallery__item > video { display: block; width: 100%; height: 100%; object-fit: cover; }
 .gallery--bento { display: grid; gap: 1vh; grid-template-columns: repeat(3, 32.5vw); grid-template-rows: repeat(4, 20vh); justify-content: center; align-content: center; }
 .gallery--final.gallery--bento { grid-template-columns: repeat(3, 100vw); grid-template-rows: repeat(4, 49.5vh); gap: 1vh; }
-.gallery--final .gallery__item { border-radius: 0; box-shadow: 0 0 0 0 rgba(11,11,11,0); }
+.gallery--final .gallery__item { border-radius: 0; box-shadow: 0 0 0 0 rgba(255,255,255,0); }
 .gallery--bento .gallery__item:nth-child(1) { grid-area: 1 / 1 / 3 / 2; }
 .gallery--bento .gallery__item:nth-child(2) { grid-area: 1 / 2 / 2 / 3; }
 .gallery--bento .gallery__item:nth-child(3) { grid-area: 2 / 2 / 4 / 3; }

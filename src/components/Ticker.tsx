@@ -253,11 +253,11 @@ export const Ticker = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Side Gradient Masks - High Z-Index to cover cards */}
-      <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-white via-white to-transparent z-[200] pointer-events-none" />
-      <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-white via-white to-transparent z-[200] pointer-events-none" />
+      <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-[#0f0d16] via-[#0f0d16] to-transparent z-[200] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#0f0d16] via-[#0f0d16] to-transparent z-[200] pointer-events-none" />
       
       {/* Bottom Gradient Mask */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white via-white/50 to-transparent z-[200] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#0f0d16] via-[#0f0d16]/50 to-transparent z-[200] pointer-events-none" />
 
       <div 
         className="relative w-full h-[500px] flex justify-center" 

@@ -67,16 +67,13 @@ const arrow = (
  * The scrubbed bento. Pinned for 1.7 screens of scroll: the grid Flips from a bento to three screen-wide columns, so
  * the centre tile (the CBS reel) grows until it fills the viewport; then the Cross Border Supps title card opens over it.
  */
-export const BentoGallery = ({ onDark }: { onDark?: (d: boolean) => void }) => {
+export const BentoGallery = () => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const darkRef = useRef(onDark); darkRef.current = onDark;
 
   useLayoutEffect(() => {
     const wrap = wrapRef.current, grid = gridRef.current, card = cardRef.current; if (!wrap || !grid || !card) return;
-    let dark = false;
-    const setDark = (d: boolean) => { if (d !== dark) { dark = d; darkRef.current?.(d); } };
     let ctx: gsap.Context | undefined;
     const build = () => {
       ctx?.revert();
@@ -90,15 +87,13 @@ export const BentoGallery = ({ onDark }: { onDark?: (d: boolean) => void }) => {
         const flip = Flip.to(state, { simple: true, duration: 1, ease: 'expoScale(1, 5)', props: 'borderRadius,boxShadow' });
         const tl = gsap.timeline({ scrollTrigger: {
           trigger: grid, start: 'center center', end: '+=170%', scrub: 0.4, pin: wrap, anticipatePin: 1,
-          // the nav goes dark once the reel has grown over it, and stays dark until the bento scrolls away
-          onUpdate: self => setDark(self.isActive && self.progress > 0.55), onToggle: self => setDark(self.isActive && self.progress > 0.55), onRefresh: self => setDark(self.isActive && self.progress > 0.55),
         } });
         tl.add(flip);
         // the reel dims as the title card opens over it, like a title over footage
         tl.to(grid.querySelector('.gallery__item--reel'), { filter: 'brightness(0.42)', duration: 0.35, ease: 'power1.inOut' }, '-=0.08');
         tl.fromTo(card, { autoAlpha: 0, y: 60 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power2.out' }, '<');
         tl.to({}, { duration: 0.35 }); // hold, so the card sits fully open before the pin lets go
-        return () => { gsap.set(items, { clearProps: 'all' }); setDark(false); };
+        return () => gsap.set(items, { clearProps: 'all' });
       }, wrap);
     };
     build();
