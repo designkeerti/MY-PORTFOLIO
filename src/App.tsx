@@ -28,7 +28,7 @@ function App() {
   return (
     <main className="w-full min-h-screen bg-white selection:bg-[#DF95FF]/30 relative" style={{ overflowX: 'clip' }}>
       <ScrollToTop />
-      {!(isHome && revealStep < 0) && <Navigation revealStep={isHome ? revealStep : 3} isDarkMode={isDarkMode} />}
+      <Navigation revealStep={isHome ? revealStep : 3} isDarkMode={isDarkMode} />
       <Routes>
         <Route path="/" element={<Home onReveal={handleReveal} onDarkModeChange={handleDark} />} />
         <Route path="/work/:slug" element={<CaseStudy onDarkModeChange={handleDark} />} />

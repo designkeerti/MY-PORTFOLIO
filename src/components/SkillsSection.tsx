@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 
-export const skills = [
+const skills = [
   {
     title: "UX Design",
     desc: "Crafting intuitive journeys from wireframes to final prototypes.",

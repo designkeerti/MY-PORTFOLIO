@@ -4,7 +4,7 @@ const S = '/cbs/shots/';
 
 export const cbs: Project = {
   meta: { slug: 'cbs', title: 'Cross Border Supps: a storefront that has to prove the box is real', oneLiner: 'An importer of genuine sports supplements into India, moved off Shopify onto a storefront I designed from scratch. Boarding passes, postage stamps and a vault door: one idea, turned into a system. Live and selling.', role: 'Design lead', year: '2026', company: 'Cross Border Supps', accent: '#6cbde0', accent2: '#06080b', tag: 'E-commerce · WooCommerce' },
-  cover: '/work/home/poster.jpg',
+  cover: S + 'home-hero.jpg',
   timeline: 'May to September 2026, on a live store the whole time',
   expertise: 'Art direction · Design system · Interaction design',
   facts: ['Design lead', 'Live and selling', '11 brands, one system', 'Three mobile passes'],

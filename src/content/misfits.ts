@@ -4,7 +4,7 @@ const A = '/work/misfits/';
 
 export const misfits: Project = {
   meta: { slug: 'misfits', title: 'Misfits: connecting through communities', oneLiner: 'A platform for finding like-minded people through interest-based clubs, and then actually meeting them. Research, personas, flows and a full high-fidelity app.', role: 'UX/UI Designer', year: '2023', company: 'Misfits', accent: '#8B5CF6', accent2: '#0E0A1C', tag: 'Mobile app' },
-  cover: '/work/misfits/poster.jpg',
+  cover: A + 'ohaffIRt0xglZU0U2rKGdrcYD5o.webp',
   externalLink: 'https://keerthivardhan.framer.website/Work/AppProject2',
   timeline: 'Explorations to final designs in 5 weeks, alongside other projects',
   expertise: 'UX/UI design',

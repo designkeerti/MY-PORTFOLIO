@@ -4,7 +4,7 @@ const A = '/work/ekai/';
 
 export const ekai: Project = {
   meta: { slug: 'ekai', title: 'Website design and product experience for ekai', oneLiner: 'An AI twin that answers your team’s questions inside Slack. The product worked; the website didn’t say so. I rebuilt the first touchpoint from research to final motion.', role: 'Product Designer', year: '2025', company: 'ekai', accent: '#FF6A2A', accent2: '#27403F', tag: 'B2B SaaS' },
-  cover: '/work/ekai/poster.jpg',
+  cover: A + 'b4LEGCUCaclrfhX51x9RUiUasM.png',
   externalLink: 'https://keerthivardhan.framer.website/Work/appproject11',
   timeline: 'Explorations to high-fidelity in 4 weeks, alongside other projects',
   expertise: 'Interaction design · Product design',

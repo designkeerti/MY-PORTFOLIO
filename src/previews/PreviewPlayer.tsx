@@ -1,12 +1,9 @@
-import { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion';
 import type { Scene } from './types';
 
 /** Every scene is composed at this width, then scaled to whatever the frame is. */
 const DESIGN_W = 1280;
-
-export type PlayerHandle = { jump: (i: number) => void; toggle: () => void; next: () => void; prev: () => void };
-export type PlayerState = { idx: number; count: number; paused: boolean; caption?: string };
 
 type Props = {
   scenes: Scene[];
@@ -16,14 +13,6 @@ type Props = {
   className?: string;
   /** hide the caption strip */
   bare?: boolean;
-  /** hide the in-frame progress segments (a transport bar outside the frame shows them instead) */
-  chromeless?: boolean;
-  /** scene or pause changes, for an external transport bar */
-  onState?: (s: PlayerState) => void;
-  /** progress of the current scene, 0..1, every frame; write it to the DOM, do not set state with it */
-  onTick?: (t: number) => void;
-  /** the last scene finished (only when not looping) */
-  onEnd?: () => void;
 };
 
 /**
@@ -31,7 +20,7 @@ type Props = {
  * Plays when at least half of it is on screen, pauses when it scrolls away, click to hold.
  * Under prefers-reduced-motion it simply shows the last scene and never animates.
  */
-export const PreviewPlayer = forwardRef<PlayerHandle, Props>(({ scenes, accent = '#DF95FF', loop = true, className = '', bare = false, chromeless = false, onState, onTick, onEnd }, ref) => {
+export const PreviewPlayer = ({ scenes, accent = '#DF95FF', loop = true, className = '', bare = false }: Props) => {
   const frameRef = useRef<HTMLDivElement>(null);
   const inView = useInView(frameRef, { amount: 0.4 });
   const reduce = useReducedMotion();
@@ -53,7 +42,6 @@ export const PreviewPlayer = forwardRef<PlayerHandle, Props>(({ scenes, accent =
 
   useEffect(() => { if (reduce) { setIdx(scenes.length - 1); setStopped(true); } }, [reduce, scenes.length]);
   useEffect(() => { if (inView && !started) setStarted(true); }, [inView, started]);
-  useEffect(() => { onState?.({ idx, count: scenes.length, paused, caption: scene?.caption }); }, [idx, paused, scenes.length, scene, onState]);
 
   // measure the frame so the stage can be scaled into it
   useEffect(() => {
@@ -67,8 +55,7 @@ export const PreviewPlayer = forwardRef<PlayerHandle, Props>(({ scenes, accent =
       if (!b) return;
       b.style.width = k < i ? '100%' : k === i ? `${Math.min(100, t * 100)}%` : '0%';
     });
-    onTick?.(Math.min(1, t));
-  }, [onTick]);
+  }, []);
 
   useEffect(() => {
     if (!playing) { lastRef.current = null; if (rafRef.current) cancelAnimationFrame(rafRef.current); return; }
@@ -82,29 +69,20 @@ export const PreviewPlayer = forwardRef<PlayerHandle, Props>(({ scenes, accent =
         elapsedRef.current = 0;
         if (idx + 1 < scenes.length) setIdx(idx + 1);
         else if (loop) { setIdx(0); paint(0, 0); }
-        else { setStopped(true); paint(scenes.length - 1, 1); onEnd?.(); }
+        else { setStopped(true); paint(scenes.length - 1, 1); }
         return;
       }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [playing, idx, scene, scenes.length, loop, paint, onEnd]);
+  }, [playing, idx, scene, scenes.length, loop, paint]);
 
-  const jumpTo = useCallback((i: number) => {
-    const k = ((i % scenes.length) + scenes.length) % scenes.length;
+  const jump = (i: number, e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
     elapsedRef.current = 0; lastRef.current = null;
-    setStopped(false); setPaused(false); setStarted(true); setIdx(k); paint(k, 0);
-  }, [scenes.length, paint]);
-
-  useImperativeHandle(ref, () => ({
-    jump: jumpTo,
-    toggle: () => { setStarted(true); setPaused(p => !p); },
-    next: () => jumpTo(idx + 1),
-    prev: () => jumpTo(idx - 1),
-  }), [jumpTo, idx]);
-
-  const jump = (i: number, e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); jumpTo(i); };
+    setStopped(false); setPaused(false); setIdx(i); paint(i, 0);
+  };
 
   return (
     <div
@@ -116,13 +94,11 @@ export const PreviewPlayer = forwardRef<PlayerHandle, Props>(({ scenes, accent =
       tabIndex={-1}
       aria-label={paused ? 'Resume preview' : 'Pause preview'}
     >
-      {!chromeless && (
-        <div className="preview-progress">
-          {scenes.map((s, k) => (
-            <i key={s.id} onClick={(e) => jump(k, e)}><b ref={(el) => { barRefs.current[k] = el; }} /></i>
-          ))}
-        </div>
-      )}
+      <div className="preview-progress">
+        {scenes.map((s, k) => (
+          <i key={s.id} onClick={(e) => jump(k, e)}><b ref={(el) => { barRefs.current[k] = el; }} /></i>
+        ))}
+      </div>
 
       <AnimatePresence mode="sync">
         <motion.div key={scene.id} className="scene"
@@ -151,5 +127,4 @@ export const PreviewPlayer = forwardRef<PlayerHandle, Props>(({ scenes, accent =
       )}
     </div>
   );
-});
-PreviewPlayer.displayName = 'PreviewPlayer';
+};
