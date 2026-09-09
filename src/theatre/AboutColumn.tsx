@@ -1,12 +1,9 @@
 import { Hoops } from './Hoops';
+import { Shelf } from './Shelf';
 
 /** About me as one card: a game on top, the person underneath. */
 const Social = ({ href, label, icon }: { href: string; label: string; icon: string }) => (
   <a href={href} target={href.startsWith('mailto') ? undefined : '_blank'} rel="noreferrer" aria-label={label} title={label} className="about-social"><i className={`ph-bold ${icon}`} aria-hidden="true" /></a>
-);
-
-const Interest = ({ icon, label }: { icon: string; label: string }) => (
-  <span className="about-pill"><span aria-hidden="true">{icon}</span>{label}</span>
 );
 
 export const AboutColumn = () => (
@@ -39,11 +36,7 @@ export const AboutColumn = () => (
           <button type="button" className="px-4 py-2 bg-black text-white rounded-full text-[12.5px] font-medium hover:bg-[#DF95FF] transition-colors duration-300 shadow-lg shadow-[#DF95FF]/20 whitespace-nowrap">Download Resume</button>
           <a href="mailto:design.keerti@gmail.com" className="px-4 py-2 bg-white text-black border border-gray-200 rounded-full text-[12.5px] font-medium hover:bg-gray-50 transition-colors duration-300 whitespace-nowrap">Send me a message</a>
         </div>
-        <div className="about-hide-2 flex flex-wrap items-center gap-1.5 pt-1.5" aria-label="Offline mode">
-          <Interest icon="🏀" label="Basketball" />
-          <Interest icon="✍️" label="Poetry" />
-          <Interest icon="📚" label="Novels" />
-        </div>
+        <Shelf />
       </div>
     </div>
 
