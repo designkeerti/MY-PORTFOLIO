@@ -1,4 +1,3 @@
-import { VideoGridParallax } from './VideoGridParallax';
 import { SlidingText } from './SlidingText';
 import { ProfilePicture3D } from './ProfilePicture3D';
 import { RiveAnimation } from './RiveAnimation';
@@ -180,15 +179,6 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
         </div>
       </section>
 
-      {/* Full Width Video Grid Block - OUTSIDE constrained section */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: revealStep >= 3 ? 1 : 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        className="w-full relative z-10 mt-10"
-      >
-        <VideoGridParallax />
-      </motion.div>
     </div>
   );
 };

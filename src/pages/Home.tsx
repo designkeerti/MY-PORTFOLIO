@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HeroSection } from '../components/HeroSection';
-import { WorkSection } from '../components/WorkSection';
+import { WorkFlow } from '../components/WorkFlow';
 import { SkillsSection } from '../components/SkillsSection';
 import { AboutSection } from '../components/AboutSection';
 import { useScrollControl } from '../components/SmoothScroll';
@@ -22,7 +22,7 @@ export const Home = ({ onReveal, onDarkModeChange }: { onReveal: (n: number) => 
       <HeroSection onRevealStepChange={setRevealStep} />
       {revealStep >= 3 && (
         <>
-          <WorkSection onDarkModeChange={onDarkModeChange} />
+          <WorkFlow onDarkModeChange={onDarkModeChange} />
           <SkillsSection />
           <AboutSection />
         </>

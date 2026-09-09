@@ -18,7 +18,7 @@ interface ProjectProps {
   index?: number;
 }
 
-const projects: ProjectProps[] = [
+export const projects: ProjectProps[] = [
   {
     title: "Cross Border Supps: An E-Commerce Storefront",
     subtitle: "Art Direction / Design System / Interaction Design",
@@ -90,7 +90,7 @@ const StarryBackground = ({ progress }: { progress: any }) => {
 /** rgb(…) → rgba(…, a) for the pastel tints */
 const tint = (rgb: string, a: number) => rgb.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
 
-const ProjectCard = ({ project, index }: { project: ProjectProps; index: number }) => {
+export const ProjectCard = ({ project, index }: { project: ProjectProps; index: number }) => {
   const entry = useMemo(() => content.find(p => p.meta.slug === project.slug), [project.slug]);
   const scenes = useMemo(() => entry?.preview() ?? [], [entry]);
   const meta = entry?.meta;
