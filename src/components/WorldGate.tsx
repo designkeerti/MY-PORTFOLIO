@@ -10,14 +10,14 @@ type Tile = { src: string; alt: string; pos?: string };
 
 /** Slot order follows the grid areas: 1, 4 and 6 are tall, 3 is the gate (the one that grows), the rest are wide. */
 const tiles: Tile[] = [
-  { src: '/world/kitten-hug.jpg', alt: 'Keerthi hugging a kitten', pos: '50% 30%' },
-  { src: '/world/flowers-notebook.jpg', alt: 'Bougainvillea and a scarf on a notebook', pos: '50% 32%' },
+  { src: '/world/cats-turf.jpg', alt: 'Two cats on a green lawn', pos: '50% 45%' },
+  { src: '/world/bougainvillea-sky.jpg', alt: 'Bougainvillea against a summer sky', pos: '50% 52%' },
   { src: '/world/self-love.jpg', alt: 'A bookshop shelf with a self-love sign', pos: '50% 52%' },
-  { src: '/world/bougainvillea-sky.jpg', alt: 'Bougainvillea against a summer sky', pos: '50% 40%' },
-  { src: '/world/cats-turf.jpg', alt: 'Two cats on a green lawn', pos: '50% 42%' },
-  { src: '/world/cat-bench.jpg', alt: 'A cat perched on a wooden bench', pos: '50% 40%' },
+  { src: '/world/metro.jpg', alt: 'Keerthi on a metro platform, smiling', pos: '50% 28%' },
+  { src: '/world/cat-bench.jpg', alt: 'A cat perched on a wooden bench', pos: '50% 29%' },
   { src: '/world/poems-roses.jpg', alt: 'A book of poems with white roses', pos: '50% 48%' },
-  { src: '/world/metro.jpg', alt: 'Keerthi on a metro platform, smiling', pos: '50% 26%' },
+  { src: '/world/flowers-notebook.jpg', alt: 'Bougainvillea and a scarf on a notebook', pos: '50% 30%' },
+  { src: '/world/kitten-hug.jpg', alt: 'Keerthi hugging a kitten', pos: '50% 40%' },
 ];
 
 /**
