@@ -128,3 +128,11 @@ section {
 .bento-card__cta { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; margin-top: 6px; padding: 12px 22px; border-radius: 999px; background: #fff; color: #0b0b0b; font-weight: 600; font-size: 15px; transition: background .3s, transform .3s; }
 .bento-card__cta:hover { background: #6cbde0; transform: translateY(-1px); }
 @media (max-width: 767px) { .bento-card__body { padding: 0 20px 40px; gap: 10px; } .bento-card__blurb { font-size: 14px; } }
+
+/* the gateway's word tiles and welcome card */
+.world-word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 8%; }
+.world-word--ink { background: radial-gradient(120% 90% at 50% 115%, rgba(223,149,255,.30), transparent 62%), #17151f; }
+.world-word--ink b { font-size: clamp(26px, 3.6vw, 56px); font-weight: 900; letter-spacing: .08em; text-transform: uppercase; line-height: 1; background: linear-gradient(135deg, #DF95FF, #FFAA95); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.world-word--glow { background: linear-gradient(135deg, #DF95FF 0%, #FFAA95 100%); color: #fff; font-weight: 600; font-size: clamp(15px, 1.5vw, 22px); line-height: 1.35; text-shadow: 0 1px 8px rgba(0,0,0,.12); }
+.bento-card--world .bento-card__facts li { background: rgba(223,149,255,.14); border-color: rgba(223,149,255,.35); }
+.bento-card__hint { margin-top: 8px; font-size: 13px; letter-spacing: .04em; color: rgba(255,255,255,.55); }

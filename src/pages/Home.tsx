@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HeroSection } from '../components/HeroSection';
+import { WorldGate } from '../components/WorldGate';
 import { WorkFlow } from '../components/WorkFlow';
 import { SkillsSection } from '../components/SkillsSection';
 import { AboutSection } from '../components/AboutSection';
@@ -22,6 +23,7 @@ export const Home = ({ onReveal }: { onReveal: (n: number) => void }) => {
       <HeroSection onRevealStepChange={setRevealStep} />
       {revealStep >= 3 && (
         <>
+          <WorldGate />
           <WorkFlow />
           <SkillsSection />
           <AboutSection />
