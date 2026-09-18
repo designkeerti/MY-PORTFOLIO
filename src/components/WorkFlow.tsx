@@ -1,6 +1,6 @@
 import { ProjectCard, projects } from './WorkSection';
 
-/** The work: every project as a card, on the dark ground, after the gateway. */
+/** The work: every project as a card, on the dark ground, straight after the hero. */
 export const WorkFlow = () => (
   <div id="work" className="work-flow">
     <div className="work-more">

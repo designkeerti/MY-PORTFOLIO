@@ -21,7 +21,7 @@ const tiles: Tile[] = [
 ];
 
 /**
- * The gateway: a scrubbed bento of pictures, pinned for 1.6 screens of scroll. The grid Flips from a bento to three
+ * The gateway: a scrubbed bento of pictures, pinned for 1.6 screens of scroll, sitting after the work. The grid Flips from a bento to three
  * screen-wide columns, so the gate tile grows until it fills the viewport, holds there, and lets go.
  */
 export const WorldGate = () => {
