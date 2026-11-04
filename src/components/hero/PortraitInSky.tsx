@@ -48,10 +48,11 @@ void main() {
   col *= mix(1.0, 0.42, smoothstep(0.15, 0.9, u_dusk));
   // Clouds hold the body: they fully cover the arms and lower body, with a
   // billowy top edge shaped by the scene's own cloud noise, and never rise
-  // over the face. (luv.y runs bottom-up: the shoulders sit near 0.45.)
-  float edge = 0.44 + (dens - 0.45) * 0.22;
-  float body = smoothstep(edge + 0.035, edge - 0.035, luv.y);
-  float wisps = smoothstep(0.56, 0.74, dens) * smoothstep(0.62, 0.5, luv.y);   // stray wisps, below the chin only
+  // over the shoulders. (luv.y runs bottom-up: the shoulders sit near 0.38.)
+  // the billows come up to the shoulders (luv.y ~0.39) and never go higher
+  float edge = min(0.4, 0.36 + (dens - 0.45) * 0.16);
+  float body = smoothstep(edge + 0.03, edge - 0.03, luv.y);
+  float wisps = smoothstep(0.56, 0.74, dens) * smoothstep(0.4, 0.33, luv.y);   // stray wisps, below the shoulders only
   float front = max(body, wisps);
   // the sky's cloud colour where it has cloud; otherwise lit cloud with the same light and texture
   vec3 lit = mix(skyShade(), skyLit(), clamp(0.62 + (dens - 0.45) * 0.9, 0.0, 1.0));

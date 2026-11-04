@@ -33,18 +33,18 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   return (
     <section className="hero-poster relative w-full overflow-hidden">
       {/* No navbar over the hero: the page opens on the poster itself. */}
-      <div className="relative mx-auto grid w-full max-w-[1360px] grid-cols-1 px-5 pt-12 md:px-10 lg:min-h-[100svh] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-6 lg:pt-0">
+      <div className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-12 text-center md:px-10 md:pt-14">
 
-        {/* Left: the type, then who I've worked with */}
-        <div className="relative z-30 lg:self-center">
+        {/* The type, centred */}
+        <div className="relative z-30 flex flex-col items-center">
           <h1 className="leading-[0.86] text-ink">
             <motion.span {...rise(0.05)} className="hero-name-1 block">Keerthi</motion.span>
             <motion.span {...rise(0.15)} className="hero-name-2 block">Vardhan</motion.span>
           </h1>
-          <motion.p {...rise(0.3)} className="mt-6 max-w-[34ch] text-[clamp(17px,1.4vw,20px)] leading-snug text-ink/80">
+          <motion.p {...rise(0.3)} className="mt-5 max-w-[40ch] text-[clamp(16px,1.35vw,19px)] leading-snug text-ink/80">
             Product designer. I design interfaces, motion and systems, and take them all the way to <span className="font-display font-bold text-ink">production.</span>
           </motion.p>
-          <motion.div {...rise(0.42)} className="mt-7 flex flex-wrap items-center gap-3">
+          <motion.div {...rise(0.42)} className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <a href="#work" className="group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-medium text-white transition-transform duration-300 hover:-translate-y-0.5">
               See the work
               <span aria-hidden className="transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
@@ -53,30 +53,25 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
               Get in touch
             </a>
           </motion.div>
-
-          {/* No visible label: the logos speak for themselves. Screen readers still get one. */}
-          <motion.ul
-            {...rise(0.6)}
-            aria-label="Companies I've worked with"
-            className="mt-16 hidden max-w-[560px] grid-cols-3 items-center gap-x-8 gap-y-6 lg:grid"
-          >
-            {COMPANIES.map(c => <CompanyLogo key={c.name} c={c} />)}
-          </motion.ul>
         </div>
 
-        {/* Right: me, standing in the sky, with what I make orbiting */}
+        {/* Me, standing in the sky, with what I make orbiting */}
         <div
-          className="relative z-10 mx-auto mt-8 [--stage-w:88vw] sm:[--stage-w:64vw] lg:mx-0 lg:mt-0 lg:[--stage-w:min(560px,40vw,60svh)]"
+          className="relative z-10 mt-4 [--stage-w:88vw] sm:[--stage-w:60vw] lg:[--stage-w:min(500px,38vw)]"
           style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})` }}
         >
           <PortraitInSky src={PORTRAIT.src} alt="Keerthi Vardhan laughing, head tilted back, in a white shirt" shown={staged} className="absolute inset-0 h-full w-full" />
           <OrbitRing head={PORTRAIT.head} shown={staged} className="pointer-events-none absolute inset-0 z-20" />
         </div>
 
-        {/* on phones and tablets the logos come after the portrait */}
-        <ul aria-label="Companies I've worked with" className="relative z-30 -mt-6 grid grid-cols-3 items-center gap-x-6 gap-y-6 pb-14 lg:hidden">
+        {/* Worked with: sitting on the cloud bank. No visible label; screen readers get one. */}
+        <motion.ul
+          {...rise(0.6)}
+          aria-label="Companies I've worked with"
+          className="relative z-30 -mt-[calc(var(--stage-w)*0.28)] grid w-full max-w-[1100px] grid-cols-3 items-center justify-items-center gap-x-6 gap-y-6 pb-14 [--stage-w:88vw] sm:[--stage-w:60vw] md:flex md:justify-between lg:[--stage-w:min(500px,38vw)]"
+        >
           {COMPANIES.map(c => <CompanyLogo key={c.name} c={c} />)}
-        </ul>
+        </motion.ul>
       </div>
     </section>
   );
@@ -85,7 +80,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 // One ink colour at rest so the row reads as one quiet line; the brand's own colours on hover.
 function CompanyLogo({ c }: { c: Company }) {
   return (
-    <li className="flex justify-start">
+    <li className="flex justify-center">
       <a href={c.href} target="_blank" rel="noopener noreferrer" aria-label={c.name} title={c.name}
         className="group relative flex items-center gap-2 opacity-70 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100">
         <span className="relative block shrink-0" style={{ height: c.h }}>

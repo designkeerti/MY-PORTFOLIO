@@ -80,8 +80,12 @@ vec3 skyScene(vec2 uv, float asp, float sc, float extra, out float nearDens) {
     float speed = mix(0.005, 0.011, fl);
     vec2 cp = p * scale + vec2(u_time * speed, -sc * mix(0.3, 0.6, fl)) + fl * 17.0;
     vec2 q = warp(cp);
-    float rise = mix(0.18, 0.42, fl);
+    float rise = mix(0.18, 0.34, fl);
     float shape = (rise - uv.y) * mix(0.35, 0.55, fl) + 0.10 * smoothstep(0.3, 0.0, min(uv.x, 1.0 - uv.x)) * fl + extra * fl;
+    // a few far clouds drifting up by the name, at the top centre; they clear
+    // as you scroll away and with the dusk
+    if (L == 0) shape += 0.42 * smoothstep(0.6, 0.94, uv.y) * smoothstep(0.42, 0.06, abs(uv.x - 0.5))
+                         * (1.0 - smoothstep(0.0, 0.6, sc)) * (1.0 - d1);
     float dens = fbm(cp + 1.7 * q) + shape;
     if (L == 1) nearDens = dens;
     float cover = 0.5;
@@ -106,7 +110,7 @@ vec4 skyNearClouds(vec2 uv, float asp, float sc, float extra, out float dens) {
   float scale = 1.25;
   vec2 cp = p * scale + vec2(u_time * 0.011, -sc * 0.6) + 17.0;
   vec2 q = warp(cp);
-  float shape = (0.42 - uv.y) * 0.55 + 0.10 * smoothstep(0.3, 0.0, min(uv.x, 1.0 - uv.x)) + extra;
+  float shape = (0.34 - uv.y) * 0.55 + 0.10 * smoothstep(0.3, 0.0, min(uv.x, 1.0 - uv.x)) + extra;
   dens = fbm(cp + 1.7 * q) + shape;
   float a = smoothstep(0.5, 0.55, dens);
   if (a <= 0.001) return vec4(0.0);
