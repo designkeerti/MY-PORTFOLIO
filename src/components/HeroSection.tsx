@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PortraitInSky } from './hero/PortraitInSky';
-import { WorkOrbit, ORBIT, type OrbitClip } from './hero/WorkOrbit';
+import { WorkOrbit, type OrbitClip } from './hero/WorkOrbit';
 import { SkillCards, SkillGrid } from './hero/SkillCards';
 import { COMPANIES, type Company } from './hero/tools';
 
@@ -9,17 +9,17 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 // The portrait (transparent background, head and shoulders), and the centre of the ring of
 // work around it: low, round the chest and shoulders, so the face stays clear.
-const PORTRAIT = { src: '/hero/portrait.webp', aspect: 1200 / 1428, ring: [0.5, 0.56] as [number, number] };
+const PORTRAIT = { src: '/hero/portrait.webp', aspect: 1200 / 1428, ring: [0.5, 0.5] as [number, number] };
 
-// The work orbiting: short clips of real projects.
-const P = '/hero/posters/';
+// The work orbiting: each project's reel (recorded from its animated preview), plus a Rive prototype.
+const R = '/hero/reels/';
 const CLIPS: OrbitClip[] = [
-  { src: '/videos/2dark.mp4', poster: P + '2dark.jpg', label: 'Cross Border Supps: the storefront on mobile' },
-  { src: '/work/ekai/b4LEGCUCaclrfhX51x9RUiUasM.mp4', poster: P + 'b4LEGCUCaclrfhX51x9RUiUasM.jpg', label: 'ekai: the website' },
-  { src: '/videos/1dark.mp4', poster: P + '1dark.jpg', label: 'An interactive Rive prototype' },
-  { src: '/videos/1light.mp4', poster: P + '1light.jpg', label: 'A body-profile app flow' },
-  { src: '/work/ekai/qJlWawcCzXTwNSh3ZDbm19udE.mp4', poster: P + 'qJlWawcCzXTwNSh3ZDbm19udE.jpg', label: 'ekai: the platform diagram' },
-  { src: '/videos/2light.mp4', poster: P + '2light.jpg', label: 'ekai joining a meeting' },
+  { src: R + 'cbs.mp4', poster: R + 'cbs.jpg', label: 'Cross Border Supps reel' },
+  { src: R + 'ekai.mp4', poster: R + 'ekai.jpg', label: 'ekai reel' },
+  { src: R + 'misfits.mp4', poster: R + 'misfits.jpg', label: 'Misfits reel' },
+  { src: '/videos/1dark.mp4', poster: R + 'rive.jpg', label: 'An interactive Rive prototype' },
+  { src: R + 'dmrc.mp4', poster: R + 'dmrc.jpg', label: 'Delhi Metro reel' },
+  { src: R + 'infinity.mp4', poster: R + 'infinity.jpg', label: 'Infinity reel' },
 ];
 
 export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step: number) => void }) => {
@@ -29,8 +29,6 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   useEffect(() => { try { sessionStorage.setItem('introSeen', '1'); } catch { /* private mode */ } }, []);
   const instant = skipIntro || !!reduce;
   const [staged, setStaged] = useState(instant);
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // the rest of the page and the nav don't wait for the intro
@@ -48,7 +46,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   return (
     <section className="hero-poster relative w-full overflow-hidden">
       {/* No navbar over the hero: the page opens on the poster itself. */}
-      <div ref={wrapRef} className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-12 text-center md:px-10 md:pt-14">
+      <div className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-12 text-center md:px-10 md:pt-14">
 
         {/* The type, centred */}
         <div className="relative z-30 flex flex-col items-center">
@@ -72,7 +70,6 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 
         {/* Me, standing in the sky, with the work orbiting round me */}
         <div
-          ref={stageRef}
           className="relative z-10 mt-4 [--stage-w:74vw] sm:[--stage-w:56vw] lg:[--stage-w:min(500px,36vw)]"
           style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})` }}
         >
@@ -81,8 +78,8 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
           </WorkOrbit>
         </div>
 
-        {/* What I make: floating beside me on wide screens, tied to the work by dotted lines */}
-        <SkillCards container={wrapRef} stage={stageRef} ring={PORTRAIT.ring} radius={ORBIT.radius} shown={staged} />
+        {/* What I make: floating either side of me on wide screens */}
+        <SkillCards shown={staged} />
         <SkillGrid shown={staged} />
 
         {/* Worked with. No visible label; screen readers get one. */}

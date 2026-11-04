@@ -26,8 +26,8 @@ type Props = {
   style?: React.CSSProperties;
 };
 
-/** Ring radius and tilt, shared with the skill-card connectors. */
-export const ORBIT = { radius: 0.64, tiltX: -11, tiltZ: -7 };
+/** Ring radius (fraction of --stage-w) and tilt. */
+export const ORBIT = { radius: 0.74, tiltX: -11, tiltZ: -7 };
 
 export function WorkOrbit({ clips, centre, shown, children, className, style }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -102,8 +102,8 @@ export function WorkOrbit({ clips, centre, shown, children, className, style }: 
               ref={el => { panels.current[i] = el; }}
               className="absolute"
               style={{
-                width: 'calc(var(--stage-w) * 0.3)', height: 'calc(var(--stage-w) * 0.2)',
-                left: 'calc(var(--stage-w) * -0.15)', top: 'calc(var(--stage-w) * -0.1)',
+                width: 'calc(var(--stage-w) * 0.42)', height: 'calc(var(--stage-w) * 0.2625)',
+                left: 'calc(var(--stage-w) * -0.21)', top: 'calc(var(--stage-w) * -0.13125)',
                 transformStyle: 'preserve-3d', willChange: 'transform',
               }}
             >

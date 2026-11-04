@@ -4,6 +4,10 @@ import { Navigation } from './components/Navigation';
 import { Home } from './pages/Home';
 import { CaseStudy } from './pages/CaseStudy';
 import { SkyBackground } from './components/SkyBackground';
+import { lazy, Suspense } from 'react';
+
+// dev-only page for recording project reels to video
+const ReelCapture = import.meta.env.DEV ? lazy(() => import('./pages/ReelCapture')) : null;
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -33,6 +37,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home onReveal={handleReveal} />} />
         <Route path="/work/:slug" element={<CaseStudy />} />
+        {ReelCapture && <Route path="/__reel/:slug" element={<Suspense fallback={null}><ReelCapture /></Suspense>} />}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </main>
