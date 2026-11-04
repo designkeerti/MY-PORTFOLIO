@@ -1,8 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { PaintedPortrait } from './hero/PaintedPortrait';
-import { TOOLS, COMPANIES, type Tool } from './hero/tools';
+import { TOOLS, COMPANIES, type Tool, type Company } from './hero/tools';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -111,19 +110,11 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
           transition={{ duration: 0.9, delay: instant ? 0 : 1.1, ease: EASE }}
           className="col-span-full mt-16 border-t border-white/15 pt-5 md:mt-12"
         >
-          <div className="grid grid-cols-2 gap-x-6 gap-y-6 md:grid-cols-[auto_repeat(4,minmax(0,1fr))] md:items-baseline md:gap-x-10">
-            <span className="col-span-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 md:col-span-1">Worked with</span>
-            {COMPANIES.map(c => {
-              const inner = (
-                <>
-                  <span className="block text-[17px] font-bold tracking-[-0.01em] text-[#f4efe6] md:text-[19px]">{c.name}</span>
-                  <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.14em] text-white/45">{c.role} · {c.year}</span>
-                </>
-              );
-              return c.href
-                ? <Link key={c.name} to={c.href} className="group transition-opacity hover:opacity-80">{inner}</Link>
-                : <div key={c.name}>{inner}</div>;
-            })}
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:gap-12">
+            <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">Worked with</span>
+            <ul className="grid flex-1 grid-cols-3 items-center gap-x-6 gap-y-7 md:flex md:justify-between md:gap-8">
+              {COMPANIES.map(c => <CompanyLogo key={c.name} c={c} />)}
+            </ul>
           </div>
         </motion.div>
       </div>
@@ -153,5 +144,21 @@ function ToolCard({ tool, index, shown, instant, pin }: { tool: Tool; index: num
       <div className="mt-2 font-display text-[19px] italic leading-[1.05] md:mt-2.5 md:text-[22px]">{tool.makes}</div>
       <p className="mt-1.5 text-[11px] leading-snug text-black/60 md:text-[12px]">{tool.detail}</p>
     </motion.div>
+  );
+}
+
+// Cream at rest so the row reads as one quiet line; the brand's own colours on hover.
+function CompanyLogo({ c }: { c: Company }) {
+  return (
+    <li className="flex justify-center md:block">
+      <a href={c.href} target="_blank" rel="noopener noreferrer" aria-label={c.name} title={c.name}
+        className="group relative flex items-center gap-2 opacity-70 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100">
+        <span className="relative block shrink-0" style={{ height: c.h }}>
+          <img src={c.mono} alt="" draggable={false} className="block h-full w-auto transition-opacity duration-300 group-hover:opacity-0 group-focus-visible:opacity-0" />
+          <img src={c.color} alt="" draggable={false} loading="lazy" className="absolute inset-0 block h-full w-auto opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" />
+        </span>
+        {c.word && <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#f4efe6] md:text-[13px] md:tracking-[0.32em]">{c.word}</span>}
+      </a>
+    </li>
   );
 }

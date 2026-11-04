@@ -48,11 +48,24 @@ export const TOOLS: Tool[] = [
   },
 ];
 
-export type Company = { name: string; role: string; year: string; href?: string };
+export type Company = {
+  name: string;
+  href: string;
+  /** cream version shown at rest, and the brand's own colours on hover */
+  mono: string;
+  color: string;
+  /** visual height in px, tuned per logo so they read at the same weight */
+  h: number;
+  /** a wordmark set as text next to the mark, where the brand does that itself */
+  word?: string;
+};
 
+// Oldest to latest.
 export const COMPANIES: Company[] = [
-  { name: 'Cross Border Supps', role: 'Design lead', year: '2026', href: '/work/cbs' },
-  { name: 'ekai', role: 'Product designer', year: '2025' },
-  { name: 'Infinity Lifespaces', role: 'UX designer', year: '2024' },
-  { name: 'Misfits', role: 'UX/UI designer', year: '2023' },
+  { name: 'SpiceJet', href: 'https://www.spicejet.com', mono: '/logos/spicejet-mono.svg', color: '/logos/spicejet.svg', h: 26 },
+  { name: 'Misfits', href: 'https://www.misfits.net.in', mono: '/logos/misfits-mono.png', color: '/logos/misfits.svg', h: 26 },
+  { name: 'Infinity Ventures', href: 'https://www.infiventures.com', mono: '/logos/infinity-mono.png', color: '/logos/infinity.png', h: 28, word: 'Infinity' },
+  { name: 'ekai', href: 'https://www.yourekai.com', mono: '/logos/ekai-mono.svg', color: '/logos/ekai.svg', h: 24 },
+  { name: 'Design Tribe', href: 'https://designtribe.studio', mono: '/logos/designtribe-mono.svg', color: '/logos/designtribe.svg', h: 22 },
+  { name: 'WeWork', href: 'https://wework.co.in', mono: '/logos/wework-mono.png', color: '/logos/wework.png', h: 32 },
 ];
