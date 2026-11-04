@@ -111,9 +111,11 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
             </motion.div>
           </div>
 
-          {/* Me, standing in the sky, with the work orbiting round me; sinks away on scroll */}
+          {/* Me, standing in the sky, with the work orbiting round me; sinks away on scroll.
+              shrink-0: the pinned frame is one screen tall, and flex would otherwise squash the
+              portrait to fit (it should keep its shape and run off the bottom instead). */}
           <motion.div
-            className="relative z-10 mt-4 [--stage-w:70vw] sm:[--stage-w:54vw] lg:[--stage-w:min(500px,36vw)]"
+            className="relative z-10 mt-4 shrink-0 [--stage-w:70vw] sm:[--stage-w:54vw] lg:[--stage-w:min(500px,36vw)]"
             style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})`, ...(pinned ? { y: stageY, opacity: stageOpacity } : {}) }}
           >
             <WorkOrbit clips={CLIPS} centre={PORTRAIT.ring} shown={staged} className="absolute inset-0">
