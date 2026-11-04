@@ -46,11 +46,16 @@ void main() {
   vec4 cl = skyNearClouds(vuv, vasp, u_sc, 0.0, dens);
   // the light follows the sky: the photo dims as the sky turns to dusk and night
   col *= mix(1.0, 0.42, smoothstep(0.15, 0.9, u_dusk));
-  float front = smoothstep(0.56, 0.74, dens);
-  // the bottom of the photo always settles into cloud, so it never ends in a hard edge
-  float settle = smoothstep(0.24, 0.0, luv.y);
-  front = max(front, settle);
-  vec3 cloudCol = cl.a > 0.02 ? cl.rgb / cl.a : mix(skyShade(), skyLit(), 0.75);
+  // Clouds hold the body: they fully cover the arms and lower body, with a
+  // billowy top edge shaped by the scene's own cloud noise, and never rise
+  // over the face. (luv.y runs bottom-up: the shoulders sit near 0.45.)
+  float edge = 0.44 + (dens - 0.45) * 0.22;
+  float body = smoothstep(edge + 0.035, edge - 0.035, luv.y);
+  float wisps = smoothstep(0.56, 0.74, dens) * smoothstep(0.62, 0.5, luv.y);   // stray wisps, below the chin only
+  float front = max(body, wisps);
+  // the sky's cloud colour where it has cloud; otherwise lit cloud with the same light and texture
+  vec3 lit = mix(skyShade(), skyLit(), clamp(0.62 + (dens - 0.45) * 0.9, 0.0, 1.0));
+  vec3 cloudCol = cl.a > 0.02 ? mix(lit, cl.rgb / cl.a, cl.a) : lit;
   col = mix(col, cloudCol, front);
 
   col = skyFinish(col, vuv, vasp, frag);
@@ -130,9 +135,10 @@ export function PortraitInSky({ src, alt, className, shown }: { src: string; alt
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
     }
 
-    let raf = 0, last = 0, visible = true;
+    let raf = 0, last = 0, visible = true, showStart = 0;
     function loop(now: number) {
-      if (showRef.current && show < 1) show = Math.min(1, show + 0.025);
+      // fade in over ~0.8s of real time, however fast the device draws
+      if (showRef.current && show < 1) { if (!showStart) showStart = now; show = Math.min(1, (now - showStart) / 800); }
       // ~30fps, like the sky, so the two stay in step
       if (visible && !document.hidden && now - last > 33) { last = now; draw(); }
       raf = requestAnimationFrame(loop);

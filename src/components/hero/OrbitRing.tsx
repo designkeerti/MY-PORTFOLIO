@@ -96,7 +96,7 @@ export function OrbitRing({ shown, head, className }: { shown: boolean; head: [n
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let raf = 0, angle = 18, last = performance.now();
-    let tx = 0, ty = 0, cx = 0, cy = 0, appear = reduce ? 1 : 0;
+    let tx = 0, ty = 0, cx = 0, cy = 0, appear = reduce ? 1 : 0, appearStart = 0;
     const onMove = (e: PointerEvent) => { tx = e.clientX / innerWidth - 0.5; ty = e.clientY / innerHeight - 0.5; };
     if (!reduce) window.addEventListener('pointermove', onMove, { passive: true });
 
@@ -105,7 +105,7 @@ export function OrbitRing({ shown, head, className }: { shown: boolean; head: [n
       if (!document.hidden) {
         if (!reduce) angle = (angle + dt * 0.0075) % 360;         // a full turn in ~48s
         cx += (tx - cx) * 0.05; cy += (ty - cy) * 0.05;
-        if (shownRef.current && appear < 1) appear = Math.min(1, appear + dt / 1400);
+        if (shownRef.current && appear < 1) { if (!appearStart) appearStart = now; appear = Math.min(1, (now - appearStart) / 1400); }
         if (tiltRef.current) tiltRef.current.style.transform = `rotateX(${-8 - cy * 6}deg) rotateZ(-7deg) rotateY(${cx * 10}deg)`;
         const W = boxRef.current?.getBoundingClientRect().width || 400;
         const R = W * 0.4;
