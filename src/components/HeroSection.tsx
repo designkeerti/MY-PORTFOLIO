@@ -94,8 +94,8 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
             </div>
             {/* the line under the name fades out with the buttons, making room for the companies */}
             <motion.div style={pinned ? { opacity: ctaOpacity, y: ctaY } : undefined}>
-              <motion.p {...rise(0.3)} className="mt-5 max-w-[40ch] text-[clamp(16px,1.35vw,19px)] leading-snug text-ink/80">
-                He’s a product designer. He designs interfaces, motion and systems, and takes them all the way to <span className="font-display font-bold text-ink">production.</span>
+              <motion.p {...rise(0.3)} className="mt-5 max-w-[56ch] text-balance text-[clamp(14px,1.3vw,19px)] leading-snug text-ink/80">
+                He’s a product designer who designs interfaces, motion and systems, and takes them all the way to <span className="font-display font-bold text-ink">production.</span>
               </motion.p>
             </motion.div>
             <motion.div style={pinned ? { opacity: ctaOpacity, y: ctaY } : undefined}>
