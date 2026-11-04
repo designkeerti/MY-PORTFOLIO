@@ -52,7 +52,7 @@ export function SkillCards({ container, stage, head, shown }: {
         if (!el) return { d: '', x: 0, y: 0 };
         const r = el.getBoundingClientRect();
         const x0 = (p.side < 0 ? r.right : r.left) - cr.left, y0 = r.top - cr.top + r.height / 2;
-        const x1 = hx + p.side * sr.width * 0.68, y1 = hy + sr.width * p.dy;
+        const x1 = hx + p.side * sr.width * 0.62, y1 = hy + sr.width * p.dy;
         const mx = (x0 + x1) / 2;
         return { d: `M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1}`, x: x1, y: y1 };
       }));

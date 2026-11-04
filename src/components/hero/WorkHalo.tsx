@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react';
 
 /**
  * A still, curved band of the work around the head: short looping clips of
- * real projects, set in 3D on an arc that wraps behind the head and leaves
- * the face clear. Nothing orbits; on load the panels resolve one by one out
+ * real projects, on an arc that sweeps across the face and out round the
+ * head. Nothing orbits; on load the panels resolve one by one out
  * of a blur. Clips only play while the hero is on screen.
  *
  * Sized from the CSS variable --stage-w set by the parent.
@@ -11,16 +11,15 @@ import { useEffect, useRef } from 'react';
 
 export type HaloClip = { src: string; poster: string; label: string };
 
-// angle around the head (0 = facing you; the face sits at 0, so nothing goes near it),
-// and height relative to the eyes, as a fraction of --stage-w
-// A wide arc at eye level: three panels each side of the face, spreading outwards,
+// A wide arc round the head: the inner pair crosses the face at cheek height, the rest
+// spread outwards,
 // each turned a little more (ry) and set a little smaller (k), so the strip reads as
 // curving round the head without stacking up. x, y are offsets from the head centre,
 // as fractions of --stage-w (y rises slightly towards the outside).
 const SLOTS: { x: number; y: number; ry: number; k: number }[] = [
-  { x: -0.42, y: 0.03, ry: -16, k: 1 }, { x: 0.42, y: 0.03, ry: 16, k: 1 },
-  { x: -0.68, y: -0.01, ry: -26, k: 0.94 }, { x: 0.68, y: -0.01, ry: 26, k: 0.94 },
-  { x: -0.92, y: -0.06, ry: -36, k: 0.88 }, { x: 0.92, y: -0.06, ry: 36, k: 0.88 },
+  { x: -0.22, y: 0.12, ry: -10, k: 1 }, { x: 0.22, y: 0.12, ry: 10, k: 1 },
+  { x: -0.5, y: 0.06, ry: -24, k: 0.95 }, { x: 0.5, y: 0.06, ry: 24, k: 0.95 },
+  { x: -0.77, y: -0.02, ry: -36, k: 0.89 }, { x: 0.77, y: -0.02, ry: 36, k: 0.89 },
 ];
 
 export function WorkHalo({ clips, head, shown, className }: { clips: HaloClip[]; head: [number, number]; shown: boolean; className?: string }) {
@@ -44,7 +43,7 @@ export function WorkHalo({ clips, head, shown, className }: { clips: HaloClip[];
       <div className="absolute h-0 w-0" style={{ left: `${head[0] * 100}%`, top: `${head[1] * 100}%`, transformStyle: 'preserve-3d', transform: 'rotateZ(-6deg)' }}>
         {clips.slice(0, SLOTS.length).map((c, i) => {
           const { x, y, ry, k } = SLOTS[i];
-          const away = Math.abs(x) > 0.8;                      // the outermost pair: a touch softer
+          const away = Math.abs(x) > 0.7;                      // the outermost pair: a touch softer
           return (
             <figure
               key={c.src}
