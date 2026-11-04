@@ -33,6 +33,8 @@ type Props = {
   instant?: boolean;
   /** which part of the photo to keep in frame, like object-position */
   focus?: [number, number];
+  /** where the fine detail strokes go, in canvas coords: [cx, cy, radius] */
+  detail?: [number, number, number];
   className?: string;
   label: string;
 };
@@ -66,7 +68,7 @@ function curve(r: () => number, x: number, y: number, ang: number, len: number, 
 // The painter's hand: every stroke leans at about this angle.
 const HAND = -13 * (Math.PI / 180);
 
-function buildStrokes(): Stroke[] {
+function buildStrokes(detail: [number, number, number]): Stroke[] {
   const r = rng(20261104);
   const out: Stroke[] = [];
   const deg = Math.PI / 180;
@@ -95,11 +97,11 @@ function buildStrokes(): Stroke[] {
   }
   t += 80;
 
-  // 3. Detail: the face.
+  // 3. Detail: the face (and whoever else is in it).
   for (let i = 0; i < 28; i++) {
     const a = r() * Math.PI * 2, d = Math.sqrt(r());
-    const x = 0.56 + Math.cos(a) * d * 0.18;
-    const y = 0.34 + Math.sin(a) * d * 0.18;
+    const x = detail[0] + Math.cos(a) * d * detail[2];
+    const y = detail[1] + Math.sin(a) * d * detail[2];
     out.push({ path: curve(r, x, y, HAND + (r() - 0.5) * 30 * deg, 0.1 + r() * 0.08, (r() - 0.5) * 0.15), w: 0.04, start: t, dur: 230, seed: 400 + i });
     t += 30;
   }
@@ -151,7 +153,7 @@ const SAMPLES = 48;
 const pressure = (t: number) => 0.35 + 0.65 * Math.pow(Math.sin(Math.min(1, Math.max(0, t)) * Math.PI), 0.5);
 const ease = (t: number) => 1 - Math.pow(1 - t, 2.2);
 
-export function PaintedPortrait({ src, cues = 0, onCue, onDone, instant, focus = [0.5, 0.4], className, label }: Props) {
+export function PaintedPortrait({ src, cues = 0, onCue, onDone, instant, focus = [0.5, 0.4], detail = [0.56, 0.34, 0.18], className, label }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cb = useRef({ onCue, onDone });
@@ -165,7 +167,7 @@ export function PaintedPortrait({ src, cues = 0, onCue, onDone, instant, focus =
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const skip = instant || reduce;
-    const strokes = buildStrokes();
+    const strokes = buildStrokes(detail);
     const glazeAt = Math.max(...strokes.map(s => s.start + s.dur)) + 60;
     // cues land evenly through the painting, the last just before the glaze
     const cueAt = Array.from({ length: cues }, (_, i) => (glazeAt * (i + 0.6)) / (cues + 0.2));

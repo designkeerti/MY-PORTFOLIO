@@ -53,12 +53,12 @@ export type Company = {
   word?: string;
 };
 
-// Oldest to latest.
+// In the order Keerthi wants them shown.
 export const COMPANIES: Company[] = [
+  { name: 'WeWork', href: 'https://wework.co.in', mono: '/logos/wework-mono.png', color: '/logos/wework.png', h: 32 },
   { name: 'SpiceJet', href: 'https://www.spicejet.com', mono: '/logos/spicejet-mono.svg', color: '/logos/spicejet.svg', h: 26 },
+  { name: 'ekai', href: 'https://www.yourekai.com', mono: '/logos/ekai-mono.svg', color: '/logos/ekai.svg', h: 24 },
   { name: 'Misfits', href: 'https://www.misfits.net.in', mono: '/logos/misfits-mono.png', color: '/logos/misfits.svg', h: 26 },
   { name: 'Infinity Ventures', href: 'https://www.infiventures.com', mono: '/logos/infinity-mono.png', color: '/logos/infinity.png', h: 28, word: 'Infinity' },
-  { name: 'ekai', href: 'https://www.yourekai.com', mono: '/logos/ekai-mono.svg', color: '/logos/ekai.svg', h: 24 },
   { name: 'Design Tribe', href: 'https://designtribe.studio', mono: '/logos/designtribe-mono.svg', color: '/logos/designtribe.svg', h: 22 },
-  { name: 'WeWork', href: 'https://wework.co.in', mono: '/logos/wework-mono.png', color: '/logos/wework.png', h: 32 },
 ];

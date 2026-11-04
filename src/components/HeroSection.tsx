@@ -65,12 +65,13 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
         <div className="col-span-full mt-14 md:col-span-6 md:mt-10 lg:col-span-5 lg:col-start-7">
           <figure className="relative mx-auto w-full max-w-[460px]">
             <PaintedPortrait
-              src="/work/home/HJQw8ElsRLJCST5Te5LibBGNdY.webp"
-              focus={[0.42, 0.3]}
+              src="/world/kitten-hug.jpg"
+              focus={[0.5, 0.22]}
+              detail={[0.46, 0.38, 0.22]}
               cues={TOOLS.length}
               onCue={i => setCardsIn(c => Math.max(c, i))}
               instant={instant}
-              label="Portrait of Keerthi Vardhan, laughing on a Delhi Metro platform, painted in broad brush strokes"
+              label="Keerthi Vardhan holding a calico cat close, painted in broad brush strokes"
               className="aspect-[4/5] w-full"
             />
 
