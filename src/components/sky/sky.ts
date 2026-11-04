@@ -100,14 +100,14 @@ vec3 skyScene(vec2 uv, float asp, float sc, float extra, out float nearDens) {
 
 // Just the near cloud layer, premultiplied (rgb * a, a): for a layer of the
 // same clouds drawn in front of things. Identical maths to skyScene's near layer.
-vec4 skyNearClouds(vec2 uv, float asp, float sc, float extra) {
+vec4 skyNearClouds(vec2 uv, float asp, float sc, float extra, out float dens) {
   vec2 p = vec2(uv.x * asp, uv.y);
   vec2 sunDir = normalize(vec2(-0.45, 0.9));
   float scale = 1.25;
   vec2 cp = p * scale + vec2(u_time * 0.011, -sc * 0.6) + 17.0;
   vec2 q = warp(cp);
   float shape = (0.42 - uv.y) * 0.55 + 0.10 * smoothstep(0.3, 0.0, min(uv.x, 1.0 - uv.x)) + extra;
-  float dens = fbm(cp + 1.7 * q) + shape;
+  dens = fbm(cp + 1.7 * q) + shape;
   float a = smoothstep(0.5, 0.55, dens);
   if (a <= 0.001) return vec4(0.0);
   float ahead = fbm(cp + sunDir * 0.06 + 1.7 * q) + shape - sunDir.y * 0.06 / scale * 0.55;
