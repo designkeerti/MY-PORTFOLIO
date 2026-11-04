@@ -53,7 +53,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 
   // The scroll sequence. The hero is pinned for a while (the section is taller than the
   // screen and its content sticks); progress p runs 0 -> 1 across that scroll:
-  //   name stays put · the buttons fade · I (and the orbit) sink out of view ·
+  //   name stays put · the line under it and the buttons fade · I (and the orbit) sink out of view ·
   //   the skill cards shoot off to the sides · wind blows the sky away and fog settles into paper while
   //   the companies (current, then previous) rise in under the name.
   const pinned = !reduce;
@@ -82,9 +82,12 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
               <motion.span {...rise(0.05)} className="hero-name-1 block">Keerthi</motion.span>
               <motion.span {...rise(0.15)} className="hero-name-2 block">Vardhan</motion.span>
             </h1>
-            <motion.p {...rise(0.3)} className="mt-5 max-w-[40ch] text-[clamp(16px,1.35vw,19px)] leading-snug text-ink/80">
-              Product designer. I design interfaces, motion and systems, and take them all the way to <span className="font-display font-bold text-ink">production.</span>
-            </motion.p>
+            {/* the line under the name fades out with the buttons, making room for the companies */}
+            <motion.div style={pinned ? { opacity: ctaOpacity, y: ctaY } : undefined}>
+              <motion.p {...rise(0.3)} className="mt-5 max-w-[40ch] text-[clamp(16px,1.35vw,19px)] leading-snug text-ink/80">
+                Product designer. I design interfaces, motion and systems, and take them all the way to <span className="font-display font-bold text-ink">production.</span>
+              </motion.p>
+            </motion.div>
             <motion.div style={pinned ? { opacity: ctaOpacity, y: ctaY } : undefined}>
               <motion.div {...rise(0.42)} className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <a href="#work" className="group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-medium text-white transition-transform duration-300 hover:-translate-y-0.5">
@@ -113,7 +116,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 
           {/* The companies rise into the space the portrait leaves */}
           {pinned && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-[max(4svh,env(safe-area-inset-bottom))] top-[31svh] z-40 flex items-center justify-center px-5 md:bottom-[22svh] md:top-[26svh] md:px-10">
+            <div className="pointer-events-none absolute inset-x-0 bottom-[max(4svh,env(safe-area-inset-bottom))] top-[calc(21svh+env(safe-area-inset-top))] z-40 flex items-start justify-center px-5 md:top-[25svh] md:px-10">
               <CompanyShowcase enter={companiesIn} className="pointer-events-auto max-w-[980px]" />
             </div>
           )}

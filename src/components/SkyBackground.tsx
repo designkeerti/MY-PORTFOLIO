@@ -51,11 +51,11 @@ void main() {
   }
   sky = skyFinish(sky / 3.0, uv, asp, gl_FragCoord.xy);
 
-  // Fog rolls in from the left on the same wind: soft, billowing, wider at the edge.
-  float n = fbm(p * vec2(1.4, 2.6) + vec2(-u_time * 0.22 - c * 3.2, 0.0));
-  float wisp = fbm(p * vec2(3.5, 6.0) + vec2(-u_time * 0.4 - c * 5.0, 1.7));
-  float field = uv.x * 0.75 + (n - 0.5) * 0.65 + (wisp - 0.5) * 0.15 + (1.0 - uv.y) * 0.08;
-  float t = c * 1.55 - 0.3;
+  // Fog rises from the bottom, soft and billowing, drifting on the same wind.
+  float n = fbm(p * vec2(1.8, 1.4) + vec2(-u_time * 0.12 - c * 2.0, -u_time * 0.05 - c * 1.2));
+  float wisp = fbm(p * vec2(4.0, 3.0) + vec2(-u_time * 0.3 - c * 4.0, -c * 2.0 + 1.7));
+  float field = uv.y * 0.8 + (n - 0.5) * 0.6 + (wisp - 0.5) * 0.15;
+  float t = c * 1.6 - 0.32;
   float fog = smoothstep(t + 0.16, t - 0.14, field);
   vec3 fogCol = mix(vec3(0.90, 0.93, 0.96), vec3(0.985, 0.985, 0.98), smoothstep(0.3, 0.8, n + wisp * 0.4));
 
