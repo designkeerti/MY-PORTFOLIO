@@ -5,7 +5,6 @@ const A = '/work/dmrc/';
 export const dmrc: Project = {
   meta: { slug: 'dmrc', title: 'Redesigning the Delhi Metro experience', oneLiner: 'One of the busiest metro systems on earth, 5.5 million riders a day, and a crowd-management problem at its interchanges. Research, global benchmarks, structured ideation and three proposals.', role: 'UX Researcher', year: '2024', company: 'DMRC', accent: '#E53935', accent2: '#0A1424', tag: 'Public transport' },
   cover: A + 'YijBlctGzn0Mk4J6rFwf6TL43P0.png',
-  externalLink: 'https://keerthivardhan.framer.website/Work/AppProject1',
   timeline: 'Explorations to low-fidelity designs in 4 weeks, alongside other projects',
   expertise: 'UX research · System design',
   facts: ['UX researcher', '5.5M riders a day', '72% cite overcrowding', 'Three proposals'],
@@ -69,7 +68,7 @@ export const dmrc: Project = {
         { src: A + 'RN2r3DBw4Fvr4fT8Ek9HKSrPvU.webp', alt: 'AR: keep following the path' },
         { src: A + 'bsIB2rlEr8B6s20GLK15DYoGhcQ.webp', alt: 'AR: take the escalator down to the subway' },
       ], caption: 'AR guidance, with a language translator for signboards and routes to lifts and wheelchair-accessible paths.' },
-      { type: 'img', src: A + 'fkEECPTXCEVTVMrlwe0geoxTiyg.png', alt: 'Smart card auto top-up feature', caption: 'Top-up at the gate: convenience, time saved at peak, fewer interruptions.', size: 'text' },
+      { type: 'img', src: A + 'fkEECPTXCEVTVMrlwe0geoxTiyg.jpg', alt: 'Smart card auto top-up feature', caption: 'Top-up at the gate: convenience, time saved at peak, fewer interruptions.', size: 'text' },
     ]},
     { id: 'conclusion', title: 'Conclusion', blocks: [
       { type: 'p', text: 'The Delhi Metro is a testament to urban innovation, and its growing ridership demands thoughtful, practical change. The Hybrid Carriage System, gate-side top-up and the enhanced app are actionable strategies to improve flow and elevate the experience. The project underscored something simpler too: listening to commuters and learning from other cities showed that small, thoughtful changes can have a large impact.' },

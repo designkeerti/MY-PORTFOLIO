@@ -4,6 +4,7 @@ import { Navigation } from './components/Navigation';
 import { Home } from './pages/Home';
 import { CaseStudy } from './pages/CaseStudy';
 import { SkyBackground } from './components/SkyBackground';
+import { PageTransitionProvider } from './components/PageTransition';
 import { lazy, Suspense } from 'react';
 
 // dev-only page for recording project reels to video
@@ -12,11 +13,17 @@ const ReelCapture = import.meta.env.DEV ? lazy(() => import('./pages/ReelCapture
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
-    if (hash) {
+    if (!hash) { window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); return; }
+    // the target may render a moment later (the home page mounts its sections after the
+    // hero), so look for it for a short while before giving up
+    let tries = 0, raf = 0;
+    const find = () => {
       const el = document.querySelector(hash);
       if (el) { el.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' }); return; }
-    }
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      if (++tries < 60) raf = requestAnimationFrame(find); else window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    };
+    find();
+    return () => cancelAnimationFrame(raf);
   }, [pathname, hash]);
   return null;
 }
@@ -28,26 +35,31 @@ function App() {
 
   const handleReveal = useCallback((n: number) => setRevealStep(n), []);
 
-  // Home sits on the sky; other pages are dark. Keep the page background and Safari's
-  // bar colour in step when navigating (index.html sets them before first paint).
+  // Home and the case studies sit on the sky; anything else is dark. Keep the page
+  // background and Safari's bar colour in step (index.html sets them before first paint).
+  const isCase = location.pathname.startsWith('/work/');
+  const onSky = isHome || isCase;
   useEffect(() => {
-    document.documentElement.classList.toggle('sky', isHome);
-    document.querySelector('meta[name=theme-color]')?.setAttribute('content', isHome ? '#2c8bc6' : '#0f0d16');
-  }, [isHome]);
+    document.documentElement.classList.toggle('sky', onSky);
+    document.querySelector('meta[name=theme-color]')?.setAttribute('content', onSky ? '#2c8bc6' : '#0f0d16');
+  }, [onSky]);
 
   return (
-    <main className={`w-full min-h-screen ${isHome ? 'bg-transparent' : 'bg-[#0f0d16]'} text-[#f4f2f8] selection:bg-[#DF95FF]/30 relative`} style={{ overflowX: 'clip' }}>
-      {/* The home page sits on a live sky (fixed: it does not change with scroll). */}
-      {isHome && <SkyBackground />}
-      <ScrollToTop />
-      <Navigation revealStep={isHome ? revealStep : 3} />
-      <Routes>
-        <Route path="/" element={<Home onReveal={handleReveal} />} />
-        <Route path="/work/:slug" element={<CaseStudy />} />
-        {ReelCapture && <Route path="/__reel/:slug" element={<Suspense fallback={null}><ReelCapture /></Suspense>} />}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </main>
+    <PageTransitionProvider>
+      <main className={`w-full min-h-screen ${onSky ? 'bg-transparent' : 'bg-[#0f0d16]'} text-[#f4f2f8] selection:bg-[#DF95FF]/30 relative`} style={{ overflowX: 'clip' }}>
+        {/* The live sky. Remounted per page (under the transition) so it tracks that page's hero. */}
+        {onSky && <SkyBackground key={location.pathname} />}
+        <ScrollToTop />
+        {/* case studies have their own top bar */}
+        {!isCase && <Navigation revealStep={isHome ? revealStep : 3} />}
+        <Routes>
+          <Route path="/" element={<Home onReveal={handleReveal} />} />
+          <Route path="/work/:slug" element={<CaseStudy />} />
+          {ReelCapture && <Route path="/__reel/:slug" element={<Suspense fallback={null}><ReelCapture /></Suspense>} />}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </PageTransitionProvider>
   );
 }
 

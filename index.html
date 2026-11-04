@@ -9,7 +9,7 @@
          Other pages are dark. App.tsx keeps this in step when navigating. -->
     <script>
       (function () {
-        var home = location.pathname === '/' || location.pathname === '';
+        var home = location.pathname === '/' || location.pathname === '' || location.pathname.indexOf('/work/') === 0;
         document.documentElement.className = home ? 'sky' : '';
         if (!home) document.querySelector('meta[name=theme-color]').setAttribute('content', '#0f0d16');
       })();

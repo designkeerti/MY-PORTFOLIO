@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { TransitionLink } from './PageTransition';
 import { projects } from '../content/projects';
 import type { Project } from '../content/types';
 
@@ -84,7 +84,7 @@ function WorkCard({ p }: { p: Project }) {
         <Facts items={[meta.role, (p.facts ?? [])[1]].filter(Boolean) as string[]} />
 
         {internal
-          ? <Link to={href} className={btnClass} style={{ background: accent, color: onAccent(accent) }}>{button}</Link>
+          ? <TransitionLink to={href} className={btnClass} style={{ background: accent, color: onAccent(accent) }}>{button}</TransitionLink>
           : <a href={href} target="_blank" rel="noopener noreferrer" className={btnClass} style={{ background: accent, color: onAccent(accent) }}>{button}</a>}
       </div>
     </article>

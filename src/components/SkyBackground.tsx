@@ -194,7 +194,7 @@ export function SkyBackground() {
     const ro = new ResizeObserver(() => fit());
     ro.observe(canvas);
     let io: IntersectionObserver | undefined;
-    const hero = document.querySelector('.hero-poster');
+    const hero = document.querySelector('.hero-poster, [data-sky-hero]');
     if (hero) {
       // a ratio above 0, not isIntersecting: an edge merely touching the viewport counts as intersecting
       io = new IntersectionObserver(es => { heroVisible = es.some(e => e.intersectionRatio > 0); kick(); }, { threshold: [0, 0.01] });
