@@ -2,7 +2,7 @@ import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { setBack } from './sky/sky';
 import type { ReactNode } from 'react';
-import { SparkleIcon, BallIcon, QuillIcon, BookIcon } from './icons/SkillIcons';
+import { PawIcon, BallIcon, QuillIcon, BookIcon } from './icons/SkillIcons';
 
 // frosted glass, as in the hero
 const GLASS = 'border border-white/80 bg-white/65 backdrop-blur-md shadow-[0_24px_50px_-30px_rgba(15,30,55,0.55)]';
@@ -96,9 +96,9 @@ export const AboutSection = () => {
               className="rounded-[24px] p-8 md:p-10 flex flex-col justify-center items-center text-center border border-white/80 shadow-[0_24px_50px_-30px_rgba(15,30,55,0.55)] relative overflow-hidden group min-h-[240px] text-ink"
               style={{ background: 'linear-gradient(135deg,#efe6ff,#ffe7d6)' }}
             >
-               <span className="mb-4 h-10 w-10 text-ink/80 md:mb-6 md:h-12 md:w-12"><SparkleIcon /></span>
+               <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-[16px] bg-white/70 p-3 text-ink/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_20px_-12px_rgba(15,30,55,0.4)] md:mb-6"><PawIcon /></span>
                <p className="text-lg md:text-2xl font-semibold tracking-[-0.01em] leading-snug relative z-10">
-                 "Great design isn’t just about how it works, it’s about how it feels."
+                 “I just want to be rich enough to feed every animal around me.”
                </p>
             </motion.div>
 
@@ -160,7 +160,7 @@ export const AboutSection = () => {
 
 const InterestRow = ({ icon, bg, title, desc }: { icon: ReactNode, bg: string, title: string, desc: string }) => (
   <div className="group flex items-center gap-4 transition-transform duration-300 hover:translate-x-1.5">
-    <div className="flex h-12 w-12 items-center justify-center rounded-[13px] p-3 text-ink/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]" style={{ background: bg }}>
+    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] p-[11px] text-ink/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_20px_-12px_rgba(15,30,55,0.4)]" style={{ background: bg }}>
       {icon}
     </div>
     <div>
