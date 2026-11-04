@@ -37,7 +37,7 @@ export const Navigation = ({ revealStep, isDarkMode = true }: { revealStep: numb
     <>
       {/* Fixed Navbar */}
       <motion.nav 
-        className="fixed top-0 left-0 right-0 z-50 px-8 pt-6 pb-3 flex justify-between items-center bg-transparent backdrop-blur-sm"
+        className="fixed top-0 left-0 right-0 z-50 px-8 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3 flex justify-between items-center bg-transparent backdrop-blur-sm"
         initial={{ opacity: 0, y: -20 }}
         // fully hidden once faded, so its links can't be tabbed to while invisible
         animate={visible

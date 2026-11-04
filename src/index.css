@@ -43,6 +43,10 @@
 .font-display { font-family: var(--font-head), sans-serif; }
 main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
 
+/* Home: the sky shows edge to edge, under Safari's bars too (see index.html). */
+html.sky { background-color: #2c8bc6; }
+html.sky body { background-color: transparent; }
+
 body {
   margin: 0;
   font-family: var(--font-text), sans-serif;

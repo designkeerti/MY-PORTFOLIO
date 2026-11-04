@@ -50,7 +50,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   return (
     <section ref={heroRef} className="hero-poster relative w-full overflow-hidden">
       {/* No navbar over the hero: the page opens on the poster itself. */}
-      <div className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-12 text-center md:px-10 md:pt-14">
+      <div className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-[calc(3rem+env(safe-area-inset-top))] text-center md:px-10 md:pt-[calc(3.5rem+env(safe-area-inset-top))]">
 
         {/* The type, centred */}
         <div className="relative z-30 flex flex-col items-center">

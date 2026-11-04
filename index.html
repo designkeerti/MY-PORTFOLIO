@@ -3,8 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="theme-color" content="#3f9cc9" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2c8bc6" />
+    <!-- Before first paint: the home page sits on the sky, so the page behind it (what Safari
+         shows under its status bar, toolbar and in the scroll bounce) must be sky-blue, not dark.
+         Other pages are dark. App.tsx keeps this in step when navigating. -->
+    <script>
+      (function () {
+        var home = location.pathname === '/' || location.pathname === '';
+        document.documentElement.className = home ? 'sky' : '';
+        if (!home) document.querySelector('meta[name=theme-color]').setAttribute('content', '#0f0d16');
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Keerthi’s Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
