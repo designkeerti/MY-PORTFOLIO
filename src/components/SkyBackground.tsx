@@ -112,7 +112,7 @@ export function SkyBackground() {
       className="pointer-events-none fixed inset-0 h-full w-full"
       // behind everything: above the page background, below all content
       // the farthest layer of the hero parallax: overscaled so its edges never show at full travel
-      style={{ zIndex: -1, scale: '1.08', translate: 'calc(var(--px, 0) * -36px) calc(var(--py, 0) * -24px)', background: 'linear-gradient(180deg, #2185c2 0%, #8ccbe6 60%, #e6f3f9 100%)' }}
+      style={{ zIndex: -1, scale: '1.14', translate: 'calc(var(--px, 0) * -60px) calc(var(--py, 0) * -40px)', background: 'linear-gradient(180deg, #2185c2 0%, #8ccbe6 60%, #e6f3f9 100%)' }}
     />
   );
 }

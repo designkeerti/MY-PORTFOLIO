@@ -26,7 +26,7 @@ function Card({ t, i, className = '', shown }: { t: Tool; i: number; className?:
 
 // Scattered either side, a little above the middle of the hero, each at its own angle.
 // how far each card travels with the pointer: they float nearest, each a little differently
-const DEPTH = [48, 40, 58, 52];
+const DEPTH = [22, 18, 26, 24];
 const SCATTER = [
   'left-[5%] top-[24%] -rotate-[6deg]',
   'right-[6%] top-[21%] rotate-[5deg]',
