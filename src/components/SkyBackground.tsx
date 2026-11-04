@@ -35,8 +35,11 @@ export function SkyBackground() {
 
   useEffect(() => {
     const canvas = ref.current!;
-    const gl = canvas.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false });
-    if (!gl) return; // the CSS gradient on the canvas stays as the fallback
+    // Transparent, not opaque: iOS Safari can drop a canvas's drawing for a frame while
+    // its toolbars animate during scroll. An opaque canvas then shows black; a transparent
+    // one shows the still sky picture on the layer behind it. (The shader writes alpha 1.)
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: true });
+    if (!gl) return; // the still sky picture on the layer stays as the fallback
 
     const sh = (type: number, src: string) => { const s = gl.createShader(type)!; gl.shaderSource(s, src); gl.compileShader(s); return s; };
     const prog = gl.createProgram()!;
@@ -63,9 +66,9 @@ export function SkyBackground() {
     // Size to the canvas's own box, which is 100lvh (the largest viewport height), so
     // phone address bars showing and hiding while scrolling never resize the sky.
     function resize() {
-      const r = canvas.getBoundingClientRect();
-      const w = Math.max(2, Math.round(r.width / (parseFloat(canvas.style.scale) || 1) * SCALE));
-      const h = Math.max(2, Math.round(r.height / (parseFloat(canvas.style.scale) || 1) * SCALE));
+      // the layout box, before any parallax scale
+      const w = Math.max(2, Math.round(canvas.clientWidth * SCALE));
+      const h = Math.max(2, Math.round(canvas.clientHeight * SCALE));
       if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl!.viewport(0, 0, w, h); }
       gl!.uniform2f(uRes, w, h);
     }
@@ -107,14 +110,13 @@ export function SkyBackground() {
     };
   }, []);
 
+  // A fixed layer the full height of the screen (the largest viewport height, so phone
+  // toolbars appearing and disappearing never resize it), behind everything. It carries a
+  // still picture of the same sky, so the screen is sky even before or between frames.
+  // Parallax (translate + overscale) is desktop-only, via .sky-layer in index.css.
   return (
-    <canvas
-      ref={ref}
-      aria-hidden
-      className="pointer-events-none fixed left-0 top-0 h-[100lvh] w-screen"
-      // behind everything: above the page background, below all content
-      // the farthest layer of the hero parallax: overscaled so its edges never show at full travel
-      style={{ zIndex: -1, scale: '1.14', translate: 'calc(var(--px, 0) * -60px) calc(var(--py, 0) * -40px)', background: 'linear-gradient(180deg, #2185c2 0%, #8ccbe6 60%, #e6f3f9 100%)' }}
-    />
+    <div aria-hidden className="sky-layer pointer-events-none">
+      <canvas ref={ref} className="absolute inset-0 block h-full w-full" />
+    </div>
   );
 }
