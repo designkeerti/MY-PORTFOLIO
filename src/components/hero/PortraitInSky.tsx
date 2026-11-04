@@ -2,16 +2,10 @@ import { useEffect, useRef } from 'react';
 import { SKY_GLSL, skyTime, duskAmount, skyScroll } from '../sky/sky';
 
 /**
- * The portrait, placed inside the sky rather than on top of it. This canvas
- * draws only the person (the photo's own transparency), and over them the
- * sky's *own* near clouds, computed by the same shared code at the same
- * place, time and scroll as the background. Where the scene's clouds are
- * dense they pass in front of the person; their thin edges stay behind. No
- * extra cloud is added: the clouds you see around the portrait are the same
- * ones that drift across it.
- *
- * The photo is also lightly graded into the scene: a touch of the sky's haze
- * and the same film grain.
+ * The portrait, placed in the sky: the person (the photo's own transparency),
+ * graded with the scene (a breath of the sky's haze, the same film grain, and
+ * dimming as the sky turns to dusk), fading softly into the open sky at its
+ * base. Drawn with the shared sky code so the grade matches the background.
  */
 
 const FRAG = `
@@ -41,27 +35,13 @@ void main() {
   // the photo, graded into the scene: a breath of the sky's haze, deeper in shadow
   vec3 col = mix(ph.rgb, skyLow(), 0.06);
 
-  // the scene's own near clouds: dense parts in front of the person, thin edges behind
-  float dens;
-  vec4 cl = skyNearClouds(vuv, vasp, u_sc, 0.0, dens);
   // the light follows the sky: the photo dims as the sky turns to dusk and night
   col *= mix(1.0, 0.42, smoothstep(0.15, 0.9, u_dusk));
-  // Clouds hold the body: they fully cover the arms and lower body, with a
-  // billowy top edge shaped by the scene's own cloud noise, and never rise
-  // over the shoulders. (luv.y runs bottom-up: the shoulders sit near 0.38.)
-  // the billows come up to the shoulders (luv.y ~0.39) and never go higher
-  float edge = min(0.4, 0.36 + (dens - 0.45) * 0.16);
-  float body = smoothstep(edge + 0.03, edge - 0.03, luv.y);
-  float wisps = smoothstep(0.56, 0.74, dens) * smoothstep(0.4, 0.33, luv.y);   // stray wisps, below the shoulders only
-  float front = max(body, wisps);
-  // the sky's cloud colour where it has cloud; otherwise lit cloud with the same light and texture
-  vec3 lit = mix(skyShade(), skyLit(), clamp(0.62 + (dens - 0.45) * 0.9, 0.0, 1.0));
-  vec3 cloudCol = cl.a > 0.02 ? mix(lit, cl.rgb / cl.a, cl.a) : lit;
-  col = mix(col, cloudCol, front);
 
   col = skyFinish(col, vuv, vasp, frag);
   // rises into place on load
-  float a = ph.a * u_show * smoothstep(0.0, 0.1, luv.y);
+  // no cloud bank below: the photo fades softly into the open sky at its base
+  float a = ph.a * u_show * smoothstep(0.0, 0.3, luv.y);
   gl_FragColor = vec4(col * a, a);
 }`;
 const VERT = `attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }`;
