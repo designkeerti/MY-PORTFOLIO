@@ -30,7 +30,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   useEffect(() => { try { sessionStorage.setItem('introSeen', '1'); } catch { /* private mode */ } }, []);
   const instant = skipIntro || !!reduce;
   const [staged, setStaged] = useState(instant);
-  // pointer parallax: each layer below moves by its own amount (nearer = more)
+  // pointer parallax on the sky, skill cards and logos (the name and portrait stay put)
   const heroRef = useRef<HTMLElement>(null);
   useHeroParallax(heroRef);
 
@@ -53,7 +53,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
       <div className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-12 text-center md:px-10 md:pt-14">
 
         {/* The type, centred */}
-        <div className="relative z-30 flex flex-col items-center" style={{ translate: depth(-14) }}>
+        <div className="relative z-30 flex flex-col items-center">
           <h1 className="leading-[0.86] text-ink">
             <motion.span {...rise(0.05)} className="hero-name-1 block">Keerthi</motion.span>
             <motion.span {...rise(0.15)} className="hero-name-2 block">Vardhan</motion.span>
@@ -75,7 +75,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
         {/* Me, standing in the sky, with the work orbiting round me */}
         <div
           className="relative z-10 mt-4 [--stage-w:74vw] sm:[--stage-w:56vw] lg:[--stage-w:min(500px,36vw)]"
-          style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})`, translate: depth(22) }}
+          style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})` }}
         >
           <WorkOrbit clips={CLIPS} centre={PORTRAIT.ring} shown={staged} className="absolute inset-0">
             <PortraitInSky src={PORTRAIT.src} alt="Keerthi Vardhan laughing, head tilted back, in a white shirt" shown={staged} className="absolute inset-0 h-full w-full" />
