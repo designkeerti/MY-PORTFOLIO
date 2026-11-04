@@ -29,6 +29,8 @@
 @font-face { font-family: 'Sofia Sans'; src: url('./assets/fonts/sofia/sofia-sans-italic.woff2') format('woff2'); font-weight: 300 900; font-style: italic; font-display: swap; }
 @font-face { font-family: 'Sofia Sans Semi Condensed'; src: url('./assets/fonts/sofia/sofia-sans-semi-condensed-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Sofia Sans Condensed'; src: url('./assets/fonts/sofia/sofia-sans-condensed-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
+/* Telma (Indian Type Foundry, via Fontshare; ITF Free Font License), self-hosted variable 300-900: the name */
+@font-face { font-family: 'Telma'; src: url('./assets/fonts/telma/Telma-Variable.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
 
 :root {
   --font-text: 'Sofia Sans';
@@ -38,8 +40,8 @@
   --ink: rgb(var(--ink-rgb));
 }
 /* The name in the hero: a condensed line over a big display line, like a poster. */
-.hero-name-1 { font-family: var(--font-head), sans-serif; font-weight: 700; letter-spacing: -0.015em; font-size: clamp(34px, 3.6vw, 56px); line-height: 0.95; }
-.hero-name-2 { font-family: var(--font-display), sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.005em; font-size: clamp(76px, 8.4vw, 136px); line-height: 0.84; }
+.hero-name-1 { font-family: 'Telma', serif; font-weight: 700; letter-spacing: 0; font-size: clamp(38px, 4.6vw, 72px); line-height: 1; }
+.hero-name-2 { font-family: 'Telma', serif; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; font-size: min(15.5vw, clamp(78px, 9.2vw, 144px)); line-height: 0.9; }
 .font-display { font-family: var(--font-head), sans-serif; }
 main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
 
