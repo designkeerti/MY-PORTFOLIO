@@ -42,6 +42,9 @@ void main() {
   // rises into place on load
   // no cloud bank below: the photo fades softly into the open sky at its base
   float a = ph.a * u_show * smoothstep(0.0, 0.3, luv.y);
+  // the crop cuts the shoulders at the frame's sides: soften those edges into the sky too
+  float sides = smoothstep(0.0, 0.14, luv.x) * smoothstep(1.0, 0.86, luv.x);
+  a *= mix(1.0, sides, smoothstep(0.62, 0.3, luv.y));
   gl_FragColor = vec4(col * a, a);
 }`;
 const VERT = `attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }`;

@@ -1,18 +1,19 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { PortraitInSky } from './hero/PortraitInSky';
-import { WorkHalo, type HaloClip } from './hero/WorkHalo';
+import { WorkOrbit, ORBIT, type OrbitClip } from './hero/WorkOrbit';
 import { SkillCards, SkillGrid } from './hero/SkillCards';
 import { COMPANIES, type Company } from './hero/tools';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// The portrait (transparent background, head and shoulders) and where the head sits in it.
-const PORTRAIT = { src: '/hero/portrait.webp', aspect: 1200 / 1428, head: [0.45, 0.3] as [number, number] };
+// The portrait (transparent background, head and shoulders), and the centre of the ring of
+// work around it: low, round the chest and shoulders, so the face stays clear.
+const PORTRAIT = { src: '/hero/portrait.webp', aspect: 1200 / 1428, ring: [0.5, 0.56] as [number, number] };
 
-// The work around the head: short clips of real projects.
+// The work orbiting: short clips of real projects.
 const P = '/hero/posters/';
-const CLIPS: HaloClip[] = [
+const CLIPS: OrbitClip[] = [
   { src: '/videos/2dark.mp4', poster: P + '2dark.jpg', label: 'Cross Border Supps: the storefront on mobile' },
   { src: '/work/ekai/b4LEGCUCaclrfhX51x9RUiUasM.mp4', poster: P + 'b4LEGCUCaclrfhX51x9RUiUasM.jpg', label: 'ekai: the website' },
   { src: '/videos/1dark.mp4', poster: P + '1dark.jpg', label: 'An interactive Rive prototype' },
@@ -69,18 +70,19 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
           </motion.div>
         </div>
 
-        {/* Me, standing in the sky, with the work around my head */}
+        {/* Me, standing in the sky, with the work orbiting round me */}
         <div
           ref={stageRef}
-          className="relative z-10 mt-4 [--stage-w:74vw] sm:[--stage-w:56vw] lg:[--stage-w:min(540px,38vw)]"
+          className="relative z-10 mt-4 [--stage-w:74vw] sm:[--stage-w:56vw] lg:[--stage-w:min(500px,36vw)]"
           style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})` }}
         >
-          <PortraitInSky src={PORTRAIT.src} alt="Keerthi Vardhan laughing, head tilted back, in a white shirt" shown={staged} className="absolute inset-0 h-full w-full" />
-          <WorkHalo clips={CLIPS} head={PORTRAIT.head} shown={staged} className="pointer-events-none absolute inset-0 z-20" />
+          <WorkOrbit clips={CLIPS} centre={PORTRAIT.ring} shown={staged} className="absolute inset-0">
+            <PortraitInSky src={PORTRAIT.src} alt="Keerthi Vardhan laughing, head tilted back, in a white shirt" shown={staged} className="absolute inset-0 h-full w-full" />
+          </WorkOrbit>
         </div>
 
         {/* What I make: floating beside me on wide screens, tied to the work by dotted lines */}
-        <SkillCards container={wrapRef} stage={stageRef} head={PORTRAIT.head} shown={staged} />
+        <SkillCards container={wrapRef} stage={stageRef} ring={PORTRAIT.ring} radius={ORBIT.radius} shown={staged} />
         <SkillGrid shown={staged} />
 
         {/* Worked with. No visible label; screen readers get one. */}

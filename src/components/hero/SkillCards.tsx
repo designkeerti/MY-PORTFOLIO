@@ -11,10 +11,11 @@ const CHIPS = ['linear-gradient(135deg,#f0ffc4,#c9ef6f)', 'linear-gradient(135de
 
 // where each card floats (wide screens), and which side of the head its line goes to
 const PLACE = [
-  { cls: 'left-[2%] top-[30%] -rotate-[2deg]', side: -1, dy: -0.1 },
-  { cls: 'right-[2%] top-[28%] rotate-[2deg]', side: 1, dy: -0.1 },
-  { cls: 'left-[5%] top-[72%] rotate-[1.5deg]', side: -1, dy: 0.08 },
-  { cls: 'right-[5%] top-[70%] -rotate-[1.5deg]', side: 1, dy: 0.06 },
+  // dy: where on the ring's side the line lands (the ring tilts, so its left side sits lower)
+  { cls: 'left-[3%] top-[38%] -rotate-[2deg]', side: -1, dy: 0.02 },
+  { cls: 'right-[3%] top-[34%] rotate-[2deg]', side: 1, dy: -0.12 },
+  { cls: 'left-[6%] top-[72%] rotate-[1.5deg]', side: -1, dy: 0.13 },
+  { cls: 'right-[6%] top-[68%] -rotate-[1.5deg]', side: 1, dy: -0.03 },
 ];
 
 function Card({ t, i, className = '', innerRef, shown }: { t: Tool; i: number; className?: string; innerRef?: (el: HTMLDivElement | null) => void; shown: boolean }) {
@@ -34,25 +35,27 @@ function Card({ t, i, className = '', innerRef, shown }: { t: Tool; i: number; c
   );
 }
 
-export function SkillCards({ container, stage, head, shown }: {
-  container: RefObject<HTMLElement>; stage: RefObject<HTMLElement>; head: [number, number]; shown: boolean;
+export function SkillCards({ container, stage, ring, radius, shown }: {
+  container: RefObject<HTMLElement>; stage: RefObject<HTMLElement>;
+  /** the ring's centre (fractions of the stage's width / height) and radius (fraction of its width) */
+  ring: [number, number]; radius: number; shown: boolean;
 }) {
   const cards = useRef<(HTMLDivElement | null)[]>([]);
   const [paths, setPaths] = useState<{ d: string; x: number; y: number }[]>([]);
 
-  // draw each dotted line from the card's inner edge to the band beside the head
+  // draw each dotted line from the card's inner edge to the side of the ring
   useLayoutEffect(() => {
     const measure = () => {
       const c = container.current, s = stage.current;
       if (!c || !s || !window.matchMedia('(min-width: 1024px)').matches) { setPaths([]); return; }
       const cr = c.getBoundingClientRect(), sr = s.getBoundingClientRect();
-      const hx = sr.left - cr.left + sr.width * head[0], hy = sr.top - cr.top + sr.height * head[1];
+      const hx = sr.left - cr.left + sr.width * ring[0], hy = sr.top - cr.top + sr.height * ring[1];
       setPaths(PLACE.map((p, i) => {
         const el = cards.current[i];
         if (!el) return { d: '', x: 0, y: 0 };
         const r = el.getBoundingClientRect();
         const x0 = (p.side < 0 ? r.right : r.left) - cr.left, y0 = r.top - cr.top + r.height / 2;
-        const x1 = hx + p.side * sr.width * 0.62, y1 = hy + sr.width * p.dy;
+        const x1 = hx + p.side * sr.width * radius * 0.97, y1 = hy + sr.width * p.dy;
         const mx = (x0 + x1) / 2;
         return { d: `M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1}`, x: x1, y: y1 };
       }));
@@ -63,7 +66,7 @@ export function SkillCards({ container, stage, head, shown }: {
     if (stage.current) ro.observe(stage.current);
     document.fonts?.ready.then(measure);
     return () => ro.disconnect();
-  }, [container, stage, head]);
+  }, [container, stage, ring, radius]);
 
   return (
     <>
