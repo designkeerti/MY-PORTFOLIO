@@ -1,4 +1,5 @@
-import { motion, motionValue, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, motionValue, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { setBurn } from './sky/sky';
 import { useEffect, useRef, useState } from 'react';
 import { useHeroParallax } from './hero/useHeroParallax';
 import { PortraitInSky } from './hero/PortraitInSky';
@@ -53,7 +54,8 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   // The scroll sequence. The hero is pinned for a while (the section is taller than the
   // screen and its content sticks); progress p runs 0 -> 1 across that scroll:
   //   name stays put · the buttons fade · I (and the orbit) sink out of view ·
-  //   the skill cards shoot off to the sides · the companies rise in and settle.
+  //   the skill cards shoot off to the sides · the sky burns away to plain paper while
+  //   the companies (current, then previous) rise in under the name.
   const pinned = !reduce;
   const { scrollYProgress: p } = useScroll({ target: heroRef, offset: ['start start', 'end end'] });
   const ctaOpacity = useTransform(p, [0, 0.1], [1, 0]);
@@ -61,8 +63,11 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   const stageY = useTransform(p, [0.02, 0.4], ['0svh', '80svh']);
   const stageOpacity = useTransform(p, [0.26, 0.4], [1, 0]);
   const cardsExit = useTransform(p, [0.02, 0.4], [0, 1]);
-  // the companies start rising while I'm still sinking, so there's no empty moment
-  const companiesIn = useTransform(p, [0.16, 0.66], [0, 1]);
+  // the companies rise in (both lines together) while the sky burns away to paper
+  const companiesIn = useTransform(p, [0.3, 0.6], [0, 1]);
+  const burn = useTransform(p, [0.22, 0.62], [0, 1]);
+  useMotionValueEvent(burn, 'change', v => { if (pinned) setBurn(v); });
+  useEffect(() => () => setBurn(0), []);
 
   return (
     <>
@@ -108,8 +113,8 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 
           {/* The companies rise into the space the portrait leaves */}
           {pinned && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-[max(4svh,env(safe-area-inset-bottom))] top-[31svh] z-40 flex items-center justify-center px-5 md:top-[34svh] md:px-10">
-              <CompanyShowcase enter={companiesIn} className="pointer-events-auto max-w-[920px]" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-[max(4svh,env(safe-area-inset-bottom))] top-[31svh] z-40 flex items-center justify-center px-5 md:bottom-[22svh] md:top-[26svh] md:px-10">
+              <CompanyShowcase enter={companiesIn} className="pointer-events-auto max-w-[980px]" />
             </div>
           )}
         </div>

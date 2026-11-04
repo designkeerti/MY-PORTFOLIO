@@ -2,37 +2,51 @@ import { motion, useTransform, type MotionValue } from 'framer-motion';
 import { COMPANIES, type Company } from './tools';
 
 /**
- * The companies, given room: a grid of frosted tiles, each logo large and in its
- * own colours (or in ink, for logos that are white-on-dark). Driven by `enter`
- * (0 -> 1): the tiles rise into place one after another.
+ * Where I work, under the name: no boxes, just the logos. The current company on
+ * its own line, then everyone before. Both lines rise in together as `enter`
+ * goes 0 -> 1. Logos are in ink, and show their own colours on hover.
  */
 
-function Tile({ c, i, enter }: { c: Company; i: number; enter: MotionValue<number> }) {
-  const start = 0.08 * i;
-  const k = useTransform(enter, [start, start + 0.45], [0, 1], { clamp: true });
-  const y = useTransform(k, v => `${((1 - v) ** 2 * 60).toFixed(2)}vh`);
-  const opacity = useTransform(k, [0, 0.6], [0, 1]);
-  const scale = useTransform(k, [0, 1], [0.92, 1]);
-  const ink = c.tile === 'ink';
+const CURRENT = 'WeWork';
+
+function Logo({ c, scale = 1 }: { c: Company; scale?: number }) {
+  const h = Math.round(c.h * scale);
   return (
-    <motion.li style={{ y, opacity, scale }} className="list-none">
-      <a href={c.href} target="_blank" rel="noopener noreferrer" aria-label={c.name}
-        className="group flex h-[clamp(84px,15svh,150px)] items-center justify-center gap-2.5 rounded-[14px] border border-white/80 bg-white/70 px-6 shadow-[0_20px_44px_-26px_rgba(15,30,55,0.5)] backdrop-blur-md transition-transform duration-300 hover:-translate-y-1">
-        <img
-          src={ink ? c.mono : c.color} alt="" draggable={false}
-          className={`block w-auto max-w-[70%] object-contain ${ink ? 'brightness-0 opacity-85' : ''}`}
-          style={{ height: `clamp(${Math.round(c.h * 0.9)}px, ${(c.h * 0.16).toFixed(1)}vh, ${Math.round(c.h * 1.5)}px)` }}
-        />
-        {c.word && <span className="text-[12px] font-medium uppercase tracking-[0.3em] text-ink md:text-[14px]">{c.word}</span>}
-      </a>
-    </motion.li>
+    <a href={c.href} target="_blank" rel="noopener noreferrer" aria-label={c.name} title={c.name}
+      className="group relative flex shrink-0 items-center gap-2 opacity-80 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100">
+      <span className="relative block" style={{ height: h }}>
+        <img src={c.mono} alt="" draggable={false} className="block h-full w-auto brightness-0 transition-opacity duration-300 group-hover:opacity-0 group-focus-visible:opacity-0" />
+        {c.tile !== 'ink' && (
+          <img src={c.color} alt="" draggable={false} loading="lazy" className="absolute inset-0 block h-full w-auto opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" />
+        )}
+      </span>
+      {c.word && <span className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink md:text-[13px]" style={{ fontSize: `${Math.round(12 * scale)}px` }}>{c.word}</span>}
+    </a>
   );
 }
 
+const Label = ({ children }: { children: React.ReactNode }) => (
+  <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-ink/50 md:text-[12px]">{children}</p>
+);
+
 export function CompanyShowcase({ enter, className }: { enter: MotionValue<number>; className?: string }) {
+  const current = COMPANIES.find(c => c.name === CURRENT)!;
+  const before = COMPANIES.filter(c => c.name !== CURRENT);
+  const y = useTransform(enter, v => `${((1 - v) ** 2 * 8).toFixed(2)}svh`);
+  const opacity = useTransform(enter, [0, 0.7], [0, 1]);
+  const filter = useTransform(enter, v => (v < 0.98 ? `blur(${((1 - v) * 8).toFixed(1)}px)` : 'none'));
   return (
-    <ul aria-label="Companies I've worked with" className={`grid w-full grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 ${className ?? ''}`}>
-      {COMPANIES.map((c, i) => <Tile key={c.name} c={c} i={i} enter={enter} />)}
-    </ul>
+    <motion.div style={{ y, opacity, filter }} className={`flex flex-col items-center gap-10 md:gap-14 ${className ?? ''}`}>
+      <div className="flex flex-col items-center gap-4">
+        <Label>Currently designing at</Label>
+        <Logo c={current} scale={2.1} />
+      </div>
+      <div className="flex flex-col items-center gap-5">
+        <Label>Previously with</Label>
+        <ul aria-label="Companies I've worked with before" className="flex flex-wrap items-center justify-center gap-x-9 gap-y-6 md:gap-x-14">
+          {before.map(c => <li key={c.name}><Logo c={c} scale={1.35} /></li>)}
+        </ul>
+      </div>
+    </motion.div>
   );
 }

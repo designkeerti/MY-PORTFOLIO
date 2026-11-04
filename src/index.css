@@ -57,6 +57,10 @@ main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
   .sky-layer { scale: 1.14; translate: calc(var(--px, 0) * -60px) calc(var(--py, 0) * -40px); }
 }
 
+/* After the burn: plain paper (the shader draws it; this is the backing and Safari's bars) */
+.sky-layer.burned { background: #f6f4ef; }
+html.sky.burned { background-color: #f6f4ef; }
+
 /* Home: the sky shows edge to edge, under Safari's bars too (see index.html). */
 html.sky { background-color: #2c8bc6; }
 html.sky body { background-color: transparent; }
