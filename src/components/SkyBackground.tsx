@@ -111,7 +111,8 @@ export function SkyBackground() {
       aria-hidden
       className="pointer-events-none fixed inset-0 h-full w-full"
       // behind everything: above the page background, below all content
-      style={{ zIndex: -1, background: 'linear-gradient(180deg, #2185c2 0%, #8ccbe6 60%, #e6f3f9 100%)' }}
+      // the farthest layer of the hero parallax: a slight overscale so its edges never show
+      style={{ zIndex: -1, scale: '1.03', translate: 'calc(var(--px, 0) * -10px) calc(var(--py, 0) * -6px)', background: 'linear-gradient(180deg, #2185c2 0%, #8ccbe6 60%, #e6f3f9 100%)' }}
     />
   );
 }

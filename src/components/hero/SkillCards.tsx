@@ -1,4 +1,5 @@
 import { TOOLS, type Tool } from './tools';
+import { depth } from './useHeroParallax';
 
 /**
  * The four skill cards scattered either side, a little above centre (wide
@@ -24,6 +25,8 @@ function Card({ t, i, className = '', shown }: { t: Tool; i: number; className?:
 }
 
 // Scattered either side, a little above the middle of the hero, each at its own angle.
+// how far each card travels with the pointer: they float nearest, each a little differently
+const DEPTH = [48, 40, 58, 52];
 const SCATTER = [
   'left-[5%] top-[24%] -rotate-[6deg]',
   'right-[6%] top-[21%] rotate-[5deg]',
@@ -35,7 +38,7 @@ export function SkillCards({ shown }: { shown: boolean }) {
   return (
     <>
       {TOOLS.map((t, i) => (
-        <div key={t.makes} className={`absolute z-30 hidden transition-transform duration-500 hover:rotate-0 lg:block ${SCATTER[i]}`}>
+        <div key={t.makes} className={`absolute z-30 hidden transition-transform duration-500 hover:rotate-0 lg:block ${SCATTER[i]}`} style={{ translate: depth(DEPTH[i], DEPTH[i] * 0.7) }}>
           <Card t={t} i={i} shown={shown} />
         </div>
       ))}

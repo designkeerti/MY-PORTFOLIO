@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useHeroParallax, depth } from './hero/useHeroParallax';
 import { PortraitInSky } from './hero/PortraitInSky';
 import { WorkOrbit, type OrbitClip } from './hero/WorkOrbit';
 import { SkillCards, SkillGrid } from './hero/SkillCards';
@@ -29,6 +30,9 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   useEffect(() => { try { sessionStorage.setItem('introSeen', '1'); } catch { /* private mode */ } }, []);
   const instant = skipIntro || !!reduce;
   const [staged, setStaged] = useState(instant);
+  // pointer parallax: each layer below moves by its own amount (nearer = more)
+  const heroRef = useRef<HTMLElement>(null);
+  useHeroParallax(heroRef);
 
   useEffect(() => {
     // the rest of the page and the nav don't wait for the intro
@@ -44,12 +48,12 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   });
 
   return (
-    <section className="hero-poster relative w-full overflow-hidden">
+    <section ref={heroRef} className="hero-poster relative w-full overflow-hidden">
       {/* No navbar over the hero: the page opens on the poster itself. */}
       <div className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-12 text-center md:px-10 md:pt-14">
 
         {/* The type, centred */}
-        <div className="relative z-30 flex flex-col items-center">
+        <div className="relative z-30 flex flex-col items-center" style={{ translate: depth(-14) }}>
           <h1 className="leading-[0.86] text-ink">
             <motion.span {...rise(0.05)} className="hero-name-1 block">Keerthi</motion.span>
             <motion.span {...rise(0.15)} className="hero-name-2 block">Vardhan</motion.span>
@@ -71,7 +75,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
         {/* Me, standing in the sky, with the work orbiting round me */}
         <div
           className="relative z-10 mt-4 [--stage-w:74vw] sm:[--stage-w:56vw] lg:[--stage-w:min(500px,36vw)]"
-          style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})` }}
+          style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})`, translate: depth(22) }}
         >
           <WorkOrbit clips={CLIPS} centre={PORTRAIT.ring} shown={staged} className="absolute inset-0">
             <PortraitInSky src={PORTRAIT.src} alt="Keerthi Vardhan laughing, head tilted back, in a white shirt" shown={staged} className="absolute inset-0 h-full w-full" />
@@ -86,6 +90,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
         <motion.ul
           {...rise(0.6)}
           aria-label="Companies I've worked with"
+          style={{ translate: depth(8) }}
           className="relative z-30 mt-10 grid w-full max-w-[1100px] grid-cols-3 items-center justify-items-center gap-x-6 gap-y-6 pb-14 md:flex md:justify-between lg:-mt-16"
         >
           {COMPANIES.map(c => <CompanyLogo key={c.name} c={c} />)}
