@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { motion, useTransform, type MotionValue } from 'framer-motion';
 import { TOOLS, type Tool } from './tools';
 
 /**
@@ -42,14 +43,29 @@ const lookAt = (d: number) => {
   const k = (d - FARTHEST) / (NEAREST - FARTHEST);        // 0 farthest .. 1 nearest
   return { scale: 0.9 + 0.16 * k, look: { blur: +(0.9 * (1 - k) ** 2).toFixed(2), opacity: +(0.82 + 0.18 * k).toFixed(2) } };
 };
-const SCATTER = [
-  'left-[5%] top-[24%] -rotate-[6deg]',
-  'right-[6%] top-[21%] rotate-[5deg]',
-  'left-[12%] top-[45%] rotate-[4deg]',
-  'right-[11%] top-[43%] -rotate-[4deg]',
+const POS = ['left-[5%] top-[24%]', 'right-[6%] top-[21%]', 'left-[12%] top-[45%]', 'right-[11%] top-[43%]'];
+const ROT = ['-rotate-[6deg]', 'rotate-[5deg]', 'rotate-[4deg]', '-rotate-[4deg]'];
+// On scroll each card shoots out towards its own side (x, y in viewport widths/heights) and spins.
+const SHOOT = [
+  { x: -0.55, y: -0.35, r: -28 }, { x: 0.55, y: -0.4, r: 26 },
+  { x: -0.6, y: 0.1, r: 22 }, { x: 0.6, y: 0.05, r: -24 },
 ];
 
-export function SkillCards({ shown }: { shown: boolean }) {
+/** One card's scroll exit: flies out and fades as `exit` goes 0 -> 1. */
+function Shoot({ exit, i, className, children }: { exit?: MotionValue<number>; i: number; className: string; children: React.ReactNode }) {
+  const zero = useTransform(() => 0);
+  const e = exit ?? zero;
+  // each card starts a little after the previous one, so they peel off in turn
+  const k = useTransform(e, [i * 0.08, 0.7 + i * 0.08], [0, 1], { clamp: true });
+  const x = useTransform(k, v => `${(SHOOT[i].x * v * v * 100).toFixed(2)}vw`);
+  const y = useTransform(k, v => `${(SHOOT[i].y * v * v * 100).toFixed(2)}vh`);
+  const rotate = useTransform(k, v => SHOOT[i].r * v);
+  const opacity = useTransform(k, [0, 0.25, 1], [1, 0.85, 0]);
+  const filter = useTransform(k, v => (v > 0.02 ? `blur(${(v * 6).toFixed(1)}px)` : 'none'));
+  return <motion.div className={className} style={{ x, y, rotate, opacity, filter, zIndex: 30 + DEPTH[i] }}>{children}</motion.div>;
+}
+
+export function SkillCards({ shown, exit }: { shown: boolean; exit?: MotionValue<number> }) {
   const wraps = useRef<(HTMLDivElement | null)[]>([]);
   // the intro fades the cards in with CSS; after it, the focus effect takes over
   const [live, setLive] = useState(false);
@@ -76,7 +92,8 @@ export function SkillCards({ shown }: { shown: boolean }) {
         const { scale, look } = base[i];
         const k = f[i], others = Math.max(0, top - k);
         el.style.scale = (scale * (1 + 0.16 * k - 0.07 * others)).toFixed(4);
-        el.style.zIndex = String(30 + DEPTH[i] + Math.round(k * 60));
+        // stacking lives on the outer (scroll) wrapper, which is its own stacking context
+        if (el.parentElement) el.parentElement.style.zIndex = String(30 + DEPTH[i] + Math.round(k * 60));
         el.style.setProperty('--d', (DEPTH[i] * (1 + 1.2 * k - 0.4 * others)).toFixed(2));
         el.style.setProperty('--fo', (look.opacity + (1 - look.opacity) * k - 0.22 * others).toFixed(3));
         el.style.setProperty('--fb', `${(look.blur * (1 - k) + 1.1 * others).toFixed(2)}px`);
@@ -120,16 +137,18 @@ export function SkillCards({ shown }: { shown: boolean }) {
       {TOOLS.map((t, i) => {
         const { scale, look } = lookAt(DEPTH[i]);
         return (
-          <div key={t.makes} ref={el => { wraps.current[i] = el; }}
-            className={`absolute hidden transition-transform duration-500 hover:rotate-0 lg:block ${SCATTER[i]}`}
-            style={{
-              // parallax travel comes from --d, which the focus effect raises as the pointer nears
-              ['--d' as string]: DEPTH[i],
-              translate: 'calc(var(--px, 0) * var(--d) * 1px) calc(var(--py, 0) * var(--d) * 0.7px)',
-              scale: String(scale), zIndex: 30 + DEPTH[i],
-            }}>
-            <Card t={t} i={i} shown={shown} look={look} live={live} />
-          </div>
+          <Shoot key={t.makes} exit={exit} i={i} className={`absolute hidden lg:block ${POS[i]}`}>
+            <div ref={el => { wraps.current[i] = el; }}
+              className={`transition-transform duration-500 hover:rotate-0 ${ROT[i]}`}
+              style={{
+                // parallax travel comes from --d, which the focus effect raises as the pointer nears
+                ['--d' as string]: DEPTH[i],
+                translate: 'calc(var(--px, 0) * var(--d) * 1px) calc(var(--py, 0) * var(--d) * 0.7px)',
+                scale: String(scale),
+              }}>
+              <Card t={t} i={i} shown={shown} look={look} live={live} />
+            </div>
+          </Shoot>
         );
       })}
     </>
