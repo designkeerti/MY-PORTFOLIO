@@ -1,7 +1,7 @@
 import { TOOLS, type Tool } from './tools';
 
 /**
- * The four skill cards in the open sky either side of the portrait (wide
+ * The four skill cards at the top, either side of the name (wide
  * screens), or in a 2x2 grid on smaller ones.
  */
 
@@ -26,11 +26,11 @@ function Card({ t, i, className = '', shown }: { t: Tool; i: number; className?:
 export function SkillCards({ shown }: { shown: boolean }) {
   return (
     <>
-      {/* two calm columns either side of the portrait; the right one sits a step lower */}
-      <div className="pointer-events-none absolute left-[3%] top-[44%] z-30 hidden flex-col gap-5 lg:flex">
+      {/* two columns at the top, either side of the name */}
+      <div className="pointer-events-none absolute left-[3%] top-12 z-30 hidden flex-col gap-4 lg:flex">
         {[0, 2].map(i => <div key={i} className="pointer-events-auto"><Card t={TOOLS[i]} i={i} shown={shown} /></div>)}
       </div>
-      <div className="pointer-events-none absolute right-[3%] top-[52%] z-30 hidden flex-col gap-5 lg:flex">
+      <div className="pointer-events-none absolute right-[3%] top-12 z-30 hidden flex-col gap-4 lg:flex">
         {[1, 3].map(i => <div key={i} className="pointer-events-auto"><Card t={TOOLS[i]} i={i} shown={shown} /></div>)}
       </div>
     </>
