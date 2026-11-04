@@ -16,6 +16,8 @@ export default {
       },
       fontFamily: {
         sans: ['Satoshi', 'sans-serif'],
+        display: ['"Instrument Serif"', 'Georgia', 'serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'Menlo', 'monospace'],
       }
     },
   },

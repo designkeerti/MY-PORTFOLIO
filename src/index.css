@@ -139,3 +139,19 @@ section {
 .bento-card__cta { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; margin-top: 6px; padding: 12px 22px; border-radius: 999px; background: #fff; color: #0b0b0b; font-weight: 600; font-size: 15px; transition: background .3s, transform .3s; }
 .bento-card__cta:hover { background: #6cbde0; transform: translateY(-1px); }
 @media (max-width: 767px) { .bento-card__body { padding: 0 20px 40px; gap: 10px; } .bento-card__blurb { font-size: 14px; } }
+
+/* Hero poster: ink ground with a faint paper grain */
+.hero-poster {
+  background:
+    radial-gradient(ellipse 60% 50% at 75% 40%, rgba(217, 115, 78, 0.07), transparent 70%),
+    #0f0d14;
+}
+.hero-poster::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
