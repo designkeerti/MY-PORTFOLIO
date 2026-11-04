@@ -16,7 +16,11 @@ export type Block =
   | { type: 'live'; id: LiveId }
   | { type: 'note'; text: string };
 
-export type Chapter = { id: string; title: string; kicker?: string; blocks: Block[] };
+/** `nav` is a short label for the side navigation when the title is long */
+export type Chapter = { id: string; title: string; kicker?: string; nav?: string; blocks: Block[] };
+
+/** the thirty-second version, for whoever is skimming before an interview */
+export type Glance = { problem: string; role: string; did: string[]; outcome: string };
 
 export type Project = {
   meta: ProjectMeta;
@@ -26,6 +30,7 @@ export type Project = {
   /** three or four short, true things for the project card on the home page */
   facts?: string[];
   summary: string;
+  glance?: Glance;
   link?: { href: string; label: string };
   /** the Framer case study, for projects not yet rebuilt on this site */
   externalLink?: string;

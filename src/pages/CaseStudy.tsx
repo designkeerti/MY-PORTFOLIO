@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type MouseEvent } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { projects, bySlug } from '../content/projects';
 import { PreviewPlayer } from '../previews/PreviewPlayer';
 import { BlockView } from '../casestudy/Blocks';
+import type { Glance as GlanceT } from '../content/types';
 import { TransitionLink } from '../components/PageTransition';
 
 /**
@@ -38,6 +39,10 @@ export const CaseStudy = () => {
   const idx = projects.findIndex(p => p.meta.slug === meta.slug);
   const next = projects[(idx + 1) % projects.length];
   const facts: [string, string][] = [['Role', meta.role], ['Timeline', project.timeline], ['Focus', project.expertise]];
+  const navItems = [
+    ...(project.glance ? [{ id: 'glance', label: 'At a glance', n: '' }] : []),
+    ...project.chapters.map((c, i) => ({ id: c.id, label: c.nav ?? c.title, n: String(i + 1).padStart(2, '0') })),
+  ];
 
   return (
     <article className="relative text-ink">
@@ -82,39 +87,132 @@ export const CaseStudy = () => {
         <DesktopNote accent={meta.accent} company={meta.company} next={next.meta} />
       </section>
 
-      {/* the story, on a light sheet */}
+      {/* the story, on a light sheet; on large screens a side nav rides along */}
       <div className="relative hidden rounded-t-[32px] bg-[#f7f6f2] pb-28 pt-16 md:block shadow-[0_-30px_60px_-40px_rgba(15,30,55,0.5)] md:rounded-t-[44px] md:pt-24">
-        <div className="flex flex-col gap-24 md:gap-32">
-          {project.chapters.map((c, i) => (
-            <section key={c.id} id={'s-' + c.id} className="flex scroll-mt-24 flex-col gap-9 md:gap-11">
-              <header className="mx-auto flex w-full max-w-[760px] flex-col items-center px-6 text-center">
-                <span className="text-[12px] font-medium uppercase tracking-[0.24em]" style={{ color: meta.accent }}>
-                  {String(i + 1).padStart(2, '0')}{c.kicker ? ` · ${c.kicker}` : ''}
-                </span>
-                <h2 className="section-title mt-3 text-[clamp(28px,4vw,46px)] leading-[1.06]">{c.title}</h2>
-              </header>
-              {c.blocks.map((b, k) => <BlockView key={k} b={b} accent={meta.accent} />)}
-            </section>
-          ))}
-        </div>
-
-        {/* next project */}
-        <TransitionLink to={`/work/${next.meta.slug}`} className="group mx-auto mt-28 block max-w-[760px] px-6">
-          <div className="cs-glass flex items-center justify-between gap-6 rounded-[24px] p-6 md:p-8">
-            <div>
-              <p className="text-[12px] font-medium uppercase tracking-[0.22em] text-ink/45">Next case · {next.meta.company}</p>
-              <p className="section-title mt-2 text-[clamp(22px,3vw,32px)] leading-tight">{next.meta.title}</p>
+        <div className="mx-auto max-w-[1480px] lg:grid lg:grid-cols-[210px_minmax(0,1fr)] xl:grid-cols-[250px_minmax(0,1fr)]">
+          <SideNav items={navItems} accent={meta.accent} />
+          <div className="min-w-0">
+            <div className="flex flex-col gap-24 md:gap-32">
+              {project.glance && <Glance g={project.glance} accent={meta.accent} />}
+              {project.chapters.map((c, i) => (
+                <section key={c.id} id={'s-' + c.id} className="flex scroll-mt-24 flex-col gap-9 md:gap-11">
+                  <header className="mx-auto flex w-full max-w-[760px] flex-col items-center px-6 text-center">
+                    <span className="text-[12px] font-medium uppercase tracking-[0.24em]" style={{ color: meta.accent }}>
+                      {String(i + 1).padStart(2, '0')}{c.kicker ? ` · ${c.kicker}` : ''}
+                    </span>
+                    <h2 className="section-title mt-3 text-[clamp(28px,4vw,46px)] leading-[1.06]">{c.title}</h2>
+                  </header>
+                  {c.blocks.map((b, k) => <BlockView key={k} b={b} accent={meta.accent} />)}
+                </section>
+              ))}
             </div>
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-transform duration-300 group-hover:translate-x-1" style={{ background: next.meta.accent, color: onAccent(next.meta.accent) }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-            </span>
+
+            {/* next project */}
+            <TransitionLink to={`/work/${next.meta.slug}`} className="group mx-auto mt-28 block max-w-[760px] px-6">
+              <div className="cs-glass flex items-center justify-between gap-6 rounded-[24px] p-6 md:p-8">
+                <div>
+                  <p className="text-[12px] font-medium uppercase tracking-[0.22em] text-ink/45">Next case · {next.meta.company}</p>
+                  <p className="section-title mt-2 text-[clamp(22px,3vw,32px)] leading-tight">{next.meta.title}</p>
+                </div>
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-transform duration-300 group-hover:translate-x-1" style={{ background: next.meta.accent, color: onAccent(next.meta.accent) }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                </span>
+              </div>
+            </TransitionLink>
           </div>
-        </TransitionLink>
+        </div>
       </div>
 
     </article>
   );
 };
+
+/** The thirty-second version: problem, role, what I did, what happened. */
+function Glance({ g, accent }: { g: GlanceT; accent: string }) {
+  const label = 'text-[12px] font-medium uppercase tracking-[0.22em]';
+  return (
+    <section id="s-glance" className="mx-auto w-full max-w-[1000px] scroll-mt-24 px-6">
+      <header className="mb-9 flex flex-col items-center text-center md:mb-11">
+        <span className={label} style={{ color: accent }}>At a glance</span>
+        <h2 className="section-title mt-3 text-[clamp(28px,4vw,46px)] leading-[1.06]">The short version</h2>
+      </header>
+      <div className="grid gap-3 md:grid-cols-2">
+        <div className="cs-glass rounded-[22px] p-7 md:col-span-2">
+          <p className={`${label} text-ink/45`}>The problem</p>
+          <p className="mt-3 text-[19px] font-medium leading-[1.45] tracking-[-0.01em] text-ink md:text-[21px]">{g.problem}</p>
+        </div>
+        <div className="cs-glass rounded-[22px] p-7">
+          <p className={`${label} text-ink/45`}>My role</p>
+          <p className="mt-3 text-[16px] leading-relaxed text-ink/75">{g.role}</p>
+        </div>
+        <div className="cs-glass rounded-[22px] p-7">
+          <p className={`${label} text-ink/45`}>What I did</p>
+          <ul className="mt-3 flex flex-col gap-2.5">
+            {g.did.map(d => (
+              <li key={d} className="flex gap-3 text-[16px] leading-snug text-ink/75">
+                <span className="mt-[0.5em] h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: accent }} aria-hidden />{d}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-[22px] border p-7 md:col-span-2" style={{ background: `color-mix(in srgb, ${accent} 11%, #ffffff)`, borderColor: `color-mix(in srgb, ${accent} 26%, #ffffff)` }}>
+          <p className={label} style={{ color: `color-mix(in srgb, ${accent} 70%, #17191e)` }}>Where it landed</p>
+          <p className="mt-3 text-[17px] leading-relaxed text-ink/85">{g.outcome}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Large screens: a sticky list of the chapters, the one you are reading lit in the accent. */
+function SideNav({ items, accent }: { items: { id: string; label: string; n: string }[]; accent: string }) {
+  const [active, setActive] = useState(items[0]?.id);
+  const ids = items.map(i => i.id).join(' ');
+  useEffect(() => {
+    const els = ids.split(' ').map(id => document.getElementById('s-' + id)).filter((e): e is HTMLElement => !!e);
+    // a section is "current" once its top passes 40% of the way down the screen
+    const pick = () => {
+      const line = window.innerHeight * 0.4;
+      let cur = els[0]?.id;
+      for (const el of els) if (el.getBoundingClientRect().top <= line) cur = el.id;
+      if (cur) setActive(cur.slice(2));
+    };
+    pick();
+    window.addEventListener('scroll', pick, { passive: true });
+    window.addEventListener('resize', pick);
+    return () => { window.removeEventListener('scroll', pick); window.removeEventListener('resize', pick); };
+  }, [ids]);
+  const go = (id: string) => (e: MouseEvent) => {
+    e.preventDefault();
+    const el = document.getElementById('s-' + id);
+    if (!el) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    history.replaceState(null, '', '#s-' + id);
+  };
+  return (
+    <nav aria-label="Sections" className="hidden lg:block">
+      <div className="sticky top-24 pl-8 pr-2 xl:pl-12">
+        <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.24em] text-ink/40">In this case</p>
+        <ol className="relative flex flex-col border-l border-ink/10">
+          {items.map(it => {
+            const on = it.id === active;
+            return (
+              <li key={it.id}>
+                <a href={'#s-' + it.id} onClick={go(it.id)} aria-current={on ? 'location' : undefined}
+                  className={`relative -ml-px flex gap-2.5 border-l-2 py-[7px] pl-4 pr-1 text-[13.5px] leading-snug transition-colors duration-200 ${on ? 'font-medium text-ink' : 'border-transparent text-ink/50 hover:text-ink/80'}`}
+                  style={on ? { borderColor: accent } : undefined}>
+                  <span className="w-5 shrink-0 tabular-nums text-[11.5px] leading-[1.6]" style={{ color: on ? accent : undefined }}>{it.n}</span>
+                  <span className="line-clamp-2">{it.label}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </nav>
+  );
+}
 
 /** Phones: the reel is the case study; the full story is offered for a bigger screen. */
 function DesktopNote({ accent, company, next }: { accent: string; company: string; next: { slug: string; company: string } }) {

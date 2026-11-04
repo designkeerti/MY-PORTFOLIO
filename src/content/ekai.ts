@@ -9,6 +9,12 @@ export const ekai: Project = {
   expertise: 'Interaction design · Product design',
   facts: ['Product designer', '63% mobile bounce, before', 'Research to final motion', 'Live at yourekai.com'],
   summary: 'Ekai builds an AI twin inside Slack that answers your team’s questions using your existing context, so work keeps moving even when you are not online. The team had a strong product and an early website. As the product grew, the site needed a clearer story and a more trustworthy presence. I partnered with the founders to redesign the full experience and shaped the UX and UI from research to final visuals.',
+  glance: {
+    problem: 'ekai’s product worked; its website did not say what it was. 63% of mobile visitors bounced, the average visit lasted 12 seconds, fewer than 2% touched the call to action, and fewer than 0.5% reached the features.',
+    role: 'Product designer, working directly with the founders. UX and UI for the website from research to final motion, alongside platform flows and the Chrome extension (those are under NDA).',
+    did: ['Talked to people before reading the analytics, and found the real blocker was trust, not features', 'Rebuilt the page in the order a skeptical buyer asks: what it is, real examples, integrations, proof, security', 'Scored three concept directions and merged the best two into a hybrid', 'Designed “alive” sections that show the product working instead of describing it'],
+    outcome: 'Shipped and live at yourekai.com, with the mobile layout designed for phones instead of scaled down from desktop.',
+  },
   link: { href: 'https://yourekai.com', label: 'Visit yourekai.com' },
   preview: ekaiScenes,
   chapters: [
@@ -42,7 +48,7 @@ export const ekai: Project = {
         { src: A + 'ACw7E8hnpQVkOu7UQtasU9Jslw.png', alt: 'Need: social proof; simple mobile layouts with a visible call to action' },
       ], bg: '#FBF3EA', caption: 'Needs, written down so the whole team could argue with them.' },
     ]},
-    { id: 'structure', title: 'A page that follows how people evaluate an AI tool', kicker: 'Buyer journey, top to bottom', blocks: [
+    { id: 'structure', nav: 'Page structure', title: 'A page that follows how people evaluate an AI tool', kicker: 'Buyer journey, top to bottom', blocks: [
       { type: 'list', items: ['Clear explanation', 'Real examples', 'Integrations', 'Proof', 'Security', 'Call to action'] },
       { type: 'p', text: 'Every section of the page answers the next question a skeptical buyer asks, in the order they ask it.' },
     ]},
