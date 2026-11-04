@@ -15,8 +15,8 @@ export default {
         "highlight-gradient2": "rgb(252, 235, 239)",
       },
       fontFamily: {
-        sans: ['Satoshi', 'sans-serif'],
-        display: ['"Instrument Serif"', 'Georgia', 'serif'],
+        sans: ['var(--font-text)', 'sans-serif'],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'Menlo', 'monospace'],
       }
     },

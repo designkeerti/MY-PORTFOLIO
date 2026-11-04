@@ -42,12 +42,12 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
         {/* Left: name and statement */}
         <div className="col-span-full flex flex-col justify-center md:col-span-6 lg:col-span-6">
           <h1 className="leading-[0.86] text-[#f4efe6]">
-            <motion.span {...rise(0.1)} className="block font-display text-[clamp(64px,10.5vw,156px)] italic tracking-[-0.01em]">Keerthi</motion.span>
-            <motion.span {...rise(0.22)} className="block text-[clamp(56px,9.4vw,140px)] font-black tracking-[-0.045em]">Vardhan</motion.span>
+            <motion.span {...rise(0.1)} className="hero-name-1 block">Keerthi</motion.span>
+            <motion.span {...rise(0.22)} className="hero-name-2 block">Vardhan</motion.span>
           </h1>
 
           <motion.p {...rise(0.4)} className="mt-8 max-w-[30ch] text-[clamp(18px,1.6vw,22px)] leading-snug text-white/75">
-            Product designer. I design interfaces, motion and systems, and take them all the way to <span className="font-display text-[1.15em] italic text-[#f4efe6]">production.</span>
+            Product designer. I design interfaces, motion and systems, and take them all the way to <span className="font-display text-[1.15em] text-[#f4efe6]">production.</span>
           </motion.p>
 
           <motion.div {...rise(0.52)} className="mt-9 flex flex-wrap items-center gap-3">
@@ -127,7 +127,7 @@ function ToolCard({ tool, shown, instant, pos }: { tool: Tool; shown: boolean; i
           <span key={x.name} title={x.name} className="flex items-center">{x.mark}<span className="sr-only">{x.name}</span></span>
         ))}
       </div>
-      <div className="mt-3 font-display text-[20px] italic leading-[1.05] md:text-[22px]">{tool.makes}</div>
+      <div className="mt-3 font-display text-[20px] leading-[1.05] md:text-[22px]">{tool.makes}</div>
       <p className="mt-1.5 text-[12px] leading-snug text-white/55">{tool.detail}</p>
     </motion.div>
   );

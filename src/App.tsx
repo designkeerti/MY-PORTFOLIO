@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Navigation } from './components/Navigation';
 import { Home } from './pages/Home';
 import { CaseStudy } from './pages/CaseStudy';
+import { FontSwitcher } from './fontPreview';
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -26,6 +27,7 @@ function App() {
   return (
     <main className="w-full min-h-screen bg-[#0f0d16] text-[#f4f2f8] selection:bg-[#DF95FF]/30 relative" style={{ overflowX: 'clip' }}>
       <ScrollToTop />
+      <FontSwitcher />
       <Navigation revealStep={isHome ? revealStep : 3} />
       <Routes>
         <Route path="/" element={<Home onReveal={handleReveal} />} />

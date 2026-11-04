@@ -18,9 +18,33 @@
   font-display: swap;
 }
 
+/*
+ * Type settings for the whole site. Everything reads these variables, so a
+ * pairing can be swapped in one place (and previewed with ?font=X, see
+ * src/fontPreview.ts). The values here are the current, live pairing.
+ */
+:root {
+  --font-text: 'Satoshi';
+  --font-display: 'Instrument Serif';
+  --display-style: italic;          /* card titles, the accent word */
+  /* the two lines of the name in the hero */
+  --name1-family: var(--font-display); --name1-style: italic; --name1-weight: 400; --name1-track: -0.01em;
+  --name2-family: var(--font-text);    --name2-style: normal; --name2-weight: 900; --name2-track: -0.045em;
+}
+.font-display { font-style: var(--display-style); }
+.hero-name-1 { font-family: var(--name1-family), serif; font-style: var(--name1-style); font-weight: var(--name1-weight); letter-spacing: var(--name1-track); font-size: calc(clamp(64px, 10.5vw, 156px) * var(--name1-scale, 1)); }
+.hero-name-2 { font-family: var(--name2-family), sans-serif; font-style: var(--name2-style); font-weight: var(--name2-weight); letter-spacing: var(--name2-track); font-size: calc(clamp(56px, 9.4vw, 140px) * var(--name2-scale, 1)); }
+/* While previewing a pairing, section and case-study headings take its display face too. */
+[data-font] main :is(h2, h3) {
+  font-family: var(--head-family), serif;
+  font-weight: var(--head-weight) !important;
+  font-style: var(--head-style, normal);
+  letter-spacing: var(--head-track) !important;
+}
+
 body {
   margin: 0;
-  font-family: 'Satoshi', sans-serif;
+  font-family: var(--font-text), sans-serif;
   background-color: #0f0d16;
   color: #f4f2f8;
   color-scheme: dark;
