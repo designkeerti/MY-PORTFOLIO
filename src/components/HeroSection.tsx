@@ -1,13 +1,25 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PortraitInSky } from './hero/PortraitInSky';
-import { OrbitRing } from './hero/OrbitRing';
+import { WorkHalo, type HaloClip } from './hero/WorkHalo';
+import { SkillCards, SkillGrid } from './hero/SkillCards';
 import { COMPANIES, type Company } from './hero/tools';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// The portrait (transparent background) and where the head sits in it, for the ring.
-const PORTRAIT = { src: '/hero/portrait.webp', aspect: 1200 / 1636, head: [0.48, 0.24] as [number, number] };
+// The portrait (transparent background, head and shoulders) and where the head sits in it.
+const PORTRAIT = { src: '/hero/portrait.webp', aspect: 1200 / 1428, head: [0.45, 0.3] as [number, number] };
+
+// The work around the head: short clips of real projects.
+const P = '/hero/posters/';
+const CLIPS: HaloClip[] = [
+  { src: '/videos/2dark.mp4', poster: P + '2dark.jpg', label: 'Cross Border Supps: the storefront on mobile' },
+  { src: '/work/ekai/b4LEGCUCaclrfhX51x9RUiUasM.mp4', poster: P + 'b4LEGCUCaclrfhX51x9RUiUasM.jpg', label: 'ekai: the website' },
+  { src: '/videos/1dark.mp4', poster: P + '1dark.jpg', label: 'An interactive Rive prototype' },
+  { src: '/videos/1light.mp4', poster: P + '1light.jpg', label: 'A body-profile app flow' },
+  { src: '/work/ekai/qJlWawcCzXTwNSh3ZDbm19udE.mp4', poster: P + 'qJlWawcCzXTwNSh3ZDbm19udE.jpg', label: 'ekai: the platform diagram' },
+  { src: '/videos/2light.mp4', poster: P + '2light.jpg', label: 'ekai joining a meeting' },
+];
 
 export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step: number) => void }) => {
   const reduce = useReducedMotion();
@@ -16,6 +28,8 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   useEffect(() => { try { sessionStorage.setItem('introSeen', '1'); } catch { /* private mode */ } }, []);
   const instant = skipIntro || !!reduce;
   const [staged, setStaged] = useState(instant);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // the rest of the page and the nav don't wait for the intro
@@ -33,7 +47,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   return (
     <section className="hero-poster relative w-full overflow-hidden">
       {/* No navbar over the hero: the page opens on the poster itself. */}
-      <div className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-12 text-center md:px-10 md:pt-14">
+      <div ref={wrapRef} className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-12 text-center md:px-10 md:pt-14">
 
         {/* The type, centred */}
         <div className="relative z-30 flex flex-col items-center">
@@ -55,20 +69,25 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
           </motion.div>
         </div>
 
-        {/* Me, standing in the sky, with what I make orbiting */}
+        {/* Me, standing in the sky, with the work around my head */}
         <div
-          className="relative z-10 mt-4 [--stage-w:88vw] sm:[--stage-w:60vw] lg:[--stage-w:min(500px,38vw)]"
+          ref={stageRef}
+          className="relative z-10 mt-4 [--stage-w:74vw] sm:[--stage-w:56vw] lg:[--stage-w:min(540px,38vw)]"
           style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})` }}
         >
           <PortraitInSky src={PORTRAIT.src} alt="Keerthi Vardhan laughing, head tilted back, in a white shirt" shown={staged} className="absolute inset-0 h-full w-full" />
-          <OrbitRing head={PORTRAIT.head} shown={staged} className="pointer-events-none absolute inset-0 z-20" />
+          <WorkHalo clips={CLIPS} head={PORTRAIT.head} shown={staged} className="pointer-events-none absolute inset-0 z-20" />
         </div>
 
-        {/* Worked with: sitting on the cloud bank. No visible label; screen readers get one. */}
+        {/* What I make: floating beside me on wide screens, tied to the work by dotted lines */}
+        <SkillCards container={wrapRef} stage={stageRef} head={PORTRAIT.head} shown={staged} />
+        <SkillGrid shown={staged} />
+
+        {/* Worked with. No visible label; screen readers get one. */}
         <motion.ul
           {...rise(0.6)}
           aria-label="Companies I've worked with"
-          className="relative z-30 -mt-[calc(var(--stage-w)*0.28)] grid w-full max-w-[1100px] grid-cols-3 items-center justify-items-center gap-x-6 gap-y-6 pb-14 [--stage-w:88vw] sm:[--stage-w:60vw] md:flex md:justify-between lg:[--stage-w:min(500px,38vw)]"
+          className="relative z-30 mt-10 grid w-full max-w-[1100px] grid-cols-3 items-center justify-items-center gap-x-6 gap-y-6 pb-14 md:flex md:justify-between lg:-mt-16"
         >
           {COMPANIES.map(c => <CompanyLogo key={c.name} c={c} />)}
         </motion.ul>
