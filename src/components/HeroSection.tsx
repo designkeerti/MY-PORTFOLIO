@@ -1,16 +1,32 @@
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { PaintedPortrait } from './hero/PaintedPortrait';
+import { OrbitStage, type OrbitItem } from './hero/OrbitStage';
+import { ForegroundClouds } from './sky/ForegroundClouds';
 import { TOOLS, COMPANIES, type Tool, type Company } from './hero/tools';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// Where each card sits around the portrait on wide screens.
+// The portrait (background removed) and where the head sits in it, for the ring.
+const PORTRAIT = { src: '/hero/portrait.webp', aspect: 1100 / 1311, head: [0.36, 0.29] as [number, number] };
+
+// Orbiting the head: the work, in motion, and the cats.
+const ORBIT: OrbitItem[] = [
+  { kind: 'video', src: '/videos/2dark.mp4', alt: 'Cross Border Supps storefront on a phone' },
+  { kind: 'image', src: '/world/cats-turf.jpg', alt: 'Two cats on a lawn' },
+  { kind: 'video', src: '/videos/1dark.mp4', alt: 'An interactive motion prototype' },
+  { kind: 'video', src: '/work/ekai/b4LEGCUCaclrfhX51x9RUiUasM.mp4', alt: 'The ekai website' },
+  { kind: 'image', src: '/world/cat-bench.jpg', alt: 'A cat on a bench' },
+  { kind: 'video', src: '/videos/1light.mp4', alt: 'A body-profile app flow' },
+  { kind: 'image', src: '/world/kitten-hug.jpg', alt: 'Keerthi hugging a kitten' },
+  { kind: 'video', src: '/videos/2light.mp4', alt: 'ekai joining a meeting' },
+];
+
+// Where each card floats beside the portrait on wide screens.
 const PIN = [
-  'md:top-[8%] md:-left-[30%]',
-  'md:top-[34%] md:-right-[14%]',
-  'md:bottom-[24%] md:-left-[26%]',
-  'md:bottom-[5%] md:-right-[6%]',
+  'lg:left-[2%] lg:top-[40%]',
+  'lg:right-[2%] lg:top-[36%]',
+  'lg:left-[7%] lg:top-[66%]',
+  'lg:right-[7%] lg:top-[63%]',
 ];
 
 export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step: number) => void }) => {
@@ -20,16 +36,23 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   useEffect(() => { try { sessionStorage.setItem('introSeen', '1'); } catch { /* private mode */ } }, []);
   const instant = skipIntro || !!reduce;
 
-  const [cardsIn, setCardsIn] = useState(-1);
+  const [staged, setStaged] = useState(instant);
+  const [cardsIn, setCardsIn] = useState(instant ? TOOLS.length : -1);
+  // a smaller ring on phones, so the panels don't cover the face as much
+  const [small] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches);
 
-  // The rest of the page and the nav don't wait for the painting.
   useEffect(() => {
-    const id = setTimeout(() => onRevealStepChange?.(3), instant ? 0 : 900);
-    return () => clearTimeout(id);
+    // the rest of the page and the nav don't wait for the intro
+    const ids = [setTimeout(() => onRevealStepChange?.(3), instant ? 0 : 900)];
+    if (!instant) {
+      ids.push(setTimeout(() => setStaged(true), 350));
+      TOOLS.forEach((_, i) => ids.push(setTimeout(() => setCardsIn(c => Math.max(c, i)), 1100 + i * 220)));
+    }
+    return () => ids.forEach(clearTimeout);
   }, [instant, onRevealStepChange]);
 
   const rise = (delay: number) => ({
-    initial: instant ? false : { opacity: 0, y: 28 },
+    initial: instant ? false : { opacity: 0, y: 24 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.9, delay, ease: EASE },
   });
@@ -37,20 +60,18 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   return (
     <section className="hero-poster relative w-full overflow-hidden">
       {/* No navbar over the hero: the page opens on the poster itself. */}
-      <div className="relative z-10 mx-auto grid w-full max-w-[1360px] grid-cols-1 gap-x-10 px-5 pb-10 pt-14 md:grid-cols-12 md:px-10 md:pt-16 lg:min-h-[100svh] lg:content-center">
+      <div className="relative mx-auto flex w-full max-w-[1360px] flex-col items-center px-5 pt-12 md:px-10 md:pt-14">
 
-        {/* Left: name and statement */}
-        <div className="col-span-full flex flex-col justify-center md:col-span-6 lg:col-span-6">
+        {/* The type, centred */}
+        <div className="relative z-30 flex flex-col items-center text-center">
           <h1 className="leading-[0.86] text-ink">
-            <motion.span {...rise(0.1)} className="hero-name-1 block">Keerthi</motion.span>
-            <motion.span {...rise(0.22)} className="hero-name-2 block">Vardhan</motion.span>
+            <motion.span {...rise(0.05)} className="hero-name-1 block">Keerthi</motion.span>
+            <motion.span {...rise(0.15)} className="hero-name-2 block">Vardhan</motion.span>
           </h1>
-
-          <motion.p {...rise(0.4)} className="mt-8 max-w-[30ch] text-[clamp(18px,1.6vw,22px)] leading-snug text-ink/80">
+          <motion.p {...rise(0.3)} className="mt-5 max-w-[42ch] text-[clamp(16px,1.35vw,19px)] leading-snug text-ink/80">
             Product designer. I design interfaces, motion and systems, and take them all the way to <span className="font-display font-bold text-ink">production.</span>
           </motion.p>
-
-          <motion.div {...rise(0.52)} className="mt-9 flex flex-wrap items-center gap-3">
+          <motion.div {...rise(0.42)} className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <a href="#work" className="group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-medium text-white transition-transform duration-300 hover:-translate-y-0.5">
               See the work
               <span aria-hidden className="transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
@@ -61,54 +82,59 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
           </motion.div>
         </div>
 
-        {/* Right: the painted portrait, with what I make around it */}
-        <div className="col-span-full mt-14 md:col-span-6 md:mt-10 lg:col-span-5 lg:col-start-7">
-          <figure className="relative mx-auto w-full max-w-[460px]">
-            <PaintedPortrait
-              src="/world/kitten-hug.jpg"
-              focus={[0.5, 0.22]}
-              detail={[0.46, 0.38, 0.22]}
-              cues={TOOLS.length}
-              onCue={i => setCardsIn(c => Math.max(c, i))}
-              instant={instant}
-              label="Keerthi Vardhan holding a calico cat close, painted in broad brush strokes"
-              className="aspect-[4/5] w-full"
-            />
-
-            <div className="mt-6 grid grid-cols-2 gap-3 md:mt-0 md:block">
-              {TOOLS.map((t, i) => (
-                <ToolCard key={t.makes} tool={t} shown={cardsIn >= i} instant={instant} pos={PIN[i]} />
-              ))}
-            </div>
-          </figure>
+        {/* The portrait, with the work and the cats orbiting, rising out of the clouds */}
+        <div className="relative z-10 mt-2 flex w-full justify-center [--stage-w:86vw] sm:[--stage-w:60vw] lg:[--stage-w:min(470px,36vw)]">
+          <OrbitStage
+            portrait={PORTRAIT.src}
+            portraitAlt="Keerthi Vardhan laughing, head tilted back"
+            aspect={PORTRAIT.aspect}
+            head={PORTRAIT.head}
+            items={ORBIT}
+            radius={small ? 0.54 : 0.6}
+            panel={small ? [0.24, 0.17] : [0.3, 0.21]}
+            shown={staged}
+          />
+          {/* the same clouds as the sky, banked up in front of the portrait */}
+          <ForegroundClouds className="absolute -bottom-[14%] left-1/2 z-20 h-[72%] w-screen -translate-x-1/2" />
         </div>
 
-        {/* Worked with */}
+        {/* What I make: floating beside the portrait on wide screens */}
+        <div className="pointer-events-none absolute inset-0 z-30 hidden lg:block">
+          {TOOLS.map((t, i) => (
+            <ToolCard key={t.makes} tool={t} shown={cardsIn >= i} instant={instant} pos={`absolute pointer-events-auto ${PIN[i]}`} />
+          ))}
+        </div>
+
+        {/* Worked with: sitting on the cloud bank */}
         <motion.div
           initial={instant ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: instant ? 0 : 1.1, ease: EASE }}
-          className="col-span-full mt-16 border-t border-ink/15 pt-6 md:mt-14"
+          transition={{ duration: 0.9, delay: instant ? 0 : 1.2, ease: EASE }}
+          className="relative z-30 -mt-16 w-full pb-10 md:-mt-20"
         >
           {/* No visible label: the logos speak for themselves. Screen readers still get one. */}
           <ul aria-label="Companies I've worked with" className="grid grid-cols-3 items-center gap-x-6 gap-y-7 md:flex md:justify-between md:gap-8">
             {COMPANIES.map(c => <CompanyLogo key={c.name} c={c} />)}
           </ul>
         </motion.div>
+
+        {/* What I make, on phones and tablets: below */}
+        <div className="relative z-30 grid w-full grid-cols-2 gap-3 pb-12 lg:hidden">
+          {TOOLS.map((t, i) => <ToolCard key={t.makes} tool={t} shown={cardsIn >= i} instant={instant} pos="" />)}
+        </div>
       </div>
     </section>
   );
 };
 
 function ToolCard({ tool, shown, instant, pos }: { tool: Tool; shown: boolean; instant: boolean; pos: string }) {
-  // On wide screens the cards land with the painting. On phones they sit
-  // below it, so they also appear on their own once scrolled into view;
-  // otherwise scrolling past quickly would leave empty slots.
+  // On wide screens the cards land one by one with the intro. On phones they
+  // sit further down, so they also appear on their own once scrolled into view.
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.4 });
-  const [stacked, setStacked] = useState(() => typeof window !== 'undefined' && !window.matchMedia('(min-width: 768px)').matches);
+  const [stacked, setStacked] = useState(() => typeof window !== 'undefined' && !window.matchMedia('(min-width: 1024px)').matches);
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 768px)');
+    const mq = window.matchMedia('(min-width: 1024px)');
     const on = () => setStacked(!mq.matches);
     mq.addEventListener('change', on);
     return () => mq.removeEventListener('change', on);
@@ -120,7 +146,7 @@ function ToolCard({ tool, shown, instant, pos }: { tool: Tool; shown: boolean; i
       initial={instant ? false : { opacity: 0, y: 16 }}
       animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
       transition={{ duration: 0.7, ease: EASE }}
-      className={`relative z-10 w-full rounded-2xl border border-white/70 bg-white/60 p-4 text-ink shadow-[0_24px_48px_-24px_rgba(20,40,70,0.45)] backdrop-blur-md md:absolute md:w-[212px] ${pos}`}
+      className={`${pos.includes('absolute') ? '' : 'relative'} z-10 w-full rounded-2xl border border-white/70 bg-white/60 p-4 text-ink shadow-[0_24px_48px_-24px_rgba(20,40,70,0.45)] backdrop-blur-md lg:w-[212px] ${pos}`}
     >
       <div className="flex items-center gap-2 text-ink/75">
         {tool.tools.map(x => (

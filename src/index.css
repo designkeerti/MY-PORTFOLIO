@@ -38,8 +38,8 @@
   --ink: rgb(var(--ink-rgb));
 }
 /* The name in the hero: a condensed line over a big display line, like a poster. */
-.hero-name-1 { font-family: var(--font-head), sans-serif; font-weight: 700; letter-spacing: -0.015em; font-size: clamp(40px, 5.2vw, 80px); line-height: 0.95; }
-.hero-name-2 { font-family: var(--font-display), sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.005em; font-size: clamp(88px, 10.6vw, 176px); line-height: 0.84; }
+.hero-name-1 { font-family: var(--font-head), sans-serif; font-weight: 700; letter-spacing: -0.015em; font-size: clamp(34px, 3.6vw, 56px); line-height: 0.95; }
+.hero-name-2 { font-family: var(--font-display), sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.005em; font-size: clamp(76px, 8.4vw, 136px); line-height: 0.84; }
 .font-display { font-family: var(--font-head), sans-serif; }
 main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
 
