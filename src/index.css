@@ -57,9 +57,15 @@ main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
   .sky-layer { scale: 1.14; translate: calc(var(--px, 0) * -60px) calc(var(--py, 0) * -40px); }
 }
 
-/* After the burn: plain paper (the shader draws it; this is the backing and Safari's bars) */
-.sky-layer.burned { background: #f6f4ef; }
-html.sky.burned { background-color: #f6f4ef; }
+/* After the burn: charred black (the shader draws it; this is the backing and Safari's
+   bars). Ink flips to a warm light so the name and logos read on the dark. */
+.sky-layer.burned { background: #0d0c0b; }
+html.sky.burned { background-color: #0d0c0b; --ink-rgb: 241 236 228; }
+.hero-poster h1, .hero-poster p, .hero-poster a { transition: color 0.6s ease; }
+.logo-ink { transition: filter 0.6s ease; }
+html.burned .logo-ink { filter: brightness(0) invert(0.93); }
+/* the skill cards are light glass: they keep dark ink */
+.skill-card { --ink-rgb: 23 25 30; }
 
 /* Home: the sky shows edge to edge, under Safari's bars too (see index.html). */
 html.sky { background-color: #2c8bc6; }

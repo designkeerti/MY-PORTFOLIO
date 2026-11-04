@@ -17,8 +17,7 @@ export const skyTime = (reduce: boolean) => (reduce ? 40 : performance.now() / 1
 export const duskAmount = () => 0;
 
 /**
- * The clear: 0 = sky, 1 = wind has blown the sky away and fog has settled into plain
- * paper. Set by the hero's scroll sequence; the sky layer listens and redraws.
+ * The burn: 0 = sky, 1 = burned through to charred black. Set by the hero's scroll sequence; the sky layer listens and redraws.
  */
 let clear = 0;
 const clearListeners = new Set<(v: number) => void>();

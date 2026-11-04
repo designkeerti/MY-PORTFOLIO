@@ -54,7 +54,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   // The scroll sequence. The hero is pinned for a while (the section is taller than the
   // screen and its content sticks); progress p runs 0 -> 1 across that scroll:
   //   name stays put · the line under it and the buttons fade · I (and the orbit) sink out of view ·
-  //   the skill cards shoot off to the sides · wind blows the sky away and fog settles into paper while
+  //   the skill cards shoot off to the sides · the sky burns through to black, then
   //   the companies (current, then previous) rise in under the name.
   const pinned = !reduce;
   const { scrollYProgress: p } = useScroll({ target: heroRef, offset: ['start start', 'end end'] });
@@ -63,9 +63,10 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   const stageY = useTransform(p, [0.02, 0.4], ['0svh', '80svh']);
   const stageOpacity = useTransform(p, [0.26, 0.4], [1, 0]);
   const cardsExit = useTransform(p, [0.02, 0.4], [0, 1]);
-  // the companies rise in (both lines together) while wind and fog clear the sky to paper
-  const companiesIn = useTransform(p, [0.3, 0.6], [0, 1]);
-  const clearSky = useTransform(p, [0.2, 0.62], [0, 1]);
+  // the sky burns away to charred black, then the companies (both lines) rise in
+  // (the burn finishes first, so the companies arrive on the dark, in light ink)
+  const companiesIn = useTransform(p, [0.4, 0.66], [0, 1]);
+  const clearSky = useTransform(p, [0.16, 0.52], [0, 1]);
   useMotionValueEvent(clearSky, 'change', v => { if (pinned) setClear(v); });
   useEffect(() => () => setClear(0), []);
 

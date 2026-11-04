@@ -19,16 +19,37 @@ uniform float u_time;
 uniform float u_dusk;
 uniform float u_sc;
 uniform float u_octaves;
-uniform float u_clear;   // 0 sky .. 1 blown away and fogged over into paper
+uniform float u_clear;   // 0 sky .. 1 burned through to charred black
 ${SKY_GLSL}
 
-// plain off-white paper with a soft fibre texture and fine grain
-vec3 paper(vec2 p, vec2 frag) {
-  vec3 base = vec3(0.965, 0.957, 0.937);
-  float fibre = fbm(p * vec2(9.0, 3.5)) - 0.5;
-  float mottle = fbm(p * 2.2 + 7.0) - 0.5;
+// charred black: soot with a fibrous texture, faint warm mottling and grain
+vec3 charred(vec2 p, vec2 frag) {
+  float fibre = fbm(p * 6.0 + 5.0) - 0.5;
+  float mottle = fbm(p * 2.0 + 11.0) - 0.5;
   float grain = hash(frag) - 0.5;
-  return base + fibre * 0.022 + mottle * 0.03 + grain * 0.025;
+  vec3 c = vec3(0.052, 0.047, 0.043) + fibre * 0.02 + grain * 0.026;
+  c += vec3(0.022, 0.012, 0.004) * mottle;       // a little warmth left in the ash
+  return max(c, 0.0);
+}
+
+// round glowing specks left in the ash, each pulsing slowly
+float embers(vec2 p, float t) {
+  vec2 q = p * 26.0;
+  vec2 id = floor(q), f = fract(q) - 0.5;
+  float h = hash(id + 9.1);
+  if (h < 0.9) return 0.0;
+  vec2 o = vec2(hash(id + 3.3) - 0.5, hash(id + 5.9) - 0.5) * 0.5;
+  return smoothstep(0.16, 0.0, length(f - o)) * (0.45 + 0.55 * sin(t * 2.5 + h * 40.0));
+}
+
+// sparks: small embers drifting up on the heat
+float sparks(vec2 p, float t) {
+  vec2 q = p * vec2(16.0, 9.0) + vec2(sin(p.y * 6.0 + t) * 0.4, -t * 2.2);
+  vec2 id = floor(q), f = fract(q) - 0.5;
+  float h = hash(id);
+  if (h < 0.86) return 0.0;
+  vec2 o = vec2(hash(id + 1.3) - 0.5, hash(id + 2.7) - 0.5) * 0.6;
+  return smoothstep(0.11, 0.0, length(f - o)) * (0.55 + 0.45 * sin(t * 11.0 + h * 50.0));
 }
 
 void main() {
@@ -41,27 +62,40 @@ void main() {
     gl_FragColor = vec4(skyFinish(skyScene(uv, asp, u_sc, 0.0, nd), uv, asp, gl_FragCoord.xy), 1.0);
     return;
   }
+  float T = u_time;
 
-  // Wind: the sky is carried off to the right, faster and faster, with a motion streak.
-  float drift = c * c * 0.9;
-  float streak = 0.05 * c;
-  vec3 sky = vec3(0.0);
-  for (int k = 0; k < 3; k++) {
-    sky += skyScene(uv - vec2(drift + float(k) * streak, 0.0), asp, u_sc, 0.0, nd);
+  // The burn rises from the bottom with a ragged, slowly licking front.
+  float field = uv.y * 0.62 + abs(uv.x - 0.5) * 0.14
+              + (fbm(p * 3.0 + 3.0) - 0.5) * 0.46
+              + (fbm(p * 9.0 + vec2(0.0, -T * 0.7)) - 0.5) * 0.07;
+  float t = c * 1.5 - 0.22;
+  float f = field - t;                       // > 0: still sky, < 0: burned
+
+  vec3 col;
+  if (f > 0.0) {
+    // ahead of the front: heat shimmer, scorching, and smoke rising off it
+    float heat = smoothstep(0.22, 0.0, f);
+    vec2 wob = vec2(fbm(p * 7.0 + vec2(0.0, -T * 2.0)), fbm(p * 7.0 + vec2(4.0, -T * 2.0))) - 0.5;
+    vec3 sky = skyFinish(skyScene(uv + wob * 0.03 * heat, asp, u_sc, 0.0, nd), uv, asp, gl_FragCoord.xy);
+    col = mix(sky, sky * vec3(0.66, 0.48, 0.34), smoothstep(0.09, 0.0, f) * 0.8);
+    float smoke = fbm(p * vec2(2.5, 3.5) + vec2(T * 0.05, -T * 0.5)) * smoothstep(0.35, 0.02, f);
+    col = mix(col, vec3(0.16, 0.14, 0.13), smoothstep(0.25, 0.75, smoke) * 0.55);
+    col += vec3(1.0, 0.42, 0.1) * exp(-f * 55.0) * 0.55;       // glow thrown ahead of the flames
+  } else {
+    float d = -f;                                             // depth into the burn
+    col = charred(p, gl_FragCoord.xy);
+    // the flame line: white-hot core -> orange -> deep red, flickering
+    float flick = 0.8 + 0.2 * sin(T * 13.0 + field * 55.0) * sin(T * 7.0 + p.x * 9.0);
+    col += vec3(1.0, 0.92, 0.65) * exp(-d * 180.0) * 1.2 * flick;
+    col += vec3(1.0, 0.45, 0.08) * exp(-d * 45.0) * 0.95 * flick;
+    col += vec3(0.55, 0.07, 0.02) * exp(-d * 14.0) * 0.6;
+    // the last embers, glowing out in the ash
+    col += vec3(1.0, 0.36, 0.06) * embers(p, T) * exp(-d * 7.0) * 0.9;
   }
-  sky = skyFinish(sky / 3.0, uv, asp, gl_FragCoord.xy);
+  // sparks drifting up just above (and a little inside) the front
+  col += vec3(1.0, 0.62, 0.22) * sparks(p, T) * smoothstep(0.32, 0.0, abs(f + 0.03)) * 1.3;
 
-  // Fog rises from the bottom, soft and billowing, drifting on the same wind.
-  float n = fbm(p * vec2(1.8, 1.4) + vec2(-u_time * 0.12 - c * 2.0, -u_time * 0.05 - c * 1.2));
-  float wisp = fbm(p * vec2(4.0, 3.0) + vec2(-u_time * 0.3 - c * 4.0, -c * 2.0 + 1.7));
-  float field = uv.y * 0.8 + (n - 0.5) * 0.6 + (wisp - 0.5) * 0.15;
-  float t = c * 1.6 - 0.32;
-  float fog = smoothstep(t + 0.16, t - 0.14, field);
-  vec3 fogCol = mix(vec3(0.90, 0.93, 0.96), vec3(0.985, 0.985, 0.98), smoothstep(0.3, 0.8, n + wisp * 0.4));
-
-  // and as it thickens it settles into plain paper
-  vec3 mist = mix(fogCol, paper(p, gl_FragCoord.xy), smoothstep(0.55, 1.0, c));
-  gl_FragColor = vec4(mix(sky, mist, fog), 1.0);
+  gl_FragColor = vec4(col, 1.0);
 }`;
 
 const VERT = `attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }`;
@@ -162,15 +196,16 @@ export function SkyBackground() {
     canvas.addEventListener('webglcontextrestored', onRestored);
     document.addEventListener('visibilitychange', onVis);
 
-    // The clear (wind + fog) is driven by scroll: draw on every change so it tracks the page.
-    // Once fully cleared, the layer's own background becomes paper too (and Safari's bars follow).
+    // The burn is driven by scroll: draw on every change so its front tracks the page.
+    // Once burned through, the page turns dark: text flips to light, Safari's bars go black.
     const layer = canvas.parentElement!;
     const offClear = onClear(v => {
       draw();
-      const burned = v > 0.75;
+      // flip as the flames reach the name (the top burns last), not once it is all black
+      const burned = v > 0.5;
       layer.classList.toggle('burned', burned);
       document.documentElement.classList.toggle('burned', burned);
-      document.querySelector('meta[name=theme-color]')?.setAttribute('content', burned ? '#f6f4ef' : '#2c8bc6');
+      document.querySelector('meta[name=theme-color]')?.setAttribute('content', burned ? '#0d0c0b' : '#2c8bc6');
     });
 
     init();

@@ -16,7 +16,7 @@ const NEAR: Look = { blur: 0, opacity: 1 };
 function Card({ t, i, className = '', shown, look = NEAR, live = false }: { t: Tool; i: number; className?: string; shown: boolean; look?: Look; live?: boolean }) {
   return (
     <div
-      className={`w-full rounded-[14px] border border-white/80 bg-white/80 p-4 text-left text-ink shadow-[0_20px_44px_-24px_rgba(15,30,55,0.5)] backdrop-blur-md lg:w-[208px] ${className}`}
+      className={`skill-card w-full rounded-[14px] border border-white/80 bg-white/80 p-4 text-left text-ink shadow-[0_20px_44px_-24px_rgba(15,30,55,0.5)] backdrop-blur-md lg:w-[208px] ${className}`}
       style={{
         // after the intro, the focus effect drives --fo / --fb every frame (no CSS transition)
         opacity: shown ? (live ? `var(--fo, ${look.opacity})` : look.opacity) : 0,

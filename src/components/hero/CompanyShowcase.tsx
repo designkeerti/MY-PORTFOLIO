@@ -15,7 +15,7 @@ function Logo({ c, scale = 1 }: { c: Company; scale?: number }) {
     <a href={c.href} target="_blank" rel="noopener noreferrer" aria-label={c.name} title={c.name}
       className="group relative flex shrink-0 items-center gap-2 opacity-80 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100">
       <span className="relative block" style={{ height: h }}>
-        <img src={c.mono} alt="" draggable={false} className="block h-full w-auto brightness-0 transition-opacity duration-300 group-hover:opacity-0 group-focus-visible:opacity-0" />
+        <img src={c.mono} alt="" draggable={false} className="logo-ink block h-full w-auto brightness-0 transition-[opacity,filter] duration-300 group-hover:opacity-0 group-focus-visible:opacity-0" />
         {c.tile !== 'ink' && (
           <img src={c.color} alt="" draggable={false} loading="lazy" className="absolute inset-0 block h-full w-auto opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" />
         )}
