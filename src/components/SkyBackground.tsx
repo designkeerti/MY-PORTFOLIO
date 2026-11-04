@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { SKY_GLSL, skyTime, duskAmount, skyScroll, getClear, onClear } from './sky/sky';
+import { SKY_GLSL, skyTime, duskAmount, skyScroll, getClear, onClear, getBack, onBack } from './sky/sky';
 
 /**
  * A live sky behind the home page: a blue gradient with soft, sunlit clouds
@@ -20,6 +20,7 @@ uniform float u_dusk;
 uniform float u_sc;
 uniform float u_octaves;
 uniform float u_clear;   // 0 sky .. 1 burned through to charred black
+uniform float u_back;    // 0 .. 1: the sky rolls back in over the burn, from the top
 ${SKY_GLSL}
 
 // charred black: soot with a fibrous texture, faint warm mottling and grain
@@ -58,11 +59,11 @@ void main() {
   vec2 p = vec2(uv.x * asp, uv.y);
   float nd;
   float c = u_clear;
-  if (c <= 0.0) {
-    gl_FragColor = vec4(skyFinish(skyScene(uv, asp, u_sc, 0.0, nd), uv, asp, gl_FragCoord.xy), 1.0);
-    return;
-  }
   float T = u_time;
+  // the sky itself (needed when nothing has burned, and when it rolls back in)
+  vec3 skyCol = vec3(0.0);
+  if (c <= 0.0 || u_back > 0.0) skyCol = skyFinish(skyScene(uv, asp, u_sc, 0.0, nd), uv, asp, gl_FragCoord.xy);
+  if (c <= 0.0) { gl_FragColor = vec4(skyCol, 1.0); return; }
 
   // The burn rises from the bottom with a ragged, slowly licking front.
   float field = uv.y * 0.62 + abs(uv.x - 0.5) * 0.14
@@ -95,6 +96,18 @@ void main() {
   // sparks drifting up just above (and a little inside) the front
   col += vec3(1.0, 0.62, 0.22) * sparks(p, T) * smoothstep(0.32, 0.0, abs(f + 0.03)) * 1.3;
 
+  // The return: clouds roll up from the bottom over the ash, a soft billowing edge, no fire.
+  if (u_back > 0.0) {
+    float bn = fbm(p * 2.4 + vec2(T * 0.04, 0.0));
+    float bf = uv.y * 0.72 + (bn - 0.5) * 0.5 + (fbm(p * 7.0) - 0.5) * 0.06;   // rises from the bottom, with the section
+    float bt = u_back * 1.5 - 0.26;
+    float reveal = smoothstep(bt + 0.05, bt - 0.05, bf);
+    col = mix(col, skyCol, reveal);
+    // a bank of cloud along the advancing edge
+    float edge = 1.0 - smoothstep(0.0, 0.14, abs(bf - bt));
+    vec3 puff = mix(skyShade(), skyLit(), clamp(0.55 + (bn - 0.5) * 1.6, 0.0, 1.0));
+    col = mix(col, puff, edge * smoothstep(0.35, 0.75, bn + 0.25) * (1.0 - smoothstep(0.85, 1.0, u_back)));
+  }
   gl_FragColor = vec4(col, 1.0);
 }`;
 
@@ -118,7 +131,7 @@ export function SkyBackground() {
     if (!gl) return; // the still sky picture on the layer stays as the fallback
 
     let uRes: WebGLUniformLocation | null = null, uTime: WebGLUniformLocation | null = null;
-    let uDusk: WebGLUniformLocation | null = null, uScroll: WebGLUniformLocation | null = null, uClear: WebGLUniformLocation | null = null;
+    let uDusk: WebGLUniformLocation | null = null, uScroll: WebGLUniformLocation | null = null, uClear: WebGLUniformLocation | null = null, uBack: WebGLUniformLocation | null = null;
     let ready = false;
     function init() {
       const sh = (type: number, src: string) => { const s = gl!.createShader(type)!; gl!.shaderSource(s, src); gl!.compileShader(s); return s; };
@@ -134,7 +147,7 @@ export function SkyBackground() {
       gl!.enableVertexAttribArray(loc);
       gl!.vertexAttribPointer(loc, 2, gl!.FLOAT, false, 0, 0);
       const U = (n: string) => gl!.getUniformLocation(prog, n);
-      uRes = U('u_res'); uTime = U('u_time'); uDusk = U('u_dusk'); uScroll = U('u_sc'); uClear = U('u_clear');
+      uRes = U('u_res'); uTime = U('u_time'); uDusk = U('u_dusk'); uScroll = U('u_sc'); uClear = U('u_clear'); uBack = U('u_back');
       gl!.uniform1f(U('u_octaves'), small ? 5 : 6);
       ready = true;
       fit(true);
@@ -160,13 +173,15 @@ export function SkyBackground() {
       gl!.uniform1f(uDusk, duskAmount());
       gl!.uniform1f(uScroll, skyScroll());
       gl!.uniform1f(uClear, getClear());
+      gl!.uniform1f(uBack, getBack());
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
     }
 
     // Draw only while the hero is on screen: below it the sky holds its last frame (kept by
     // preserveDrawingBuffer), which frees the GPU for the work section.
     let raf = 0, last = 0, heroVisible = true;
-    const animate = () => !reduce && !document.hidden && heroVisible && ready;
+    // (also while the sky is back, further down the page)
+    const animate = () => !reduce && !document.hidden && (heroVisible || getBack() > 0) && ready;
     function loop(now: number) {
       raf = 0;
       if (!animate()) return;
@@ -199,20 +214,22 @@ export function SkyBackground() {
     // The burn is driven by scroll: draw on every change so its front tracks the page.
     // Once burned through, the page turns dark: text flips to light, Safari's bars go black.
     const layer = canvas.parentElement!;
-    const offClear = onClear(v => {
-      draw();
-      // flip as the flames reach the name (the top burns last), not once it is all black
-      const burned = v > 0.5;
+    // dark page while burned, unless the sky has rolled back in
+    const sync = () => {
+      draw(); kick();
+      const burned = getClear() > 0.5 && getBack() < 0.3;
       layer.classList.toggle('burned', burned);
       document.documentElement.classList.toggle('burned', burned);
       document.querySelector('meta[name=theme-color]')?.setAttribute('content', burned ? '#0d0c0b' : '#2c8bc6');
-    });
+    };
+    const offClear = onClear(sync);
+    const offBack = onBack(sync);
 
     init();
     kick();
 
     return () => {
-      cancelAnimationFrame(raf); offClear();
+      cancelAnimationFrame(raf); offClear(); offBack();
       document.documentElement.classList.remove('burned');
       ro.disconnect(); io?.disconnect();
       canvas.removeEventListener('webglcontextlost', onLost);

@@ -1,135 +1,71 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion';
+import { useEffect, useRef, type ReactNode } from 'react';
+import { setBack } from './sky/sky';
+import { CompassIcon, PenIcon, SearchIcon, TapIcon, CodeIcon, MergeIcon } from './icons/SkillIcons';
 
-const skills = [
-  {
-    title: "UX Design",
-    desc: "Crafting intuitive journeys from wireframes to final prototypes.",
-    icon: "🧭",
-    gradient: "from-blue-400/20 to-cyan-400/20",
-    border: "group-hover:border-blue-400/50"
-  },
-  {
-    title: "UI Design",
-    desc: "Polishing pixels to create interfaces that feel magical.",
-    icon: "🎨",
-    gradient: "from-purple-400/20 to-pink-400/20",
-    border: "group-hover:border-purple-400/50"
-  },
-  {
-    title: "UX Research",
-    desc: "Digging deep into user data to find the 'why' behind the 'what'.",
-    icon: "🧪",
-    gradient: "from-green-400/20 to-emerald-400/20",
-    border: "group-hover:border-green-400/50"
-  },
-  {
-    title: "Prototyping",
-    desc: "Building interactive models to test, validate, and iterate fast.",
-    icon: "📱",
-    gradient: "from-orange-400/20 to-amber-400/20",
-    border: "group-hover:border-orange-400/50"
-  },
-  {
-    title: "Vibecoding",
-    desc: "Injecting pure soul into code. If it doesn't feel alive, it's not done.",
-    icon: "⚡️",
-    gradient: "from-yellow-400/20 to-red-400/20",
-    border: "group-hover:border-yellow-400/50"
-  },
-  {
-    title: "Collaboration",
-    desc: "Bringing positive energy and clear communication to every team.",
-    icon: "🤝",
-    gradient: "from-pink-400/20 to-rose-400/20",
-    border: "group-hover:border-pink-400/50"
-  }
+/**
+ * The toolkit, in the hero's language: the sky rolls back in over the burn as this
+ * section arrives, and the skills sit on it as frosted glass cards with a pastel
+ * icon chip whose line icon moves on hover.
+ */
+
+// soft pastel chips, as in the hero's skill cards
+const CHIP = {
+  lime: 'linear-gradient(135deg,#f0ffc4,#c9ef6f)',
+  lilac: 'linear-gradient(135deg,#efe6ff,#c4adff)',
+  peach: 'linear-gradient(135deg,#ffe7d6,#ffb68a)',
+  sky: 'linear-gradient(135deg,#dcf2ff,#93d2f5)',
+  rose: 'linear-gradient(135deg,#ffe3ec,#ffadc6)',
+  mint: 'linear-gradient(135deg,#dcfbef,#8fe3c0)',
+};
+
+const skills: { title: string; desc: string; icon: ReactNode; chip: string }[] = [
+  { title: 'UX Design', desc: 'Crafting intuitive journeys from wireframes to final prototypes.', icon: <CompassIcon />, chip: CHIP.sky },
+  { title: 'UI Design', desc: 'Polishing pixels to create interfaces that feel magical.', icon: <PenIcon />, chip: CHIP.lilac },
+  { title: 'UX Research', desc: "Digging deep into user data to find the 'why' behind the 'what'.", icon: <SearchIcon />, chip: CHIP.mint },
+  { title: 'Prototyping', desc: 'Building interactive models to test, validate and iterate fast.', icon: <TapIcon />, chip: CHIP.peach },
+  { title: 'Vibecoding', desc: "Injecting pure soul into code. If it doesn't feel alive, it's not done.", icon: <CodeIcon />, chip: CHIP.lime },
+  { title: 'Collaboration', desc: 'Bringing positive energy and clear communication to every team.', icon: <MergeIcon />, chip: CHIP.rose },
 ];
 
 export const SkillsSection = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
 
-  // Parallax effect
-  const gridY = useTransform(scrollYProgress, [0, 1], [100, -200]);
-  const gridOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const gridScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+  // the sky rolls back in as this section rises into view (and back out on the way up)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 60%'] });
+  useMotionValueEvent(scrollYProgress, 'change', v => setBack(v));
+  useEffect(() => { setBack(scrollYProgress.get()); return () => setBack(0); }, [scrollYProgress]);
 
   return (
-    <section ref={sectionRef} className="relative w-full max-w-[1300px] mx-auto px-6 py-20 md:py-32 flex flex-col gap-12 md:gap-20" style={{ paddingBottom: 'calc(8rem + 32px)' }}>
-      
-      {/* Parallax Grid Background */}
-      <motion.div
-        className="absolute z-0 pointer-events-none"
-        style={{
-          top: 0, left: 0, right: 0, height: 'calc(100% + 32px)',
-          y: gridY, scale: gridScale, opacity: gridOpacity,
-          backgroundImage: `
-            linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px',
-          maskImage: 'radial-gradient(ellipse 60% 100% at center, black 0%, transparent 70%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 60% 100% at center, black 0%, transparent 70%)',
-        }}
-      />
+    <section ref={ref} className="relative mx-auto flex w-full max-w-[1200px] flex-col gap-12 px-5 py-24 md:gap-16 md:px-8 md:py-36">
+      <div className="mx-auto flex max-w-2xl flex-col items-center gap-5 text-center">
+        <span className="rounded-full border border-white/80 bg-white/55 px-4 py-1.5 text-[12px] font-medium uppercase tracking-[0.22em] text-ink/70 backdrop-blur-md">My toolkit</span>
+        <h2 className="section-title text-[clamp(34px,5vw,64px)] leading-[1.02] text-ink">
+          Skills tailored for<br />world-class products.
+        </h2>
+      </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col gap-12 md:gap-20">
-        
-        {/* Header - Centered & Clean */}
-        <div className="flex flex-col items-center text-center gap-6 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-white/[.06] backdrop-blur-md px-5 py-2 rounded-full border border-white/10">
-             <span className="text-lg">💡</span>
-             <span className="font-bold text-white/80 text-sm uppercase tracking-wide">My Toolkit</span>
-          </div>
-          <h2 className="text-3xl md:text-6xl font-bold leading-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/55">
-            Skills tailored for <br/> world-class products.
-          </h2>
-        </div>
-
-        {/* Holographic Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skills.map((skill, i) => (
-            <div key={i} className="relative group perspective-1000">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-                whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.2, ease: "easeOut" } }}
-                className="relative rounded-[32px] transition-all duration-300 h-full"
-                style={{ willChange: 'transform' }}
-              >
-                {/* Inner Card (Optimized: No blur, high opacity) */}
-                <div className={`relative h-full p-6 md:p-8 rounded-[32px] flex flex-col justify-between min-h-[200px] md:min-h-[240px] overflow-hidden border border-white/10 bg-white/[.05] shadow-lg hover:shadow-2xl transition-all duration-300 ${skill.border}`}>
-                    
-                    {/* Gradient Orb Background */}
-                    <div className={`absolute -top-20 -right-20 w-64 h-64 rounded-full bg-gradient-to-br ${skill.gradient} blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-500`} />
-                    
-                    {/* Icon */}
-                    <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-2xl md:text-3xl border border-white/10 group-hover:scale-110 transition-transform duration-300">
-                        {skill.icon}
-                    </div>
-
-                    {/* Text */}
-                    <div className="relative z-10 flex flex-col gap-2 mt-6">
-                        <h3 className="text-xl md:text-2xl font-bold text-white">{skill.title}</h3>
-                        <p className="text-sm md:text-base text-white/60 font-medium leading-relaxed">
-                        {skill.desc}
-                        </p>
-                    </div>
-                    
-                    {/* Hover Reveal Shine */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ mixBlendMode: 'overlay' }} />
-                </div>
-              </motion.div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+        {skills.map((s, i) => (
+          <motion.div
+            key={s.title}
+            tabIndex={0}
+            initial={reduce ? false : { opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, delay: (i % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="group flex flex-col gap-5 rounded-[20px] border border-white/80 bg-white/65 p-6 text-left text-ink shadow-[0_24px_50px_-30px_rgba(15,30,55,0.55)] outline-none backdrop-blur-md transition-transform duration-300 hover:-translate-y-1 focus-visible:-translate-y-1 focus-visible:ring-2 focus-visible:ring-ink/30 md:p-7"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-[13px] p-3 text-ink/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]" style={{ background: s.chip }}>
+              {s.icon}
+            </span>
+            <div className="flex flex-col gap-1.5">
+              <h3 className="text-[20px] font-semibold leading-tight tracking-[-0.01em] md:text-[22px]">{s.title}</h3>
+              <p className="text-[15px] leading-relaxed text-ink/60">{s.desc}</p>
             </div>
-          ))}
-        </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );

@@ -201,3 +201,28 @@ section {
 /* The hero sits directly on the sky (see SkyBackground). */
 .hero-poster { background: transparent; color: var(--ink); }
 
+
+/* ---- Line icons (components/icons/SkillIcons.tsx): motion on hover/focus of a .group ---- */
+.ic * { transform-box: fill-box; transform-origin: center; }
+.ic-spin, .ic-nudge, .ic-scan, .ic-left, .ic-right, .ic-tilt, .ic-page { transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.ic-draw { stroke-dasharray: 30; stroke-dashoffset: 0; }
+.ic-ripple { opacity: 0; }
+.ic-twinkle { transition: opacity 0.3s ease; }
+.group:is(:hover, :focus-within) .ic-spin { transform: rotate(200deg); }
+.group:is(:hover, :focus-within) .ic-nudge { transform: translate(-1.5px, 1.5px) rotate(-8deg); }
+.group:is(:hover, :focus-within) .ic-draw { animation: ic-draw 0.9s ease both; }
+.group:is(:hover, :focus-within) .ic-scan { animation: ic-scan 1.2s ease-in-out infinite; }
+.group:is(:hover, :focus-within) .ic-ripple { animation: ic-ripple 1.2s ease-out infinite; }
+.group:is(:hover, :focus-within) .ic-left { transform: translateX(-2px); }
+.group:is(:hover, :focus-within) .ic-right { transform: translateX(2px); }
+.group:is(:hover, :focus-within) .ic-tilt { transform: rotate(12deg); }
+.group:is(:hover, :focus-within) .ic-page { transform: scaleX(-1); transform-origin: left center; }
+.group:is(:hover, :focus-within) .ic-twinkle { animation: ic-twinkle 0.9s ease-in-out infinite; }
+@keyframes ic-draw { from { stroke-dashoffset: 30; } to { stroke-dashoffset: 0; } }
+@keyframes ic-scan { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-1.5px, 1px); } 50% { transform: translate(1px, -1.5px); } 75% { transform: translate(1.5px, 1px); } }
+@keyframes ic-ripple { from { opacity: 0.8; transform: scale(0.4); } to { opacity: 0; transform: scale(1.6); } }
+@keyframes ic-twinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+@media (prefers-reduced-motion: reduce) { .ic * { animation: none !important; transition: none !important; } }
+
+/* Section headings in the hero's display face */
+.section-title { font-family: 'Chillax', sans-serif; font-weight: 600; letter-spacing: -0.025em; }

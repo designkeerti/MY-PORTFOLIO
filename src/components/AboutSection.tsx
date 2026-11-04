@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
+import type { ReactNode } from 'react';
+import { SparkleIcon, BallIcon, QuillIcon, BookIcon } from './icons/SkillIcons';
+
+// frosted glass, as in the hero
+const GLASS = 'border border-white/80 bg-white/65 backdrop-blur-md shadow-[0_24px_50px_-30px_rgba(15,30,55,0.55)]';
 
 export const AboutSection = () => {
   return (
     <section id="about" className="w-full relative z-10 py-20 md:py-32 overflow-hidden">
       
-      {/* Ambient Background Glows - Optimized: Removed mix-blend-mode, reduced blur */}
-      <div className="absolute top-1/2 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#DF95FF]/10 rounded-full blur-[60px] -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#FFAA95]/10 rounded-full blur-[60px] translate-y-1/4 translate-x-1/2 pointer-events-none" />
 
       <div className="w-full max-w-[1200px] mx-auto px-6 relative z-10">
         <motion.div 
@@ -17,11 +19,8 @@ export const AboutSection = () => {
         >
           {/* Section Header */}
           <div className="flex flex-col items-center text-center gap-4 mb-4 md:mb-8">
-            <div className="inline-flex items-center gap-2 bg-white/[.06] backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10">
-              <span>👋</span>
-              <span className="text-sm font-bold text-white/65 uppercase tracking-wider">About Me</span>
-            </div>
-            <h2 className="text-3xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/55 pb-2">
+            <span className="rounded-full border border-white/80 bg-white/55 px-4 py-1.5 text-[12px] font-medium uppercase tracking-[0.22em] text-ink/70 backdrop-blur-md">About me</span>
+            <h2 className="section-title text-[clamp(34px,5vw,64px)] leading-[1.02] text-ink pb-1">
               More than just pixels.
             </h2>
           </div>
@@ -32,46 +31,44 @@ export const AboutSection = () => {
             {/* 1. Main Bio Card - Optimized: No blur, high opacity */}
             <motion.div 
               whileHover={{ y: -5 }}
-              className="md:col-span-2 bg-white/[.05] rounded-[32px] p-6 md:p-12 flex flex-col justify-between gap-8 border border-white/10 hover:border-white/20 transition-all duration-300 group relative overflow-hidden"
+              className={`md:col-span-2 ${GLASS} rounded-[24px] p-6 md:p-12 flex flex-col justify-between gap-8 transition-all duration-300 group relative overflow-hidden`}
             >
                <div className="relative z-10">
                  <div className="flex flex-wrap items-center gap-3 mb-4 md:mb-6">
-                   <h3 className="text-2xl md:text-4xl font-bold text-white leading-tight">
+                   <h3 className="section-title text-2xl md:text-4xl text-ink leading-tight">
                      I'm Keerthi Vardhan.
                    </h3>
-                   <span className="px-3 py-1 bg-green-400/15 text-green-300 text-xs font-bold rounded-full border border-green-400/30 flex items-center gap-1.5 animate-pulse">
+                   <span className="px-3 py-1 bg-green-500/15 text-green-800 text-xs font-bold rounded-full border border-green-600/25 flex items-center gap-1.5">
                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                      OPEN TO WORK
                    </span>
                  </div>
                  
-                 <h4 className="text-lg md:text-xl text-white/55 font-medium mb-4 md:mb-6">
-                   Designing with purpose, heart, & <span className="text-[#DF95FF]">rhythm.</span>
+                 <h4 className="text-lg md:text-xl text-ink/55 font-medium mb-4 md:mb-6">
+                   Designing with purpose, heart, & <span className="font-semibold text-ink">rhythm.</span>
                  </h4>
 
-                 <p className="text-white/65 text-base md:text-lg leading-relaxed max-w-2xl">
+                 <p className="text-ink/70 text-base md:text-lg leading-relaxed max-w-2xl">
                    I’m an Experience Designer who blends empathy, creativity, and a touch of fun. 
-                   With a <span className="text-white font-semibold bg-[#DF95FF]/25 px-1 rounded">B.Tech in Aerospace Engineering</span> and a <span className="text-white font-semibold bg-[#FFAA95]/25 px-1 rounded">Master’s in UX Design</span>, my journey has been anything but ordinary.
+                   With a <span className="text-ink font-semibold bg-[#c4adff]/45 px-1 rounded">B.Tech in Aerospace Engineering</span> and a <span className="text-ink font-semibold bg-[#ffb68a]/45 px-1 rounded">Master’s in UX Design</span>, my journey has been anything but ordinary.
                  </p>
                </div>
                
                <div className="flex flex-col md:flex-row gap-3 md:gap-4 relative z-10">
-                 <button className="w-full md:w-auto px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-[#DF95FF] hover:scale-105 transition-all duration-300 shadow-lg shadow-[#DF95FF]/20">
+                 <button className="w-full md:w-auto px-6 py-3 bg-ink text-white rounded-full font-medium hover:-translate-y-0.5 transition-transform duration-300">
                    Download Resume
                  </button>
-                 <button className="w-full md:w-auto px-6 py-3 bg-white/[.06] text-white border border-white/15 rounded-full font-medium hover:bg-white/10 hover:scale-105 transition-all duration-300">
+                 <button className="w-full md:w-auto px-6 py-3 bg-white/40 text-ink border border-ink/20 rounded-full font-medium hover:border-ink/50 transition-colors duration-300">
                    Send me a message
                  </button>
                </div>
 
-               {/* Decorative Gradient Blob */}
-               <div className="absolute top-0 right-0 w-48 md:w-64 h-48 md:h-64 bg-gradient-to-br from-[#DF95FF]/10 to-[#FFAA95]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             </motion.div>
 
             {/* 2. Photo Card - Interactive */}
             <motion.div 
               whileHover={{ scale: 1.02 }}
-              className="md:col-span-1 md:row-span-2 h-[300px] md:h-auto rounded-[32px] overflow-hidden relative shadow-lg border border-white/20 group"
+              className="md:col-span-1 md:row-span-2 h-[300px] md:h-auto rounded-[24px] overflow-hidden relative shadow-[0_24px_50px_-30px_rgba(15,30,55,0.55)] border border-white/80 group"
             >
                <img 
                  src="/work/home/HJQw8ElsRLJCST5Te5LibBGNdY.webp" 
@@ -80,7 +77,7 @@ export const AboutSection = () => {
                />
                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
                <div className="absolute bottom-6 md:bottom-8 left-6 md:left-8 text-white z-10 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                 <p className="font-bold text-lg">That's me! 📸</p>
+                 <p className="font-bold text-lg">That's me.</p>
                  <p className="text-white/80 text-sm">Always smiling</p>
                </div>
             </motion.div>
@@ -88,12 +85,11 @@ export const AboutSection = () => {
             {/* 3. Philosophy Card - Vibrant Gradient */}
             <motion.div 
               whileHover={{ y: -5 }}
-              className="bg-gradient-to-br from-[#DF95FF] to-[#FFAA95] rounded-[32px] p-8 md:p-10 flex flex-col justify-center items-center text-center shadow-lg shadow-[#FFAA95]/30 border border-white/20 relative overflow-hidden group min-h-[240px]"
+              className="rounded-[24px] p-8 md:p-10 flex flex-col justify-center items-center text-center border border-white/80 shadow-[0_24px_50px_-30px_rgba(15,30,55,0.55)] relative overflow-hidden group min-h-[240px] text-ink"
+              style={{ background: 'linear-gradient(135deg,#efe6ff,#ffe7d6)' }}
             >
-               <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-               
-               <span className="text-4xl md:text-5xl mb-4 md:mb-6 transform group-hover:scale-125 transition-transform duration-300 drop-shadow-md">✨</span>
-               <p className="text-lg md:text-2xl font-bold text-white leading-relaxed relative z-10 drop-shadow-sm">
+               <span className="mb-4 h-10 w-10 text-ink/80 md:mb-6 md:h-12 md:w-12"><SparkleIcon /></span>
+               <p className="section-title text-lg md:text-2xl leading-snug relative z-10">
                  "Great design isn’t just about how it works, it’s about how it feels."
                </p>
             </motion.div>
@@ -101,29 +97,29 @@ export const AboutSection = () => {
             {/* 4. Personal Interests - Optimized: No blur */}
             <motion.div 
               whileHover={{ y: -5 }}
-              className="bg-white/[.05] rounded-[32px] p-8 flex flex-col border border-white/10 hover:border-[#FFAA95]/50 transition-colors group"
+              className={`${GLASS} rounded-[24px] p-8 flex flex-col group`}
             >
-               <h3 className="text-white/45 font-bold mb-6 uppercase tracking-widest text-xs flex items-center gap-2">
-                 <span className="w-1.5 h-1.5 bg-white/40 rounded-full"></span>
+               <h3 className="text-ink/50 font-medium mb-6 uppercase tracking-[0.22em] text-xs flex items-center gap-2">
+                 <span className="w-1.5 h-1.5 bg-ink/40 rounded-full"></span>
                  Offline Mode
                </h3>
                
                <div className="flex flex-col gap-5 justify-center flex-1">
                  <InterestRow 
-                   icon="🏀" 
-                   bg="bg-orange-400/20" 
+                   icon={<BallIcon />}
+                   bg="linear-gradient(135deg,#ffe7d6,#ffb68a)" 
                    title="Basketball" 
                    desc="Teamwork & Rhythm" 
                  />
                  <InterestRow 
-                   icon="✍️" 
-                   bg="bg-purple-400/20" 
+                   icon={<QuillIcon />}
+                   bg="linear-gradient(135deg,#efe6ff,#c4adff)" 
                    title="Poetry" 
                    desc="Finding clarity in verse" 
                  />
                  <InterestRow 
-                   icon="📚" 
-                   bg="bg-blue-400/20" 
+                   icon={<BookIcon />}
+                   bg="linear-gradient(135deg,#dcf2ff,#93d2f5)" 
                    title="Novels" 
                    desc="Exploring new worlds" 
                  />
@@ -132,11 +128,11 @@ export const AboutSection = () => {
 
             {/* 5. Footer Integration - Sleek & Full Width */}
             <motion.div 
-              className="md:col-span-3 mt-4 md:mt-8 border-t border-white/10 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 opacity-60 hover:opacity-100 transition-opacity duration-500 pb-12 md:pb-0"
+              className="md:col-span-3 mt-4 md:mt-8 border-t border-ink/15 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 pb-12 md:pb-0"
             >
                <div className="flex flex-col gap-1 text-center md:text-left order-2 md:order-1">
-                 <span className="text-lg md:text-xl font-bold text-white">Keerthi Vardhan</span>
-                 <p className="text-white/55 text-xs md:text-sm">© 2025. Vibecoded the shit out of this.</p>
+                 <span className="section-title text-lg md:text-xl text-ink">Keerthi Vardhan</span>
+                 <p className="text-ink/55 text-xs md:text-sm">© 2025. Vibecoded the shit out of this.</p>
                </div>
 
                <div className="flex flex-wrap justify-center gap-4 md:gap-8 order-1 md:order-2">
@@ -154,14 +150,14 @@ export const AboutSection = () => {
   );
 };
 
-const InterestRow = ({ icon, bg, title, desc }: { icon: string, bg: string, title: string, desc: string }) => (
-  <div className="flex items-center gap-4 group/item hover:translate-x-2 transition-transform duration-300">
-    <div className={`w-12 h-12 ${bg} rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover/item:scale-110 transition-transform`}>
+const InterestRow = ({ icon, bg, title, desc }: { icon: ReactNode, bg: string, title: string, desc: string }) => (
+  <div className="group flex items-center gap-4 transition-transform duration-300 hover:translate-x-1.5">
+    <div className="flex h-12 w-12 items-center justify-center rounded-[13px] p-3 text-ink/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]" style={{ background: bg }}>
       {icon}
     </div>
     <div>
-      <p className="font-bold text-white/90 text-lg leading-tight">{title}</p>
-      <p className="text-sm text-white/55">{desc}</p>
+      <p className="font-semibold text-ink text-lg leading-tight">{title}</p>
+      <p className="text-sm text-ink/55">{desc}</p>
     </div>
   </div>
 );
@@ -169,9 +165,9 @@ const InterestRow = ({ icon, bg, title, desc }: { icon: string, bg: string, titl
 const SocialLink = ({ href, label }: { href: string; label: string }) => (
   <a 
     href={href} 
-    className="text-white/55 hover:text-[#DF95FF] font-medium transition-colors relative group"
+    className="text-ink/60 hover:text-ink font-medium transition-colors relative group"
   >
     {label}
-    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#DF95FF] transition-all duration-300 group-hover:w-full" />
+    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-ink transition-all duration-300 group-hover:w-full" />
   </a>
 );

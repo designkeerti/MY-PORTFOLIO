@@ -29,6 +29,21 @@ export function setClear(v: number) {
   clearListeners.forEach(f => f(n));
 }
 export function onClear(f: (v: number) => void) { clearListeners.add(f); return () => { clearListeners.delete(f); }; }
+
+/**
+ * The return: 0 = whatever the burn left, 1 = the sky has rolled back in over it
+ * (clouds rising from the bottom, no fire). Set by the toolkit section as it comes into view.
+ */
+let back = 0;
+const backListeners = new Set<(v: number) => void>();
+export const getBack = () => back;
+export function setBack(v: number) {
+  const n = Math.min(1, Math.max(0, v));
+  if (Math.abs(n - back) < 1e-4) return;
+  back = n;
+  backListeners.forEach(f => f(n));
+}
+export function onBack(f: (v: number) => void) { backListeners.add(f); return () => { backListeners.delete(f); }; }
 export const skyScroll = () => 0;
 
 /**
