@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { LottieAnimation } from './LottieAnimation';
@@ -8,6 +8,16 @@ export const Navigation = ({ revealStep, isDarkMode = true }: { revealStep: numb
   const [isNameHovered, setIsNameHovered] = useState(false);
   const lottieRef = useRef<{ handleHoverStart: () => void; handleHoverEnd: () => void } | null>(null);
   const onHome = useLocation().pathname === '/';
+  // The home hero has no navbar: it appears once you scroll past the poster.
+  const [pastHero, setPastHero] = useState(!onHome);
+  useEffect(() => {
+    if (!onHome) { setPastHero(true); return; }
+    const check = () => setPastHero(window.scrollY > window.innerHeight * 0.8);
+    check();
+    window.addEventListener('scroll', check, { passive: true });
+    return () => window.removeEventListener('scroll', check);
+  }, [onHome]);
+  const visible = revealStep >= 3 && pastHero;
   // On the home page these stay plain anchors so the existing scroll behaviour is untouched;
   // from a case study they route home first.
   const SectionLink = ({ to, className, onClick, children }: { to: string; className?: string; onClick?: () => void; children: React.ReactNode }) =>
@@ -25,10 +35,10 @@ export const Navigation = ({ revealStep, isDarkMode = true }: { revealStep: numb
       <motion.nav 
         className="fixed top-0 left-0 right-0 z-50 px-8 pt-6 pb-3 flex justify-between items-center bg-transparent backdrop-blur-sm"
         initial={{ opacity: 0, y: -20 }}
-        animate={{ 
-          opacity: revealStep >= 3 ? 1 : 0,
-          y: revealStep >= 3 ? 0 : -20,
-        }}
+        // fully hidden once faded, so its links can't be tabbed to while invisible
+        animate={visible
+          ? { opacity: 1, y: 0, visibility: 'visible' }
+          : { opacity: 0, y: -20, transitionEnd: { visibility: 'hidden' } }}
         transition={{
           duration: 0.6,
           ease: [0.25, 0.1, 0.25, 1],

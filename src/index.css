@@ -141,11 +141,7 @@ section {
 @media (max-width: 767px) { .bento-card__body { padding: 0 20px 40px; gap: 10px; } .bento-card__blurb { font-size: 14px; } }
 
 /* Hero poster: ink ground with a faint paper grain */
-.hero-poster {
-  background:
-    radial-gradient(ellipse 60% 50% at 75% 40%, rgba(217, 115, 78, 0.07), transparent 70%),
-    #0f0d14;
-}
+.hero-poster { background: #0f0d14; }
 .hero-poster::before {
   content: '';
   position: absolute;

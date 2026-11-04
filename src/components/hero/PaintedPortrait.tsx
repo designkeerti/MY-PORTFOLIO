@@ -2,19 +2,16 @@ import { useEffect, useRef } from 'react';
 
 /**
  * Paints a photo onto a canvas with bristle brush strokes, the way a painter
- * would: a coloured underpainting first (one stroke per tool), then the photo
- * itself, broad strokes to fine ones, then a glaze that fills the gaps while
- * leaving the bristle texture on the edges.
+ * would: broad strokes to block in the figure, then shorter ones, then fine
+ * strokes on the face, then a glaze that fills the gaps while leaving the
+ * bristle texture on the edges. Only the photo is painted: no added colour.
  *
- * Everything is procedural and seeded, so it paints the same way every time.
+ * All strokes run at one angle, like a single deliberate hand, with tapered,
+ * frayed ends. Everything is seeded, so it paints the same way every time.
  */
 
 type Pt = [number, number];
-type Kind = 'color' | 'photo';
 type Stroke = {
-  kind: Kind;
-  color?: string;
-  tool?: number;
   /** centreline, normalised 0..1 canvas coords */
   path: Pt[];
   /** width as a fraction of canvas width */
@@ -26,10 +23,10 @@ type Stroke = {
 
 type Props = {
   src: string;
-  /** colours of the underpainting, one stroke per tool, in order */
-  toolColors: string[];
-  /** fired when the underpainting stroke for tool i starts */
-  onToolStroke?: (i: number) => void;
+  /** how many cues to fire while painting (e.g. one per card that should land) */
+  cues?: number;
+  /** fired at evenly spaced moments through the painting */
+  onCue?: (i: number) => void;
   /** fired once the painting has finished */
   onDone?: () => void;
   /** skip the animation and show the finished painting */
@@ -51,7 +48,7 @@ function rng(seed: number) {
   };
 }
 
-// A gently curved stroke from a start point, heading and length.
+// A gently curved stroke centred on (x, y), with a heading and length.
 function curve(r: () => number, x: number, y: number, ang: number, len: number, bend: number): Pt[] {
   const dx = Math.cos(ang), dy = Math.sin(ang);
   const nx = -dy, ny = dx;
@@ -60,63 +57,58 @@ function curve(r: () => number, x: number, y: number, ang: number, len: number, 
   for (let i = 0; i < n; i++) {
     const t = i / (n - 1);
     const b = Math.sin(t * Math.PI) * bend * len;
-    const j = (r() - 0.5) * 0.01;
+    const j = (r() - 0.5) * 0.006;
     pts.push([x + dx * len * (t - 0.5) + nx * b + j, y + dy * len * (t - 0.5) + ny * b + j]);
   }
   return pts;
 }
 
-function buildStrokes(toolColors: string[]): Stroke[] {
+// The painter's hand: every stroke leans at about this angle.
+const HAND = -13 * (Math.PI / 180);
+
+function buildStrokes(): Stroke[] {
   const r = rng(20261104);
   const out: Stroke[] = [];
   const deg = Math.PI / 180;
+  let t = 0;
 
-  // 1. Underpainting: one broad sweep per tool, top to bottom.
-  const bands = [0.2, 0.43, 0.66, 0.86];
-  toolColors.forEach((color, i) => {
-    const y = bands[i % bands.length];
-    const ang = (i % 2 ? -1 : 1) * (4 + r() * 6) * deg;
-    out.push({ kind: 'color', color, tool: i, path: curve(r, 0.5 + (r() - 0.5) * 0.08, y, ang, 1.18, (r() - 0.5) * 0.12), w: 0.24, start: i * 260, dur: 620, seed: 100 + i });
-  });
-
-  let t = toolColors.length * 260 + 380;
-
-  // 2. Photo, broad: blocks in the whole figure.
-  for (let i = 0; i < 18; i++) {
-    const y = 0.08 + (i / 17) * 0.86 + (r() - 0.5) * 0.05;
-    const x = 0.5 + (r() - 0.5) * 0.16;
-    const ang = (r() - 0.5) * 34 * deg;
-    out.push({ kind: 'photo', path: curve(r, x, y, ang, 0.72 + r() * 0.3, (r() - 0.5) * 0.18), w: 0.15, start: t, dur: 380, seed: 200 + i });
-    t += 70;
+  // 1. Broad: rows across the whole canvas, blocking in the figure.
+  const rows = 15;
+  for (let i = 0; i < rows; i++) {
+    const y = 0.05 + (i / (rows - 1)) * 0.9 + (r() - 0.5) * 0.03;
+    // Stagger where each row starts and ends, so the edges are uneven like
+    // real brushwork rather than a clean slanted slab.
+    const len = 0.7 + r() * 0.34;
+    const x = 0.5 + (r() - 0.5) * (1.06 - len) * 1.4;
+    out.push({ path: curve(r, x, y, HAND + (r() - 0.5) * 12 * deg, len, (r() - 0.5) * 0.08), w: 0.15, start: t, dur: 440, seed: 200 + i });
+    t += 85;
   }
-  t += 120;
+  t += 100;
 
-  // 3. Photo, mid: head and shoulders.
-  for (let i = 0; i < 26; i++) {
+  // 2. Mid: head and shoulders.
+  for (let i = 0; i < 24; i++) {
     const a = r() * Math.PI * 2, d = Math.sqrt(r());
-    const x = 0.5 + Math.cos(a) * d * 0.36;
-    const y = 0.46 + Math.sin(a) * d * 0.4;
-    const ang = (r() - 0.5) * 120 * deg;
-    out.push({ kind: 'photo', path: curve(r, x, y, ang, 0.26 + r() * 0.2, (r() - 0.5) * 0.3), w: 0.08, start: t, dur: 300, seed: 300 + i });
-    t += 45;
+    const x = 0.52 + Math.cos(a) * d * 0.34;
+    const y = 0.42 + Math.sin(a) * d * 0.36;
+    out.push({ path: curve(r, x, y, HAND + (r() - 0.5) * 18 * deg, 0.3 + r() * 0.16, (r() - 0.5) * 0.1), w: 0.08, start: t, dur: 320, seed: 300 + i });
+    t += 48;
   }
   t += 80;
 
-  // 4. Photo, detail: the face.
-  for (let i = 0; i < 30; i++) {
+  // 3. Detail: the face.
+  for (let i = 0; i < 28; i++) {
     const a = r() * Math.PI * 2, d = Math.sqrt(r());
-    const x = 0.55 + Math.cos(a) * d * 0.2;
-    const y = 0.36 + Math.sin(a) * d * 0.2;
-    const ang = r() * Math.PI;
-    out.push({ kind: 'photo', path: curve(r, x, y, ang, 0.1 + r() * 0.1, (r() - 0.5) * 0.4), w: 0.04, start: t, dur: 220, seed: 400 + i });
-    t += 32;
+    const x = 0.56 + Math.cos(a) * d * 0.18;
+    const y = 0.34 + Math.sin(a) * d * 0.18;
+    out.push({ path: curve(r, x, y, HAND + (r() - 0.5) * 30 * deg, 0.1 + r() * 0.08, (r() - 0.5) * 0.15), w: 0.04, start: t, dur: 230, seed: 400 + i });
+    t += 30;
   }
 
-  // Strokes are laid out in a slightly oversized space (-0.1..1.1) and then
-  // fitted inside the canvas with a margin, so no stroke is ever cut off by
-  // the canvas edge: the outline of the painting is all brush.
-  const fit = (v: number) => 0.035 + ((v + 0.1) / 1.2) * 0.93;
-  out.forEach(st => { st.path = st.path.map(([x, y]) => [fit(x), fit(y)] as Pt); st.w *= 0.93 / 1.2 * 1.18; });
+  // Laid out in a slightly oversized space (-0.1..1.1), then fitted inside the
+  // canvas with a margin: no stroke is cut off by the canvas edge, so the
+  // outline of the painting is all brush.
+  const fit = (v: number) => 0.03 + ((v + 0.1) / 1.2) * 0.94;
+  out.forEach(st => { st.path = st.path.map(([x, y]) => [fit(x), fit(y)] as Pt); st.w *= 0.94 / 1.2 * 1.18; });
   return out;
 }
 
@@ -141,34 +133,29 @@ function sample(path: Pt[], n: number) {
   return pts;
 }
 
-type Bristle = { off: number; width: number; shade: number; s: number; e: number };
+type Bristle = { off: number; width: number; s: number; e: number };
 
 function bristles(seed: number, n: number): Bristle[] {
   const r = rng(seed);
   return Array.from({ length: n }, (_, j) => ({
     off: (j / (n - 1) - 0.5) + (r() - 0.5) * 0.04,
-    width: 0.6 + r() * 0.9,
-    shade: (r() - 0.5) * 0.28, // each bristle carries slightly lighter or darker paint
-    s: r() * 0.08, // bristles touch down at slightly different moments
-    e: 0.72 + r() * 0.28, // and run dry at different lengths
+    width: 0.7 + r() * 0.8,
+    s: r() * 0.06, // bristles touch down at slightly different moments
+    // and run dry at different lengths; the outer ones first, so the tail frays
+    e: 1 - Math.abs(j / (n - 1) - 0.5) * (0.25 + r() * 0.35),
   }));
 }
 
-function shadeHex(hex: string, amt: number) {
-  const n = parseInt(hex.slice(1), 16);
-  const f = (c: number) => Math.round(amt < 0 ? c * (1 + amt) : c + (255 - c) * amt);
-  return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`;
-}
-
 const SAMPLES = 48;
-const pressure = (t: number) => 0.62 + 0.38 * Math.sin(Math.min(1, t * 1.15) * Math.PI);
+// Brush pressure along a stroke: lands narrow, swells, lifts off narrow.
+const pressure = (t: number) => 0.35 + 0.65 * Math.pow(Math.sin(Math.min(1, Math.max(0, t)) * Math.PI), 0.5);
 const ease = (t: number) => 1 - Math.pow(1 - t, 2.2);
 
-export function PaintedPortrait({ src, toolColors, onToolStroke, onDone, instant, focus = [0.5, 0.4], className, label }: Props) {
+export function PaintedPortrait({ src, cues = 0, onCue, onDone, instant, focus = [0.5, 0.4], className, label }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const cb = useRef({ onToolStroke, onDone });
-  cb.current = { onToolStroke, onDone };
+  const cb = useRef({ onCue, onDone });
+  cb.current = { onCue, onDone };
 
   useEffect(() => {
     const wrap = wrapRef.current, canvas = canvasRef.current;
@@ -178,8 +165,10 @@ export function PaintedPortrait({ src, toolColors, onToolStroke, onDone, instant
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const skip = instant || reduce;
-    const strokes = buildStrokes(toolColors);
+    const strokes = buildStrokes();
     const glazeAt = Math.max(...strokes.map(s => s.start + s.dur)) + 60;
+    // cues land evenly through the painting, the last just before the glaze
+    const cueAt = Array.from({ length: cues }, (_, i) => (glazeAt * (i + 0.6)) / (cues + 0.2));
     const GLAZE = 700;
     const fired = new Set<number>();
     let raf = 0, t0 = 0, done = false, cancelled = false;
@@ -194,7 +183,7 @@ export function PaintedPortrait({ src, toolColors, onToolStroke, onDone, instant
     let photo: HTMLCanvasElement, paint: HTMLCanvasElement, glaze: HTMLCanvasElement;
     let pattern: CanvasPattern | null = null;
     // Centrelines are resampled in pixel space on every setup, so normals stay true at any aspect ratio.
-    const geo = strokes.map(s => ({ pts: [] as ReturnType<typeof sample>, br: bristles(s.seed, s.kind === 'color' ? 26 : s.w > 0.1 ? 22 : 14), drawn: 0 }));
+    const geo = strokes.map(s => ({ pts: [] as ReturnType<typeof sample>, br: bristles(s.seed, s.w > 0.1 ? 24 : s.w > 0.06 ? 16 : 11), drawn: 0 }));
 
     const layer = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; };
 
@@ -217,15 +206,16 @@ export function PaintedPortrait({ src, toolColors, onToolStroke, onDone, instant
       geo.forEach((g, i) => { g.pts = sample(strokes[i].path.map(([x, y]) => [x * W, y * H] as Pt), SAMPLES); g.drawn = 0; });
       pattern = paint.getContext('2d')!.createPattern(photo, 'no-repeat');
 
-      // The glaze is the photo, masked by the cores of every photo stroke.
+      // The glaze is the photo masked by the core of every stroke (not the
+      // tapered ends), so it fills gaps inside without rounding off the edges.
       const gc = glaze.getContext('2d')!;
-      gc.lineCap = 'round'; gc.lineJoin = 'round'; gc.strokeStyle = '#000';
+      gc.lineCap = 'butt'; gc.lineJoin = 'round'; gc.strokeStyle = '#000';
       strokes.forEach((st, i) => {
-        if (st.kind !== 'photo') return;
         const pts = geo[i].pts;
-        gc.lineWidth = st.w * W * 0.72;
+        const k0 = Math.round(SAMPLES * 0.14), k1 = Math.round(SAMPLES * 0.84);
+        gc.lineWidth = st.w * W * 0.58;
         gc.beginPath();
-        pts.forEach((p, k) => (k ? gc.lineTo(p.x, p.y) : gc.moveTo(p.x, p.y)));
+        for (let k = k0; k <= k1; k++) (k === k0 ? gc.moveTo(pts[k].x, pts[k].y) : gc.lineTo(pts[k].x, pts[k].y));
         gc.stroke();
       });
       gc.globalCompositeOperation = 'source-in';
@@ -237,14 +227,15 @@ export function PaintedPortrait({ src, toolColors, onToolStroke, onDone, instant
       const st = strokes[i], g = geo[i];
       if (to <= g.drawn) return;
       const pc = paint.getContext('2d')!;
-      pc.lineCap = 'round'; pc.lineJoin = 'round';
+      // butt caps: bristles end in hairs, not dots
+      pc.lineCap = 'butt'; pc.lineJoin = 'round';
+      if (pattern) pc.strokeStyle = pattern;
       const width = st.w * W;
       const n = g.br.length;
       for (const b of g.br) {
         const from = Math.max(g.drawn, b.s), end = Math.min(to, b.e);
         if (end <= from) continue;
         const k0 = Math.floor(from * SAMPLES), k1 = Math.ceil(end * SAMPLES);
-        pc.strokeStyle = st.kind === 'photo' && pattern ? pattern : shadeHex(st.color!, b.shade);
         pc.lineWidth = (width / n) * b.width * 1.9;
         pc.beginPath();
         for (let k = k0; k <= k1; k++) {
@@ -268,7 +259,7 @@ export function PaintedPortrait({ src, toolColors, onToolStroke, onDone, instant
     function finishInstantly() {
       strokes.forEach((_, i) => paintStroke(i, 1));
       compose(1);
-      toolColors.forEach((_, i) => { if (!fired.has(i)) { fired.add(i); cb.current.onToolStroke?.(i); } });
+      cueAt.forEach((_, i) => { if (!fired.has(i)) { fired.add(i); cb.current.onCue?.(i); } });
       if (!done) { done = true; cb.current.onDone?.(); }
     }
 
@@ -276,10 +267,9 @@ export function PaintedPortrait({ src, toolColors, onToolStroke, onDone, instant
       if (cancelled) return;
       if (!t0) t0 = now;
       const t = now - t0;
+      cueAt.forEach((at, i) => { if (t >= at && !fired.has(i)) { fired.add(i); cb.current.onCue?.(i); } });
       strokes.forEach((st, i) => {
-        if (t < st.start) return;
-        if (st.kind === 'color' && st.tool !== undefined && !fired.has(st.tool)) { fired.add(st.tool); cb.current.onToolStroke?.(st.tool); }
-        paintStroke(i, ease(Math.min(1, (t - st.start) / st.dur)));
+        if (t >= st.start) paintStroke(i, ease(Math.min(1, (t - st.start) / st.dur)));
       });
       const ga = Math.max(0, Math.min(1, (t - glazeAt) / GLAZE));
       compose(ga);
