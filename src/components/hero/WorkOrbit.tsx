@@ -27,7 +27,7 @@ type Props = {
 };
 
 /** Ring radius (fraction of --stage-w) and tilt. */
-export const ORBIT = { radius: 0.74, tiltX: -11, tiltZ: -7 };
+export const ORBIT = { radius: 0.58, tiltX: -11, tiltZ: -7 };
 
 export function WorkOrbit({ clips, centre, shown, children, className, style }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
