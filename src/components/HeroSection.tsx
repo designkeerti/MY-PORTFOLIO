@@ -95,7 +95,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
             {/* the line under the name fades out with the buttons, making room for the companies */}
             <motion.div style={pinned ? { opacity: ctaOpacity, y: ctaY } : undefined}>
               <motion.p {...rise(0.3)} className="mt-5 max-w-[40ch] text-[clamp(16px,1.35vw,19px)] leading-snug text-ink/80">
-                Product in trouble? I’m the designer who takes the case: interfaces, motion and systems, argued all the way to <span className="font-display font-bold text-ink">production.</span>
+                He’s a product designer. He designs interfaces, motion and systems, and takes them all the way to <span className="font-display font-bold text-ink">production.</span>
               </motion.p>
             </motion.div>
             <motion.div style={pinned ? { opacity: ctaOpacity, y: ctaY } : undefined}>
