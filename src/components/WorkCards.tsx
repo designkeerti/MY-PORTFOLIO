@@ -5,8 +5,8 @@ import type { Project } from '../content/types';
 
 /**
  * The work, as calm cards: a soft gradient panel (tinted by the project's accent)
- * holding the project's reel, a big centred headline, one plain line, a short
- * details list with dotted dividers, and one clear button. Modelled on clean
+ * holding the project's reel, a centred headline, one plain line, a compact strip
+ * of facts with dashed dividers, and one clear button. Modelled on clean
  * product onboarding screens rather than portfolio collages.
  */
 
@@ -45,15 +45,14 @@ function Reel({ slug, label }: { slug: string; label: string }) {
   );
 }
 
-function Row({ title, sub, accent, last }: { title: string; sub: string; accent: string; last?: boolean }) {
+// one compact strip of facts, split by dashed dividers
+function Facts({ items }: { items: string[] }) {
   return (
-    <div className={`flex items-start gap-4 py-4 text-left ${last ? '' : 'border-b border-dashed border-white/12'}`}>
-      <span aria-hidden className="mt-1 h-5 w-5 shrink-0 rounded-full border-[1.5px] border-dashed" style={{ borderColor: accent }} />
-      <span className="min-w-0">
-        <span className="block text-[17px] font-medium leading-snug text-[#f1ece4]">{title}</span>
-        <span className="mt-0.5 block text-[14px] leading-snug text-white/50">{sub}</span>
-      </span>
-    </div>
+    <ul className="mt-5 flex w-full divide-x divide-dashed divide-white/15 rounded-[16px] border border-white/10">
+      {items.map(t => (
+        <li key={t} className="min-w-0 flex-1 truncate px-3 py-2.5 text-center text-[13px] leading-tight text-white/70" title={t}>{t}</li>
+      ))}
+    </ul>
   );
 }
 
@@ -68,24 +67,21 @@ function WorkCard({ p }: { p: Project }) {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden><path d="M5 12h14M12 5l7 7-7 7" /></svg>
     </>
   );
-  const btnClass = 'group mt-5 flex w-full items-center justify-center gap-2 rounded-full py-4 text-[16px] font-medium transition-transform duration-300 hover:-translate-y-0.5';
+  const btnClass = 'group mt-4 flex w-full items-center justify-center gap-2 rounded-full py-3 text-[15px] font-medium transition-transform duration-300 hover:-translate-y-0.5';
   return (
     <article className="flex w-full flex-col rounded-[32px] border border-white/[0.07] bg-[#141312] p-3 md:w-[calc(50%-12px)] md:p-4">
       {/* the reel, on a soft panel in the project's colour */}
-      <div className="rounded-[24px] px-[7%] py-[9%]"
+      <div className="rounded-[24px] px-[7%] py-[6%]"
         style={{ background: `linear-gradient(180deg, color-mix(in srgb, ${accent} 26%, #ffffff) 0%, color-mix(in srgb, ${accent} 82%, #0c0b0a) 100%)` }}>
         <Reel slug={meta.slug} label={`${meta.company}: project reel`} />
       </div>
 
-      <div className="flex flex-col items-center px-3 pb-3 pt-8 text-center md:px-6">
+      <div className="flex flex-col items-center px-3 pb-2 pt-6 text-center md:px-6">
         <p className="text-[12px] font-medium uppercase tracking-[0.22em] text-white/40">{meta.company} · {meta.year}</p>
-        <h3 className="mt-3 text-[clamp(30px,3.4vw,44px)] font-semibold leading-[1.02] tracking-[-0.02em] text-[#f1ece4]">{HEADLINE[meta.slug] ?? meta.title}</h3>
-        <p className="mt-4 max-w-[40ch] text-[16px] leading-[1.5] text-white/60">{firstSentence(meta.oneLiner)}</p>
+        <h3 className="mt-2 text-[clamp(28px,3vw,38px)] font-semibold leading-[1.02] tracking-[-0.02em] text-[#f1ece4]">{HEADLINE[meta.slug] ?? meta.title}</h3>
+        <p className="mt-3 line-clamp-2 max-w-[42ch] text-[15px] leading-[1.5] text-white/60">{firstSentence(meta.oneLiner)}</p>
 
-        <div className="mt-7 w-full rounded-[22px] border border-white/10 px-5">
-          <Row title={meta.role} sub={meta.tag} accent={accent} />
-          <Row title={p.facts?.[1] ?? p.timeline} sub={p.facts?.[2] ?? p.expertise} accent={accent} last />
-        </div>
+        <Facts items={[meta.role, (p.facts ?? [])[1]].filter(Boolean) as string[]} />
 
         {internal
           ? <Link to={href} className={btnClass} style={{ background: accent, color: onAccent(accent) }}>{button}</Link>
