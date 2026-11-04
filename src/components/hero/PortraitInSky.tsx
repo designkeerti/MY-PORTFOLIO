@@ -131,12 +131,9 @@ export function PortraitInSky({ src, alt, className, shown }: { src: string; alt
     ro.observe(canvas);
     const io = new IntersectionObserver(es => { visible = es.some(e => e.isIntersecting); });
     io.observe(canvas);
-    const onScroll = () => draw();   // keep the clouds in register while scrolling
-    window.addEventListener('scroll', onScroll, { passive: true });
     raf = requestAnimationFrame(loop);
     return () => {
       cancelAnimationFrame(raf); ro.disconnect(); io.disconnect();
-      window.removeEventListener('scroll', onScroll);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

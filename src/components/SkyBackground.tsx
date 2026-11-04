@@ -60,9 +60,12 @@ export function SkyBackground() {
     const SCALE = small ? 0.35 : 0.5;
     gl.uniform1f(uOct, small ? 5 : 6);
 
+    // Size to the canvas's own box, which is 100lvh (the largest viewport height), so
+    // phone address bars showing and hiding while scrolling never resize the sky.
     function resize() {
-      const w = Math.max(2, Math.round(window.innerWidth * SCALE));
-      const h = Math.max(2, Math.round(window.innerHeight * SCALE));
+      const r = canvas.getBoundingClientRect();
+      const w = Math.max(2, Math.round(r.width / (parseFloat(canvas.style.scale) || 1) * SCALE));
+      const h = Math.max(2, Math.round(r.height / (parseFloat(canvas.style.scale) || 1) * SCALE));
       if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl!.viewport(0, 0, w, h); }
       gl!.uniform2f(uRes, w, h);
     }
@@ -84,22 +87,21 @@ export function SkyBackground() {
 
     resize();
     draw(performance.now());
-    const onScroll = () => { if (reduce) draw(performance.now()); };
-    const onResize = () => { resize(); draw(performance.now()); };
+    // only a width change (or a real height change, not the address bar) needs a re-fit
+    let lastW = window.innerWidth;
+    const onResize = () => { if (window.innerWidth === lastW) return; lastW = window.innerWidth; resize(); draw(performance.now()); };
     const onVis = () => {
       running = !document.hidden && !reduce;
       cancelAnimationFrame(raf);
       if (running) raf = requestAnimationFrame(loop);
     };
     window.addEventListener('resize', onResize);
-    window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('visibilitychange', onVis);
     if (!reduce) raf = requestAnimationFrame(loop);
 
     return () => {
       running = false; cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
-      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', onVis);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
@@ -109,7 +111,7 @@ export function SkyBackground() {
     <canvas
       ref={ref}
       aria-hidden
-      className="pointer-events-none fixed inset-0 h-full w-full"
+      className="pointer-events-none fixed left-0 top-0 h-[100lvh] w-screen"
       // behind everything: above the page background, below all content
       // the farthest layer of the hero parallax: overscaled so its edges never show at full travel
       style={{ zIndex: -1, scale: '1.14', translate: 'calc(var(--px, 0) * -60px) calc(var(--py, 0) * -40px)', background: 'linear-gradient(180deg, #2185c2 0%, #8ccbe6 60%, #e6f3f9 100%)' }}

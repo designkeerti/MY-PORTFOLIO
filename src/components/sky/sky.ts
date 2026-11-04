@@ -8,16 +8,14 @@
 /** Shared clock: both canvases read the same time, so their clouds drift together. */
 export const skyTime = (reduce: boolean) => (reduce ? 40 : performance.now() / 1000 + 40);
 
-/** 0 = day, 0.5 = dusk, 1 = night. Day over the hero, night by the time the work arrives. */
-export function duskAmount() {
-  const hero = document.querySelector('.hero-poster') as HTMLElement | null;
-  const hh = hero ? hero.offsetHeight : window.innerHeight;
-  const t = (window.scrollY - hh * 0.4) / (hh * 0.6);
-  return Math.min(1, Math.max(0, t));
-}
-
-/** Scroll as a fraction of the viewport height: drives the clouds' parallax. */
-export const skyScroll = () => window.scrollY / Math.max(1, window.innerHeight);
+/**
+ * The sky is fixed: it does not change with scroll (no dusk, no cloud
+ * parallax). Redrawing a fixed background in step with scrolling made it lag
+ * behind the content and tear, so these stay constant. The shaders keep the
+ * uniforms, so dusk/scroll could return later as a deliberate effect.
+ */
+export const duskAmount = () => 0;
+export const skyScroll = () => 0;
 
 /**
  * GLSL shared by both shaders. Expects uniforms u_time, u_dusk, u_octaves.
