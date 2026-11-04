@@ -75,7 +75,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
     <section ref={heroRef} className="hero-poster relative w-full" style={{ height: pinned ? '230svh' : undefined }}>
       {/* No navbar over the hero: the page opens on the poster itself. */}
       <div className={pinned ? 'sticky top-0 h-[100svh] overflow-hidden' : 'relative'}>
-        <div className="relative mx-auto flex h-full w-full max-w-[1360px] flex-col items-center px-5 pt-[calc(3rem+env(safe-area-inset-top))] text-center md:px-10 md:pt-[calc(3.5rem+env(safe-area-inset-top))]">
+        <div className="relative mx-auto flex h-full w-full max-w-[1360px] flex-col items-center px-5 pt-[calc(3rem+env(safe-area-inset-top))] text-center md:px-10 md:pt-[calc(min(3.5rem,5svh)+env(safe-area-inset-top))]">
 
           {/* The type, centred. The name stays where it is throughout. */}
           <div className="relative z-30 flex flex-col items-center">
@@ -115,7 +115,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
               shrink-0: the pinned frame is one screen tall, and flex would otherwise squash the
               portrait to fit (it should keep its shape and run off the bottom instead). */}
           <motion.div
-            className="relative z-10 mt-4 shrink-0 [--stage-w:70vw] sm:[--stage-w:54vw] lg:[--stage-w:min(500px,36vw)]"
+            className="relative z-10 mt-4 shrink-0 [--stage-w:min(70vw,44svh)] sm:[--stage-w:min(54vw,50svh)] lg:[--stage-w:min(500px,36vw,50svh)]"
             style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})`, ...(pinned ? { y: stageY, opacity: stageOpacity } : {}) }}
           >
             <WorkOrbit clips={CLIPS} centre={PORTRAIT.ring} shown={staged} className="absolute inset-0">

@@ -40,8 +40,9 @@
   --ink: rgb(var(--ink-rgb));
 }
 /* The name in the hero: a condensed line over a big display line, like a poster. */
-.hero-name-1 { font-family: 'Telma', serif; font-weight: 700; letter-spacing: 0; font-size: clamp(38px, 4.6vw, 72px); line-height: 1; }
-.hero-name-2 { font-family: 'Telma', serif; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; font-size: min(15.5vw, clamp(78px, 9.2vw, 144px)); line-height: 0.9; }
+/* sized by width and by height, so on short screens the name gives way and the portrait fits */
+.hero-name-1 { font-family: 'Telma', serif; font-weight: 700; letter-spacing: 0; font-size: clamp(30px, min(4.6vw, 6svh), 72px); line-height: 1; }
+.hero-name-2 { font-family: 'Telma', serif; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; font-size: min(15.5vw, clamp(56px, min(9.2vw, 12svh), 144px)); line-height: 0.9; }
 .font-display { font-family: var(--font-head), sans-serif; }
 main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
 
