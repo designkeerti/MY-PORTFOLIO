@@ -41,19 +41,39 @@ export function WorkOrbit({ clips, centre, shown, children, className, style }: 
     const n = clips.length;
     let raf = 0, last = performance.now(), angle = 24, visible = true, appear = reduce ? 1 : 0, t0 = 0;
 
+    // Only the clips facing you play: decoding all six at once (inside 3D transforms) starved
+    // the page, and on iPhone the memory pressure made Safari drop the sky's WebGL context.
+    // Phones play just the frontmost clip; the rest show their poster frame.
+    const maxPlaying = window.matchMedia('(max-width: 767px)').matches ? 1 : 3;
+    const playing = new Set<number>();
+    function syncVideos(facings: number[]) {
+      const want = new Set(
+        visible && !reduce
+          ? facings.map((f, i) => [f, i]).filter(([f]) => f > 0.25).sort((a, b) => b[0] - a[0]).slice(0, maxPlaying).map(([, i]) => i)
+          : [],
+      );
+      for (let i = 0; i < n; i++) {
+        const v = panels.current[i]?.querySelector('video');
+        if (!v) continue;
+        if (want.has(i) && !playing.has(i)) { playing.add(i); v.play().catch(() => {}); }
+        else if (!want.has(i) && playing.has(i)) { playing.delete(i); v.pause(); }
+      }
+    }
     const io = new IntersectionObserver(es => {
       visible = es.some(e => e.isIntersecting);
-      root.querySelectorAll('video').forEach(v => { if (visible && !reduce) v.play().catch(() => {}); else v.pause(); });
+      if (!visible) syncVideos([]);
     }, { threshold: 0.05 });
     io.observe(root);
 
     function place() {
+      const facings: number[] = [];
       for (let i = 0; i < n; i++) {
         const el = panels.current[i];
         if (!el) continue;
         const a = (i * 360) / n + angle;
         const r = (a * Math.PI) / 180;
         const facing = Math.cos(r);                          // 1 = front of the ring, -1 = behind the body
+        facings[i] = facing;
         el.style.transform = `rotateY(${a.toFixed(2)}deg) translateZ(calc(var(--stage-w) * ${ORBIT.radius}))`;
         // a little depth of field on the far side; everything resolves out of a blur on load
         // (set on the two faces, not the panel: opacity or filter on a 3D parent would flatten it)
@@ -65,6 +85,7 @@ export function WorkOrbit({ clips, centre, shown, children, className, style }: 
           face.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : 'none';
         }
       }
+      syncVideos(facings);
     }
 
     function frame(now: number) {

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SKY_GLSL, skyTime, duskAmount, skyScroll } from '../sky/sky';
 
 /**
@@ -51,19 +51,19 @@ const VERT = `attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }
 
 export function PortraitInSky({ src, alt, className, shown }: { src: string; alt: string; className?: string; shown: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const [failed, setFailed] = useState(false);
   const showRef = useRef(shown);
   showRef.current = shown;
 
   useEffect(() => {
+    if (failed) return;
     const canvas = ref.current!;
     const gl = canvas.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
-    const fallback = () => {
-      // no WebGL: show the photo as a plain image instead
-      const img = document.createElement('img');
-      img.src = src; img.alt = alt; img.className = 'h-full w-full object-contain object-bottom';
-      canvas.replaceWith(img);
-    };
-    if (!gl) { fallback(); return; }
+    // no WebGL, or the context is lost (iOS does this under memory pressure): show the photo as a plain image
+    const fallback = () => setFailed(true);
+    const onLost = (e: Event) => { e.preventDefault(); fallback(); };
+    canvas.addEventListener('webglcontextlost', onLost);
+    if (!gl) { canvas.removeEventListener('webglcontextlost', onLost); fallback(); return; }
     const sh = (t: number, s: string) => { const o = gl.createShader(t)!; gl.shaderSource(o, s); gl.compileShader(o); return o; };
     const prog = gl.createProgram()!;
     gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT));
@@ -134,10 +134,16 @@ export function PortraitInSky({ src, alt, className, shown }: { src: string; alt
     raf = requestAnimationFrame(loop);
     return () => {
       cancelAnimationFrame(raf); ro.disconnect(); io.disconnect();
+      canvas.removeEventListener('webglcontextlost', onLost);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [src]);
+  }, [src, failed]);
 
+  if (failed) {
+    // the same photo, fading into the sky at its base and cut edges, like the shader does
+    const mask = 'linear-gradient(to top, transparent 0%, #000 30%), linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%)';
+    return <img src={src} alt={alt} className={`${className ?? ''} object-contain object-bottom`} style={{ WebkitMaskImage: mask, maskImage: mask, WebkitMaskComposite: 'source-in', maskComposite: 'intersect' }} />;
+  }
   return <canvas ref={ref} role="img" aria-label={alt} className={className} />;
 }
