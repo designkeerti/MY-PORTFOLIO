@@ -41,21 +41,21 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 
         {/* Left: name and statement */}
         <div className="col-span-full flex flex-col justify-center md:col-span-6 lg:col-span-6">
-          <h1 className="leading-[0.86] text-[#f4efe6]">
+          <h1 className="leading-[0.86] text-ink">
             <motion.span {...rise(0.1)} className="hero-name-1 block">Keerthi</motion.span>
             <motion.span {...rise(0.22)} className="hero-name-2 block">Vardhan</motion.span>
           </h1>
 
-          <motion.p {...rise(0.4)} className="mt-8 max-w-[30ch] text-[clamp(18px,1.6vw,22px)] leading-snug text-white/75">
-            Product designer. I design interfaces, motion and systems, and take them all the way to <span className="font-display text-[1.15em] text-[#f4efe6]">production.</span>
+          <motion.p {...rise(0.4)} className="mt-8 max-w-[30ch] text-[clamp(18px,1.6vw,22px)] leading-snug text-ink/80">
+            Product designer. I design interfaces, motion and systems, and take them all the way to <span className="font-display font-bold text-ink">production.</span>
           </motion.p>
 
           <motion.div {...rise(0.52)} className="mt-9 flex flex-wrap items-center gap-3">
-            <a href="#work" className="group inline-flex items-center gap-2 rounded-full bg-[#f4efe6] px-5 py-3 text-sm font-medium text-[#14121a] transition-transform duration-300 hover:-translate-y-0.5">
+            <a href="#work" className="group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-medium text-white transition-transform duration-300 hover:-translate-y-0.5">
               See the work
               <span aria-hidden className="transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
             </a>
-            <a href="#about" className="inline-flex items-center rounded-full border border-white/20 px-5 py-3 text-sm font-medium text-white/85 transition-colors duration-300 hover:border-white/50">
+            <a href="#about" className="inline-flex items-center rounded-full border border-ink/25 bg-white/30 px-5 py-3 text-sm font-medium text-ink backdrop-blur-sm transition-colors duration-300 hover:border-ink/60">
               Get in touch
             </a>
           </motion.div>
@@ -88,7 +88,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
           initial={instant ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: instant ? 0 : 1.1, ease: EASE }}
-          className="col-span-full mt-16 border-t border-white/10 pt-6 md:mt-14"
+          className="col-span-full mt-16 border-t border-ink/15 pt-6 md:mt-14"
         >
           {/* No visible label: the logos speak for themselves. Screen readers still get one. */}
           <ul aria-label="Companies I've worked with" className="grid grid-cols-3 items-center gap-x-6 gap-y-7 md:flex md:justify-between md:gap-8">
@@ -120,30 +120,30 @@ function ToolCard({ tool, shown, instant, pos }: { tool: Tool; shown: boolean; i
       initial={instant ? false : { opacity: 0, y: 16 }}
       animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
       transition={{ duration: 0.7, ease: EASE }}
-      className={`relative z-10 w-full rounded-2xl border border-white/10 bg-[#16131c]/80 p-4 text-[#f4efe6] shadow-[0_24px_48px_-20px_rgba(0,0,0,0.8)] backdrop-blur-md md:absolute md:w-[212px] ${pos}`}
+      className={`relative z-10 w-full rounded-2xl border border-white/70 bg-white/60 p-4 text-ink shadow-[0_24px_48px_-24px_rgba(20,40,70,0.45)] backdrop-blur-md md:absolute md:w-[212px] ${pos}`}
     >
-      <div className="flex items-center gap-2 text-white/70">
+      <div className="flex items-center gap-2 text-ink/75">
         {tool.tools.map(x => (
           <span key={x.name} title={x.name} className="flex items-center">{x.mark}<span className="sr-only">{x.name}</span></span>
         ))}
       </div>
       <div className="mt-3 font-display text-[20px] leading-[1.05] md:text-[22px]">{tool.makes}</div>
-      <p className="mt-1.5 text-[12px] leading-snug text-white/55">{tool.detail}</p>
+      <p className="mt-1.5 text-[12px] leading-snug text-ink/65">{tool.detail}</p>
     </motion.div>
   );
 }
 
-// Cream at rest so the row reads as one quiet line; the brand's own colours on hover.
+// One ink colour at rest so the row reads as one quiet line; the brand's own colours on hover.
 function CompanyLogo({ c }: { c: Company }) {
   return (
     <li className="flex justify-center md:block">
       <a href={c.href} target="_blank" rel="noopener noreferrer" aria-label={c.name} title={c.name}
         className="group relative flex items-center gap-2 opacity-70 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100">
         <span className="relative block shrink-0" style={{ height: c.h }}>
-          <img src={c.mono} alt="" draggable={false} className="block h-full w-auto transition-opacity duration-300 group-hover:opacity-0 group-focus-visible:opacity-0" />
+          <img src={c.mono} alt="" draggable={false} className="block h-full w-auto brightness-0 transition-opacity duration-300 group-hover:opacity-0 group-focus-visible:opacity-0" />
           <img src={c.color} alt="" draggable={false} loading="lazy" className="absolute inset-0 block h-full w-auto opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" />
         </span>
-        {c.word && <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-[#f4efe6] md:text-[13px] md:tracking-[0.32em]">{c.word}</span>}
+        {c.word && <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-ink md:text-[13px] md:tracking-[0.32em]">{c.word}</span>}
       </a>
     </li>
   );

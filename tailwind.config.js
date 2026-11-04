@@ -7,6 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        ink: "rgb(var(--ink-rgb) / <alpha-value>)",
         "text-primary": "#f4f2f8",
         "text-secondary": "rgba(244, 242, 248, 0.7)",
         "bg-gradient-light": "rgb(245, 247, 255)",
@@ -16,7 +17,7 @@ export default {
       },
       fontFamily: {
         sans: ['var(--font-text)', 'sans-serif'],
-        display: ['var(--font-display)', 'Georgia', 'serif'],
+        display: ['var(--font-head)', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'Menlo', 'monospace'],
       }
     },

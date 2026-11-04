@@ -19,28 +19,29 @@
 }
 
 /*
- * Type settings for the whole site. Everything reads these variables, so a
- * pairing can be swapped in one place (and previewed with ?font=X, see
- * src/fontPreview.ts). The values here are the current, live pairing.
+ * Sofia Sans (Lettersoup, SIL Open Font License, see assets/fonts/sofia/OFL.txt),
+ * self-hosted. Free stand-in for the poster pairing Proxima Nova Condensed + Sailors:
+ *   Sofia Sans               -> Proxima Nova (reading text)
+ *   Sofia Sans Semi Condensed -> Proxima Nova Condensed (name line, headings)
+ *   Sofia Sans Condensed     -> Sailors (the big display line, in caps)
  */
+@font-face { font-family: 'Sofia Sans'; src: url('./assets/fonts/sofia/sofia-sans-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Sofia Sans'; src: url('./assets/fonts/sofia/sofia-sans-italic.woff2') format('woff2'); font-weight: 300 900; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Sofia Sans Semi Condensed'; src: url('./assets/fonts/sofia/sofia-sans-semi-condensed-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Sofia Sans Condensed'; src: url('./assets/fonts/sofia/sofia-sans-condensed-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
+
 :root {
-  --font-text: 'Satoshi';
-  --font-display: 'Instrument Serif';
-  --display-style: italic;          /* card titles, the accent word */
-  /* the two lines of the name in the hero */
-  --name1-family: var(--font-display); --name1-style: italic; --name1-weight: 400; --name1-track: -0.01em;
-  --name2-family: var(--font-text);    --name2-style: normal; --name2-weight: 900; --name2-track: -0.045em;
+  --font-text: 'Sofia Sans';
+  --font-head: 'Sofia Sans Semi Condensed';
+  --font-display: 'Sofia Sans Condensed';
+  --ink-rgb: 23 25 30;   /* #17191e: text on the sky */
+  --ink: rgb(var(--ink-rgb));
 }
-.font-display { font-style: var(--display-style); }
-.hero-name-1 { font-family: var(--name1-family), serif; font-style: var(--name1-style); font-weight: var(--name1-weight); letter-spacing: var(--name1-track); font-size: calc(clamp(64px, 10.5vw, 156px) * var(--name1-scale, 1)); }
-.hero-name-2 { font-family: var(--name2-family), sans-serif; font-style: var(--name2-style); font-weight: var(--name2-weight); letter-spacing: var(--name2-track); font-size: calc(clamp(56px, 9.4vw, 140px) * var(--name2-scale, 1)); }
-/* While previewing a pairing, section and case-study headings take its display face too. */
-[data-font] main :is(h2, h3) {
-  font-family: var(--head-family), serif;
-  font-weight: var(--head-weight) !important;
-  font-style: var(--head-style, normal);
-  letter-spacing: var(--head-track) !important;
-}
+/* The name in the hero: a condensed line over a big display line, like a poster. */
+.hero-name-1 { font-family: var(--font-head), sans-serif; font-weight: 700; letter-spacing: -0.015em; font-size: clamp(40px, 5.2vw, 80px); line-height: 0.95; }
+.hero-name-2 { font-family: var(--font-display), sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.005em; font-size: clamp(88px, 10.6vw, 176px); line-height: 0.84; }
+.font-display { font-family: var(--font-head), sans-serif; }
+main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
 
 body {
   margin: 0;
@@ -128,7 +129,8 @@ section {
 
 /* ---------- the work flow: a scrubbed bento that zooms into Cross Border Supps ---------- */
 .work-flow { position: relative; z-index: 20; }
-.work-more { background: #0f0d16; color: #fff; }
+/* No solid backing: on the home page the work sits on the night sky (SkyBackground). */
+.work-more { background: transparent; color: #fff; }
 .gallery-wrap { position: relative; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .gallery { position: relative; width: 100%; height: 100%; flex: none; }
 .gallery__item { position: relative; flex: none; overflow: hidden; border-radius: 16px; background: #17151f; box-shadow: 0 0 0 1px rgba(255,255,255,.08); }
@@ -164,14 +166,6 @@ section {
 .bento-card__cta:hover { background: #6cbde0; transform: translateY(-1px); }
 @media (max-width: 767px) { .bento-card__body { padding: 0 20px 40px; gap: 10px; } .bento-card__blurb { font-size: 14px; } }
 
-/* Hero poster: ink ground with a faint paper grain */
-.hero-poster { background: #0f0d14; }
-.hero-poster::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.09;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
+/* The hero sits directly on the sky (see SkyBackground). */
+.hero-poster { background: transparent; color: var(--ink); }
+

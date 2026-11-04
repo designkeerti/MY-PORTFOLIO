@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Navigation } from './components/Navigation';
 import { Home } from './pages/Home';
 import { CaseStudy } from './pages/CaseStudy';
-import { FontSwitcher } from './fontPreview';
+import { SkyBackground } from './components/SkyBackground';
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -25,9 +25,10 @@ function App() {
   const handleReveal = useCallback((n: number) => setRevealStep(n), []);
 
   return (
-    <main className="w-full min-h-screen bg-[#0f0d16] text-[#f4f2f8] selection:bg-[#DF95FF]/30 relative" style={{ overflowX: 'clip' }}>
+    <main className={`w-full min-h-screen ${isHome ? 'bg-transparent' : 'bg-[#0f0d16]'} text-[#f4f2f8] selection:bg-[#DF95FF]/30 relative`} style={{ overflowX: 'clip' }}>
+      {/* The home page sits on a live sky that turns to dusk and night as you scroll. */}
+      {isHome && <SkyBackground />}
       <ScrollToTop />
-      <FontSwitcher />
       <Navigation revealStep={isHome ? revealStep : 3} />
       <Routes>
         <Route path="/" element={<Home onReveal={handleReveal} />} />
