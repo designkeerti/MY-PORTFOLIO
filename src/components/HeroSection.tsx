@@ -81,7 +81,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
           <div className="relative z-30 flex flex-col items-center">
             <div className="relative">
               <h1 className="leading-[0.86] text-ink">
-                <motion.span {...rise(0.05)} className="hero-name-1 block">Hi I am</motion.span>
+                <motion.span {...rise(0.05)} className="hero-name-1 block">Better call</motion.span>
                 <motion.span {...rise(0.15)} className="hero-name-2 block">Keerthi</motion.span>
               </h1>
               {/* The companies hang from the name with a fixed gap, so the spacing is the same on
