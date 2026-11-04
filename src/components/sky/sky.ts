@@ -17,19 +17,19 @@ export const skyTime = (reduce: boolean) => (reduce ? 40 : performance.now() / 1
 export const duskAmount = () => 0;
 
 /**
- * The burn: 0 = sky, 1 = the sky has burned away to plain paper. Set by the hero's
- * scroll sequence; the sky layer listens and redraws while it changes.
+ * The clear: 0 = sky, 1 = wind has blown the sky away and fog has settled into plain
+ * paper. Set by the hero's scroll sequence; the sky layer listens and redraws.
  */
-let burn = 0;
-const burnListeners = new Set<(v: number) => void>();
-export const getBurn = () => burn;
-export function setBurn(v: number) {
+let clear = 0;
+const clearListeners = new Set<(v: number) => void>();
+export const getClear = () => clear;
+export function setClear(v: number) {
   const n = Math.min(1, Math.max(0, v));
-  if (Math.abs(n - burn) < 1e-4) return;
-  burn = n;
-  burnListeners.forEach(f => f(n));
+  if (Math.abs(n - clear) < 1e-4) return;
+  clear = n;
+  clearListeners.forEach(f => f(n));
 }
-export function onBurn(f: (v: number) => void) { burnListeners.add(f); return () => { burnListeners.delete(f); }; }
+export function onClear(f: (v: number) => void) { clearListeners.add(f); return () => { clearListeners.delete(f); }; }
 export const skyScroll = () => 0;
 
 /**

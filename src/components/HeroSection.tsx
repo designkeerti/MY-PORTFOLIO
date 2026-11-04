@@ -1,5 +1,5 @@
 import { motion, motionValue, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import { setBurn } from './sky/sky';
+import { setClear } from './sky/sky';
 import { useEffect, useRef, useState } from 'react';
 import { useHeroParallax } from './hero/useHeroParallax';
 import { PortraitInSky } from './hero/PortraitInSky';
@@ -54,7 +54,7 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   // The scroll sequence. The hero is pinned for a while (the section is taller than the
   // screen and its content sticks); progress p runs 0 -> 1 across that scroll:
   //   name stays put · the buttons fade · I (and the orbit) sink out of view ·
-  //   the skill cards shoot off to the sides · the sky burns away to plain paper while
+  //   the skill cards shoot off to the sides · wind blows the sky away and fog settles into paper while
   //   the companies (current, then previous) rise in under the name.
   const pinned = !reduce;
   const { scrollYProgress: p } = useScroll({ target: heroRef, offset: ['start start', 'end end'] });
@@ -63,11 +63,11 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   const stageY = useTransform(p, [0.02, 0.4], ['0svh', '80svh']);
   const stageOpacity = useTransform(p, [0.26, 0.4], [1, 0]);
   const cardsExit = useTransform(p, [0.02, 0.4], [0, 1]);
-  // the companies rise in (both lines together) while the sky burns away to paper
+  // the companies rise in (both lines together) while wind and fog clear the sky to paper
   const companiesIn = useTransform(p, [0.3, 0.6], [0, 1]);
-  const burn = useTransform(p, [0.22, 0.62], [0, 1]);
-  useMotionValueEvent(burn, 'change', v => { if (pinned) setBurn(v); });
-  useEffect(() => () => setBurn(0), []);
+  const clearSky = useTransform(p, [0.2, 0.62], [0, 1]);
+  useMotionValueEvent(clearSky, 'change', v => { if (pinned) setClear(v); });
+  useEffect(() => () => setClear(0), []);
 
   return (
     <>
