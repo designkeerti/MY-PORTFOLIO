@@ -9,6 +9,7 @@ import { lazy, Suspense } from 'react';
 
 // dev-only page for recording project reels to video
 const ReelCapture = import.meta.env.DEV ? lazy(() => import('./pages/ReelCapture')) : null;
+const FilmCapture = import.meta.env.DEV ? lazy(() => import('./pages/FilmCapture')) : null;
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -56,6 +57,7 @@ function App() {
           <Route path="/" element={<Home onReveal={handleReveal} />} />
           <Route path="/work/:slug" element={<CaseStudy />} />
           {ReelCapture && <Route path="/__reel/:slug" element={<Suspense fallback={null}><ReelCapture /></Suspense>} />}
+          {FilmCapture && <Route path="/__film/:slug" element={<Suspense fallback={null}><FilmCapture /></Suspense>} />}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
