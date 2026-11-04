@@ -29,8 +29,8 @@
 @font-face { font-family: 'Sofia Sans'; src: url('./assets/fonts/sofia/sofia-sans-italic.woff2') format('woff2'); font-weight: 300 900; font-style: italic; font-display: swap; }
 @font-face { font-family: 'Sofia Sans Semi Condensed'; src: url('./assets/fonts/sofia/sofia-sans-semi-condensed-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Sofia Sans Condensed'; src: url('./assets/fonts/sofia/sofia-sans-condensed-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
-/* Kola (Indian Type Foundry, via Fontshare; ITF Free Font License), self-hosted, one weight: the name */
-@font-face { font-family: 'Kola'; src: url('./assets/fonts/kola/Kola-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+/* Chillax (Indian Type Foundry, via Fontshare; ITF Free Font License), self-hosted variable 200-700: the name */
+@font-face { font-family: 'Chillax'; src: url('./assets/fonts/chillax/Chillax-Variable.woff2') format('woff2'); font-weight: 200 700; font-style: normal; font-display: swap; }
 
 :root {
   --font-text: 'Sofia Sans';
@@ -41,8 +41,8 @@
 }
 /* The name in the hero: a condensed line over a big display line, like a poster. */
 /* sized by width and by height, so on short screens the name gives way and the portrait fits */
-.hero-name-1 { font-family: 'Kola', sans-serif; font-weight: 400; letter-spacing: 0; font-size: clamp(32px, min(4.8vw, 6.4svh), 76px); line-height: 1; }
-.hero-name-2 { font-family: 'Kola', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0; font-size: min(17vw, clamp(60px, min(9.6vw, 12.5svh), 150px)); line-height: 0.92; }
+.hero-name-1 { font-family: 'Chillax', sans-serif; font-weight: 500; letter-spacing: -0.01em; font-size: clamp(30px, min(4.4vw, 6svh), 70px); line-height: 1.02; }
+.hero-name-2 { font-family: 'Chillax', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: -0.03em; font-size: min(15vw, clamp(56px, min(9vw, 12svh), 144px)); line-height: 0.9; }
 .font-display { font-family: var(--font-head), sans-serif; }
 main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
 
