@@ -49,7 +49,7 @@ main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
 .sky-layer {
   position: fixed; left: 0; top: 0; z-index: -1;
   width: 100vw; height: 100vh; height: 100lvh;
-  background: #2c8bc6 url('/hero/sky-portrait.jpg') center top / cover no-repeat;
+  background: transparent url('/hero/sky-portrait.jpg') center top / cover no-repeat;
 }
 @media (min-aspect-ratio: 1/1) { .sky-layer { background-image: url('/hero/sky-landscape.jpg'); } }
 /* desktop pointer parallax: the farthest layer, overscaled so its edges never show */
@@ -59,14 +59,9 @@ main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
 
 /* After the burn: charred black (the shader draws it; this is the backing and Safari's
    bars). Ink flips to a warm light so the name and logos read on the dark. */
-.sky-layer.burned { background: #0d0c0b; }
+.sky-layer.burned { background-image: none; }
 html.sky.burned { background-color: #0d0c0b; --ink-rgb: 241 236 228; }
-/* once burned the hero is black anyway, so the body can carry the colour too (Safari reads it) */
-html.sky.burned body { background-color: #0d0c0b; }
-.edge-tint { position: fixed; left: 0; right: 0; height: 2px; z-index: 2147483000; pointer-events: none; background: #2c8bc6; transition: background-color 0.4s ease; }
-.edge-tint--top { top: 0; }
-.edge-tint--bottom { bottom: 0; }
-html.burned .edge-tint { background-color: #0d0c0b; }
+
 .hero-poster h1, .hero-poster p, .hero-poster a { transition: color 0.6s ease; }
 .logo-ink { transition: filter 0.6s ease; }
 html.burned .logo-ink { filter: brightness(0) invert(0.93); }

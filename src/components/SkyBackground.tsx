@@ -226,16 +226,13 @@ export function SkyBackground() {
   // toolbars appearing and disappearing never resize it), behind everything. It carries a
   // still picture of the same sky, so the screen is sky even before or between frames.
   // Parallax (translate + overscale) is desktop-only, via .sky-layer in index.css.
-  // Plus two thin fixed strips on the top and bottom edges. iOS Safari (since its 2025
-  // redesign) tints its status bar and toolbar from what is fixed at those edges, not from
-  // theme-color; these carry the page colour (sky blue, then black once burned).
+  // The layer has no background colour of its own (only the still sky picture): iOS
+  // Safari turns a solid colour on a fixed element at the screen edge into a flat tint
+  // for its bars. Without one, its glass bars show this layer through them. The
+  // fallback colour lives on <html> instead (index.css).
   return (
-    <>
-      <div aria-hidden className="sky-layer pointer-events-none">
-        <canvas ref={ref} className="absolute inset-0 block h-full w-full" />
-      </div>
-      <div aria-hidden className="edge-tint edge-tint--top" />
-      <div aria-hidden className="edge-tint edge-tint--bottom" />
-    </>
+    <div aria-hidden className="sky-layer pointer-events-none">
+      <canvas ref={ref} className="absolute inset-0 block h-full w-full" />
+    </div>
   );
 }
