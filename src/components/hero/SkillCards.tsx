@@ -1,7 +1,7 @@
 import { TOOLS, type Tool } from './tools';
 
 /**
- * The four skill cards at the top, either side of the name (wide
+ * The four skill cards scattered either side, a little above centre (wide
  * screens), or in a 2x2 grid on smaller ones.
  */
 
@@ -23,16 +23,22 @@ function Card({ t, i, className = '', shown }: { t: Tool; i: number; className?:
   );
 }
 
+// Scattered either side, a little above the middle of the hero, each at its own angle.
+const SCATTER = [
+  'left-[5%] top-[24%] -rotate-[6deg]',
+  'right-[6%] top-[21%] rotate-[5deg]',
+  'left-[12%] top-[45%] rotate-[4deg]',
+  'right-[11%] top-[43%] -rotate-[4deg]',
+];
+
 export function SkillCards({ shown }: { shown: boolean }) {
   return (
     <>
-      {/* two columns at the top, either side of the name */}
-      <div className="pointer-events-none absolute left-[3%] top-12 z-30 hidden flex-col gap-4 lg:flex">
-        {[0, 2].map(i => <div key={i} className="pointer-events-auto"><Card t={TOOLS[i]} i={i} shown={shown} /></div>)}
-      </div>
-      <div className="pointer-events-none absolute right-[3%] top-12 z-30 hidden flex-col gap-4 lg:flex">
-        {[1, 3].map(i => <div key={i} className="pointer-events-auto"><Card t={TOOLS[i]} i={i} shown={shown} /></div>)}
-      </div>
+      {TOOLS.map((t, i) => (
+        <div key={t.makes} className={`absolute z-30 hidden transition-transform duration-500 hover:rotate-0 lg:block ${SCATTER[i]}`}>
+          <Card t={t} i={i} shown={shown} />
+        </div>
+      ))}
     </>
   );
 }
