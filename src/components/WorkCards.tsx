@@ -1,0 +1,107 @@
+import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { projects } from '../content/projects';
+import type { Project } from '../content/types';
+
+/**
+ * The work, as calm cards: a soft gradient panel (tinted by the project's accent)
+ * holding the project's reel, a big centred headline, one plain line, a short
+ * details list with dotted dividers, and one clear button. Modelled on clean
+ * product onboarding screens rather than portfolio collages.
+ */
+
+// One short, editorial headline per project (the long titles live in the case studies).
+const HEADLINE: Record<string, string> = {
+  cbs: 'Proof the box is real.',
+  ekai: 'An AI twin, made clear.',
+  misfits: 'Clubs that actually meet.',
+  dmrc: 'Untangling the interchange.',
+  infinity: 'Trust, built in the open.',
+};
+
+// dark text on light accents, white on deep ones
+const onAccent = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 150 ? '#141312' : '#ffffff';
+};
+
+const firstSentence = (s: string) => (s.match(/^.*?[.!?](\s|$)/)?.[0] ?? s).trim();
+
+function Reel({ slug, label }: { slug: string; label: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  // play only while on screen
+  useEffect(() => {
+    const v = ref.current!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !reduce) v.play().catch(() => {}); else v.pause();
+    }, { threshold: 0.35 });
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <video ref={ref} src={`/hero/reels/${slug}.mp4`} poster={`/hero/reels/${slug}.jpg`} muted loop playsInline preload="none"
+      aria-label={label} className="block aspect-[16/10] w-full rounded-[14px] object-cover shadow-[0_24px_50px_-24px_rgba(0,0,0,0.6)]" />
+  );
+}
+
+function Row({ title, sub, accent, last }: { title: string; sub: string; accent: string; last?: boolean }) {
+  return (
+    <div className={`flex items-start gap-4 py-4 text-left ${last ? '' : 'border-b border-dashed border-white/12'}`}>
+      <span aria-hidden className="mt-1 h-5 w-5 shrink-0 rounded-full border-[1.5px] border-dashed" style={{ borderColor: accent }} />
+      <span className="min-w-0">
+        <span className="block text-[17px] font-medium leading-snug text-[#f1ece4]">{title}</span>
+        <span className="mt-0.5 block text-[14px] leading-snug text-white/50">{sub}</span>
+      </span>
+    </div>
+  );
+}
+
+function WorkCard({ p }: { p: Project }) {
+  const { meta } = p;
+  const accent = meta.accent;
+  const href = p.externalLink ?? `/work/${meta.slug}`;
+  const internal = !p.externalLink;
+  const button = (
+    <>
+      View case study
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+    </>
+  );
+  const btnClass = 'group mt-5 flex w-full items-center justify-center gap-2 rounded-full py-4 text-[16px] font-medium transition-transform duration-300 hover:-translate-y-0.5';
+  return (
+    <article className="flex w-full flex-col rounded-[32px] border border-white/[0.07] bg-[#141312] p-3 md:w-[calc(50%-12px)] md:p-4">
+      {/* the reel, on a soft panel in the project's colour */}
+      <div className="rounded-[24px] px-[7%] py-[9%]"
+        style={{ background: `linear-gradient(180deg, color-mix(in srgb, ${accent} 26%, #ffffff) 0%, color-mix(in srgb, ${accent} 82%, #0c0b0a) 100%)` }}>
+        <Reel slug={meta.slug} label={`${meta.company}: project reel`} />
+      </div>
+
+      <div className="flex flex-col items-center px-3 pb-3 pt-8 text-center md:px-6">
+        <p className="text-[12px] font-medium uppercase tracking-[0.22em] text-white/40">{meta.company} · {meta.year}</p>
+        <h3 className="mt-3 text-[clamp(30px,3.4vw,44px)] font-semibold leading-[1.02] tracking-[-0.02em] text-[#f1ece4]">{HEADLINE[meta.slug] ?? meta.title}</h3>
+        <p className="mt-4 max-w-[40ch] text-[16px] leading-[1.5] text-white/60">{firstSentence(meta.oneLiner)}</p>
+
+        <div className="mt-7 w-full rounded-[22px] border border-white/10 px-5">
+          <Row title={meta.role} sub={meta.tag} accent={accent} />
+          <Row title={p.facts?.[1] ?? p.timeline} sub={p.facts?.[2] ?? p.expertise} accent={accent} last />
+        </div>
+
+        {internal
+          ? <Link to={href} className={btnClass} style={{ background: accent, color: onAccent(accent) }}>{button}</Link>
+          : <a href={href} target="_blank" rel="noopener noreferrer" className={btnClass} style={{ background: accent, color: onAccent(accent) }}>{button}</a>}
+      </div>
+    </article>
+  );
+}
+
+export const WorkCards = () => (
+  <div id="work" className="work-flow">
+    <section className="relative z-10 mx-auto flex w-full max-w-[1180px] flex-col items-center gap-8 px-4 pb-24 pt-6">
+      <p className="text-[12px] font-medium uppercase tracking-[0.24em] text-white/45">Selected work</p>
+      <div className="flex w-full flex-wrap justify-center gap-6">
+        {projects.map(p => <WorkCard key={p.meta.slug} p={p} />)}
+      </div>
+    </section>
+  </div>
+);

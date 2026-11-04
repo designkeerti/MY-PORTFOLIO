@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { HeroSection } from '../components/HeroSection';
-import { WorkFlow } from '../components/WorkFlow';
+import { WorkCards } from '../components/WorkCards';
+import { SkillGrid } from '../components/hero/SkillCards';
 import { WorldGate } from '../components/WorldGate';
 import { SkillsSection } from '../components/SkillsSection';
 import { AboutSection } from '../components/AboutSection';
 import { useScrollControl } from '../components/SmoothScroll';
 
 export const Home = ({ onReveal }: { onReveal: (n: number) => void }) => {
+  const reduce = useReducedMotion();
   const [revealStep, setRevealStep] = useState(0);
   const { stopScroll, startScroll } = useScrollControl();
 
@@ -24,16 +26,19 @@ export const Home = ({ onReveal }: { onReveal: (n: number) => void }) => {
       <HeroSection onRevealStepChange={setRevealStep} />
       {revealStep >= 3 && (
         <>
-          {/* the work arrives after the hero sequence: fades and slides up, a beat late */}
+          {/* The work rises into the same frame as the logos: pulled up under the end of the
+              pinned hero, it fades and slides in a beat after its top edge appears. */}
           <motion.div
+            className={reduce ? 'relative z-20' : 'relative z-20 -mt-[12svh] md:-mt-[36svh]'}
             initial={{ opacity: 0, y: 90 }}
             whileInView={{ opacity: 1, y: 0 }}
-            // trigger on its top edge (it is many screens tall, so a share of it would never fit)
-            viewport={{ once: true, amount: 0, margin: '0px 0px -12% 0px' }}
-            transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            viewport={{ once: true, amount: 0, margin: '0px 0px -8% 0px' }}
+            transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <WorkFlow />
+            <WorkCards />
           </motion.div>
+          {/* phones and tablets: what I make (on wide screens these float in the hero) */}
+          {!reduce && <div className="mx-auto flex max-w-[560px] justify-center px-5 pb-16 lg:hidden"><SkillGrid shown /></div>}
           <WorldGate />
           <SkillsSection />
           <AboutSection />

@@ -65,14 +65,14 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
   const cardsExit = useTransform(p, [0.02, 0.4], [0, 1]);
   // the sky burns away to charred black, then the companies (both lines) rise in
   // (the burn finishes first, so the companies arrive on the dark, in light ink)
-  const companiesIn = useTransform(p, [0.4, 0.66], [0, 1]);
-  const clearSky = useTransform(p, [0.16, 0.52], [0, 1]);
+  const companiesIn = useTransform(p, [0.42, 0.54], [0, 1]);
+  const clearSky = useTransform(p, [0.14, 0.5], [0, 1]);
   useMotionValueEvent(clearSky, 'change', v => { if (pinned) setClear(v); });
   useEffect(() => () => setClear(0), []);
 
   return (
     <>
-    <section ref={heroRef} className="hero-poster relative w-full" style={{ height: pinned ? '280svh' : undefined }}>
+    <section ref={heroRef} className="hero-poster relative w-full" style={{ height: pinned ? '230svh' : undefined }}>
       {/* No navbar over the hero: the page opens on the poster itself. */}
       <div className={pinned ? 'sticky top-0 h-[100svh] overflow-hidden' : 'relative'}>
         <div className="relative mx-auto flex h-full w-full max-w-[1360px] flex-col items-center px-5 pt-[calc(3rem+env(safe-area-inset-top))] text-center md:px-10 md:pt-[calc(3.5rem+env(safe-area-inset-top))]">
@@ -136,12 +136,6 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
       )}
     </section>
 
-    {/* Phones and tablets: the skill cards (which float beside me on wide screens) follow the sequence */}
-    {pinned && (
-      <div className="mx-auto flex max-w-[560px] justify-center px-5 pb-16 lg:hidden">
-        <SkillGrid shown={staged} />
-      </div>
-    )}
     </>
   );
 };

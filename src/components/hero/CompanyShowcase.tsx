@@ -16,9 +16,8 @@ function Logo({ c, scale = 1 }: { c: Company; scale?: number }) {
       className="group relative flex shrink-0 items-center gap-2 opacity-80 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100">
       <span className="relative block" style={{ height: h }}>
         <img src={c.mono} alt="" draggable={false} className="logo-ink block h-full w-auto brightness-0 transition-[opacity,filter] duration-300 group-hover:opacity-0 group-focus-visible:opacity-0" />
-        {c.tile !== 'ink' && (
-          <img src={c.color} alt="" draggable={false} loading="lazy" className="absolute inset-0 block h-full w-auto opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" />
-        )}
+        {/* hover: the brand's own version (all read on the dark: some are white by design) */}
+        <img src={c.color} alt="" draggable={false} loading="lazy" className="absolute inset-0 block h-full w-auto opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" />
       </span>
       {c.word && <span className="text-[11px] font-medium uppercase tracking-[0.3em] text-ink md:text-[13px]" style={{ fontSize: `${Math.round(12 * scale)}px` }}>{c.word}</span>}
     </a>
@@ -33,8 +32,8 @@ export function CompanyShowcase({ enter, className }: { enter: MotionValue<numbe
   const current = COMPANIES.find(c => c.name === CURRENT)!;
   const before = COMPANIES.filter(c => c.name !== CURRENT);
   const y = useTransform(enter, v => `${((1 - v) ** 2 * 8).toFixed(2)}svh`);
-  const opacity = useTransform(enter, [0, 0.7], [0, 1]);
-  const filter = useTransform(enter, v => (v < 0.98 ? `blur(${((1 - v) * 8).toFixed(1)}px)` : 'none'));
+  const opacity = useTransform(enter, [0, 0.45], [0, 1]);
+  const filter = useTransform(enter, v => (v < 0.6 ? `blur(${((0.6 - v) * 10).toFixed(1)}px)` : 'none'));
   return (
     <motion.div style={{ y, opacity, filter }} className={`flex flex-col items-center gap-10 md:gap-14 ${className ?? ''}`}>
       <div className="flex flex-col items-center gap-4">
