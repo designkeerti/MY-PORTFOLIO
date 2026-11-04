@@ -79,10 +79,19 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 
           {/* The type, centred. The name stays where it is throughout. */}
           <div className="relative z-30 flex flex-col items-center">
-            <h1 className="leading-[0.86] text-ink">
-              <motion.span {...rise(0.05)} className="hero-name-1 block">Keerthi</motion.span>
-              <motion.span {...rise(0.15)} className="hero-name-2 block">Vardhan</motion.span>
-            </h1>
+            <div className="relative">
+              <h1 className="leading-[0.86] text-ink">
+                <motion.span {...rise(0.05)} className="hero-name-1 block">Keerthi</motion.span>
+                <motion.span {...rise(0.15)} className="hero-name-2 block">Vardhan</motion.span>
+              </h1>
+              {/* The companies hang from the name with a fixed gap, so the spacing is the same on
+                  every screen (they replace the line and buttons, which fade out first). */}
+              {pinned && (
+                <div className="pointer-events-none absolute left-1/2 top-full z-40 mt-12 w-[min(980px,calc(100vw-2.5rem))] -translate-x-1/2 md:mt-16">
+                  <CompanyShowcase enter={companiesIn} className="pointer-events-auto" />
+                </div>
+              )}
+            </div>
             {/* the line under the name fades out with the buttons, making room for the companies */}
             <motion.div style={pinned ? { opacity: ctaOpacity, y: ctaY } : undefined}>
               <motion.p {...rise(0.3)} className="mt-5 max-w-[40ch] text-[clamp(16px,1.35vw,19px)] leading-snug text-ink/80">
@@ -115,12 +124,6 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
           {/* What I make: floating either side of me on wide screens; shoots off on scroll */}
           <SkillCards shown={staged} exit={pinned ? cardsExit : undefined} />
 
-          {/* The companies rise into the space the portrait leaves */}
-          {pinned && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-[max(4svh,env(safe-area-inset-bottom))] top-[calc(21svh+env(safe-area-inset-top))] z-40 flex items-start justify-center px-5 md:top-[25svh] md:px-10">
-              <CompanyShowcase enter={companiesIn} className="pointer-events-auto max-w-[980px]" />
-            </div>
-          )}
         </div>
       </div>
 

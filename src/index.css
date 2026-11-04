@@ -61,6 +61,12 @@ main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
    bars). Ink flips to a warm light so the name and logos read on the dark. */
 .sky-layer.burned { background: #0d0c0b; }
 html.sky.burned { background-color: #0d0c0b; --ink-rgb: 241 236 228; }
+/* once burned the hero is black anyway, so the body can carry the colour too (Safari reads it) */
+html.sky.burned body { background-color: #0d0c0b; }
+.edge-tint { position: fixed; left: 0; right: 0; height: 2px; z-index: 2147483000; pointer-events: none; background: #2c8bc6; transition: background-color 0.4s ease; }
+.edge-tint--top { top: 0; }
+.edge-tint--bottom { bottom: 0; }
+html.burned .edge-tint { background-color: #0d0c0b; }
 .hero-poster h1, .hero-poster p, .hero-poster a { transition: color 0.6s ease; }
 .logo-ink { transition: filter 0.6s ease; }
 html.burned .logo-ink { filter: brightness(0) invert(0.93); }
