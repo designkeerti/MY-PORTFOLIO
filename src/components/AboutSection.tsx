@@ -74,7 +74,7 @@ export const AboutSection = () => {
               className="md:col-span-1 md:row-span-2 h-[300px] md:h-auto rounded-[32px] overflow-hidden relative shadow-lg border border-white/20 group"
             >
                <img 
-                 src="https://framerusercontent.com/images/HJQw8ElsRLJCST5Te5LibBGNdY.jpeg" 
+                 src="/work/home/HJQw8ElsRLJCST5Te5LibBGNdY.webp" 
                  alt="Keerthi" 
                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                />

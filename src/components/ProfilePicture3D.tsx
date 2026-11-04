@@ -495,7 +495,7 @@ export const ProfilePicture3D = ({ onAnimationComplete, instant = false }: { onA
         )}
 
         <motion.img
-          src="https://framerusercontent.com/images/4EgpRHgmfUkxQFXjxJH66BuVt8.png?width=316&height=316"
+          src="/work/home/4EgpRHgmfUkxQFXjxJH66BuVt8.png"
           className="w-full h-full object-cover rounded-[190px] border-4 border-white shadow-lg"
           alt="Keerthi"
           style={{

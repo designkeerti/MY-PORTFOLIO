@@ -34,7 +34,7 @@ export const projects: ProjectProps[] = [
     subtitle: "Interaction Design / Product Design",
     category: "B2B SaaS",
     color: "rgb(248, 242, 248)",
-    image: "https://framerusercontent.com/images/Pe50ywX86rDfidaxqEPq1hHV4W4.png",
+    image: "/work/home/Pe50ywX86rDfidaxqEPq1hHV4W4.webp",
     link: "https://keerthivardhan.framer.website/Work/appproject11",
     slug: "ekai"
   },
@@ -43,7 +43,7 @@ export const projects: ProjectProps[] = [
     subtitle: "UX/UI Design",
     category: "Mobile App",
     color: "rgb(222, 241, 250)",
-    image: "https://framerusercontent.com/images/ohaffIRt0xglZU0U2rKGdrcYD5o.png",
+    image: "/work/home/ohaffIRt0xglZU0U2rKGdrcYD5o.webp",
     link: "https://keerthivardhan.framer.website/Work/AppProject2",
     slug: "misfits"
   },
@@ -52,7 +52,7 @@ export const projects: ProjectProps[] = [
     subtitle: "System Design",
     category: "Public Transport",
     color: "rgb(252, 235, 239)",
-    image: "https://framerusercontent.com/images/YijBlctGzn0Mk4J6rFwf6TL43P0.png",
+    image: "/work/home/YijBlctGzn0Mk4J6rFwf6TL43P0.png",
     link: "https://keerthivardhan.framer.website/Work/AppProject1",
     slug: "dmrc"
   },
@@ -61,7 +61,7 @@ export const projects: ProjectProps[] = [
     subtitle: "CRM Application | Website design",
     category: "Real Estate",
     color: "rgb(244, 237, 255)",
-    image: "https://framerusercontent.com/images/Sk5TswNLO6gk2IJhTVRELrLDT08.png",
+    image: "/work/home/Sk5TswNLO6gk2IJhTVRELrLDT08.webp",
     link: "https://keerthivardhan.framer.website/Work/AppProject1",
     slug: "infinity"
   }
