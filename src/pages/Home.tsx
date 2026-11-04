@@ -4,7 +4,6 @@ import { HeroSection } from '../components/HeroSection';
 import { WorkCards } from '../components/WorkCards';
 import { SkillGrid } from '../components/hero/SkillCards';
 import { WorldGate } from '../components/WorldGate';
-import { SkillsSection } from '../components/SkillsSection';
 import { AboutSection } from '../components/AboutSection';
 import { useScrollControl } from '../components/SmoothScroll';
 
@@ -40,7 +39,6 @@ export const Home = ({ onReveal }: { onReveal: (n: number) => void }) => {
           {/* phones and tablets: what I make (on wide screens these float in the hero) */}
           {!reduce && <div className="mx-auto flex max-w-[560px] justify-center px-5 pb-16 lg:hidden"><SkillGrid shown /></div>}
           <WorldGate />
-          <SkillsSection />
           <AboutSection />
         </>
       )}

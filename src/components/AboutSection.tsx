@@ -1,4 +1,6 @@
-import { motion } from 'framer-motion';
+import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { setBack } from './sky/sky';
 import type { ReactNode } from 'react';
 import { SparkleIcon, BallIcon, QuillIcon, BookIcon } from './icons/SkillIcons';
 
@@ -6,8 +8,14 @@ import { SparkleIcon, BallIcon, QuillIcon, BookIcon } from './icons/SkillIcons';
 const GLASS = 'border border-white/80 bg-white/65 backdrop-blur-md shadow-[0_24px_50px_-30px_rgba(15,30,55,0.55)]';
 
 export const AboutSection = () => {
+  // the sky rolls back in over the burn as this section rises into view (and back out on the way up)
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 60%'] });
+  useMotionValueEvent(scrollYProgress, 'change', v => setBack(v));
+  useEffect(() => { setBack(scrollYProgress.get()); return () => setBack(0); }, [scrollYProgress]);
+
   return (
-    <section id="about" className="w-full relative z-10 py-20 md:py-32 overflow-hidden">
+    <section ref={ref} id="about" className="w-full relative z-10 py-20 md:py-32 overflow-hidden">
       
 
       <div className="w-full max-w-[1200px] mx-auto px-6 relative z-10">
@@ -35,7 +43,7 @@ export const AboutSection = () => {
             >
                <div className="relative z-10">
                  <div className="flex flex-wrap items-center gap-3 mb-4 md:mb-6">
-                   <h3 className="section-title text-2xl md:text-4xl text-ink leading-tight">
+                   <h3 className="text-2xl md:text-4xl font-bold tracking-[-0.02em] text-ink leading-tight">
                      I'm Keerthi Vardhan.
                    </h3>
                    <span className="px-3 py-1 bg-green-500/15 text-green-800 text-xs font-bold rounded-full border border-green-600/25 flex items-center gap-1.5">
@@ -89,7 +97,7 @@ export const AboutSection = () => {
               style={{ background: 'linear-gradient(135deg,#efe6ff,#ffe7d6)' }}
             >
                <span className="mb-4 h-10 w-10 text-ink/80 md:mb-6 md:h-12 md:w-12"><SparkleIcon /></span>
-               <p className="section-title text-lg md:text-2xl leading-snug relative z-10">
+               <p className="text-lg md:text-2xl font-semibold tracking-[-0.01em] leading-snug relative z-10">
                  "Great design isn’t just about how it works, it’s about how it feels."
                </p>
             </motion.div>
@@ -131,7 +139,7 @@ export const AboutSection = () => {
               className="md:col-span-3 mt-4 md:mt-8 border-t border-ink/15 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 pb-12 md:pb-0"
             >
                <div className="flex flex-col gap-1 text-center md:text-left order-2 md:order-1">
-                 <span className="section-title text-lg md:text-xl text-ink">Keerthi Vardhan</span>
+                 <span className="text-lg md:text-xl font-bold text-ink">Keerthi Vardhan</span>
                  <p className="text-ink/55 text-xs md:text-sm">© 2025. Vibecoded the shit out of this.</p>
                </div>
 

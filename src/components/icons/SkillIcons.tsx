@@ -1,5 +1,5 @@
 /**
- * Line icons for the toolkit and about sections. Each has a small motion that plays
+ * Line icons for the about section. Each has a small motion that plays
  * when its card (a `.group` ancestor) is hovered or focused; see `.ic-*` in index.css.
  * Stroke is currentColor, so they take the text colour.
  */
@@ -8,57 +8,6 @@ const Svg = ({ children }: { children: React.ReactNode }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="ic h-full w-full" aria-hidden>
     {children}
   </svg>
-);
-
-/** UX design: a compass; the needle swings round */
-export const CompassIcon = () => (
-  <Svg>
-    <circle cx="12" cy="12" r="9" />
-    <g className="ic-spin"><path d="M15.5 8.5 13.4 13.4 8.5 15.5 10.6 10.6Z" /><circle cx="12" cy="12" r="0.6" fill="currentColor" /></g>
-  </Svg>
-);
-
-/** UI design: a pen nib drawing a curve */
-export const PenIcon = () => (
-  <Svg>
-    <path className="ic-draw" d="M3 20c3-1 4.5-4 7-4s3.5 2 6 1" />
-    <g className="ic-nudge"><path d="m14 4 6 6-5 2-3-3 2-5Z" /><path d="m12 9-2.5 4.5" /></g>
-  </Svg>
-);
-
-/** UX research: a magnifier that searches around */
-export const SearchIcon = () => (
-  <Svg>
-    <g className="ic-scan"><circle cx="10.5" cy="10.5" r="6" /><path d="m15 15 5 5" /></g>
-    <path d="M8 10.5h5" opacity="0.5" />
-  </Svg>
-);
-
-/** Prototyping: a phone with a tap ripple */
-export const TapIcon = () => (
-  <Svg>
-    <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
-    <path d="M10.5 5h3" />
-    <circle cx="12" cy="13" r="1.3" fill="currentColor" />
-    <circle className="ic-ripple" cx="12" cy="13" r="3.5" />
-  </Svg>
-);
-
-/** Vibecoding: code brackets that spring apart */
-export const CodeIcon = () => (
-  <Svg>
-    <path className="ic-left" d="m8 7-5 5 5 5" />
-    <path className="ic-right" d="m16 7 5 5-5 5" />
-    <path className="ic-tilt" d="m13.5 5-3 14" />
-  </Svg>
-);
-
-/** Collaboration: two overlapping circles that come together */
-export const MergeIcon = () => (
-  <Svg>
-    <circle className="ic-left" cx="9" cy="12" r="5.5" />
-    <circle className="ic-right" cx="15" cy="12" r="5.5" />
-  </Svg>
 );
 
 /** A sparkle that turns */
