@@ -1,5 +1,5 @@
-import { motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 import { PaintedPortrait } from './hero/PaintedPortrait';
 import { TOOLS, COMPANIES, type Tool, type Company } from './hero/tools';
 
@@ -90,12 +90,10 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
           transition={{ duration: 0.9, delay: instant ? 0 : 1.1, ease: EASE }}
           className="col-span-full mt-16 border-t border-white/10 pt-6 md:mt-14"
         >
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:gap-12">
-            <span className="shrink-0 text-sm text-white/50">Worked with</span>
-            <ul className="grid flex-1 grid-cols-3 items-center gap-x-6 gap-y-7 md:flex md:justify-between md:gap-8">
-              {COMPANIES.map(c => <CompanyLogo key={c.name} c={c} />)}
-            </ul>
-          </div>
+          {/* No visible label: the logos speak for themselves. Screen readers still get one. */}
+          <ul aria-label="Companies I've worked with" className="grid grid-cols-3 items-center gap-x-6 gap-y-7 md:flex md:justify-between md:gap-8">
+            {COMPANIES.map(c => <CompanyLogo key={c.name} c={c} />)}
+          </ul>
         </motion.div>
       </div>
     </section>
@@ -103,10 +101,24 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 };
 
 function ToolCard({ tool, shown, instant, pos }: { tool: Tool; shown: boolean; instant: boolean; pos: string }) {
+  // On wide screens the cards land with the painting. On phones they sit
+  // below it, so they also appear on their own once scrolled into view;
+  // otherwise scrolling past quickly would leave empty slots.
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.4 });
+  const [stacked, setStacked] = useState(() => typeof window !== 'undefined' && !window.matchMedia('(min-width: 768px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const on = () => setStacked(!mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  const visible = instant || shown || (stacked && inView);
   return (
     <motion.div
+      ref={ref}
       initial={instant ? false : { opacity: 0, y: 16 }}
-      animate={shown || instant ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+      animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
       transition={{ duration: 0.7, ease: EASE }}
       className={`relative z-10 w-full rounded-2xl border border-white/10 bg-[#16131c]/80 p-4 text-[#f4efe6] shadow-[0_24px_48px_-20px_rgba(0,0,0,0.8)] backdrop-blur-md md:absolute md:w-[212px] ${pos}`}
     >

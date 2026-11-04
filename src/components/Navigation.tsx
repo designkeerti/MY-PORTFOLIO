@@ -12,7 +12,11 @@ export const Navigation = ({ revealStep, isDarkMode = true }: { revealStep: numb
   const [pastHero, setPastHero] = useState(!onHome);
   useEffect(() => {
     if (!onHome) { setPastHero(true); return; }
-    const check = () => setPastHero(window.scrollY > window.innerHeight * 0.8);
+    // past the hero = its bottom edge has scrolled above the top of the screen
+    const check = () => {
+      const hero = document.querySelector('.hero-poster');
+      setPastHero(hero ? hero.getBoundingClientRect().bottom < 80 : window.scrollY > window.innerHeight * 0.8);
+    };
     check();
     window.addEventListener('scroll', check, { passive: true });
     return () => window.removeEventListener('scroll', check);
