@@ -2,6 +2,9 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "keerti-portfolio",
   "compatibility_date": "2026-10-01",
+  // wrangler builds the site itself before every deploy or version upload, so Cloudflare's
+  // Git builds (which run only `wrangler deploy` / `versions upload`) have a dist/ to serve
+  "build": { "command": "npm run build" },
   // only the films run through the worker (it adds byte ranges); everything else is static
   "main": "./worker/index.js",
   "assets": {
