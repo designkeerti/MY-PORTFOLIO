@@ -91,6 +91,31 @@ html.sky.burned { background-color: #0d0c0b; --ink-rgb: 241 236 228; }
 .hero-poster h1, .hero-poster p, .hero-poster a { transition: color 0.6s ease; }
 .logo-ink { transition: filter 0.6s ease; }
 html.burned .logo-ink { filter: brightness(0) invert(0.93); }
+/* The nav pills (Navigation): light glass on the sky, dark glass once the page has burned
+   to black, crossfading as it turns. */
+.nav-pill {
+  height: 44px; border-radius: 999px; color: #17191e;
+  background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 12px 30px -18px rgba(15, 30, 55, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
+  transition: background-color .45s ease, border-color .45s ease, color .45s ease, box-shadow .45s ease;
+}
+@media (min-width: 768px) { .nav-pill { height: 48px; } }
+html.burned .nav-pill {
+  color: #f1ece4; background: rgba(28, 26, 34, 0.62); border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.nav-link { color: inherit; opacity: .78; transition: opacity .2s ease, background-color .2s ease; }
+.nav-link:hover, .nav-link:focus-visible { opacity: 1; background: rgba(23, 25, 30, 0.07); }
+html.burned .nav-link:hover, html.burned .nav-link:focus-visible { background: rgba(255, 255, 255, 0.09); }
+.nav-card {
+  border-radius: 18px; color: #17191e;
+  background: rgba(255, 255, 255, 0.86); border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 24px 50px -24px rgba(15, 30, 55, 0.55);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5); backdrop-filter: blur(20px) saturate(1.5);
+}
+html.burned .nav-card { color: #f1ece4; background: rgba(28, 26, 34, 0.84); border-color: rgba(255, 255, 255, 0.1); }
+
 /* the skill cards are light glass: they keep dark ink */
 .skill-card { --ink-rgb: 23 25 30; }
 

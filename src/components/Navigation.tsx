@@ -1,127 +1,136 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useEffect, type ReactNode, type MouseEvent } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { LottieAnimation } from './LottieAnimation';
 import { pageTop } from '../lib/pageTop';
 
-export const Navigation = ({ revealStep, isDarkMode = true }: { revealStep: number; isDarkMode?: boolean }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isNameHovered, setIsNameHovered] = useState(false);
+/**
+ * Two glass pills: my name with the cat on the left, the menu on the right.
+ * Nothing over the hero; from the work section on, it slides away while you scroll down and
+ * comes back the moment you scroll up.
+ *
+ * They are two separate fixed pills on purpose, not one full-width bar: iOS Safari 26 tints its
+ * status bar from a pinned box spanning the screen at the top edge (and keeps that colour while
+ * the box exists). A pill is too narrow to count, wherever it is mid-slide.
+ */
+
+// the cat only ever draws inside this part of its 80px Lottie square (measured over all 480 frames)
+const CAT = { box: 80, x0: 12, y0: 32.5, w: 54.5, h: 24, scale: 1.15 };
+const catBox = CAT.box * CAT.scale;
+
+/** distance a scroll must go in one direction before the bar reacts */
+const NUDGE = 6;
+
+export const Navigation = ({ revealStep }: { revealStep: number }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [shown, setShown] = useState(false);
   const lottieRef = useRef<{ handleHoverStart: () => void; handleHoverEnd: () => void } | null>(null);
   const onHome = useLocation().pathname === '/';
-  // The home hero has no navbar: it appears once you scroll past the poster.
-  const [pastHero, setPastHero] = useState(!onHome);
+  const reduce = useReducedMotion();
+
   useEffect(() => {
-    if (!onHome) { setPastHero(true); return; }
-    // past the hero = its bottom edge has scrolled above the top of the screen
-    const check = () => {
-      const hero = document.querySelector('.hero-poster');
-      setPastHero(hero ? hero.getBoundingClientRect().bottom < 80 : window.scrollY - pageTop() > window.innerHeight * 0.8);
+    if (revealStep < 3) { setShown(false); return; }
+    let lastY = window.scrollY, raf = 0;
+    // in the zone once the work section has reached the top of the screen (or on any page without one)
+    const inZone = () => {
+      const work = document.getElementById('work');
+      return work ? work.getBoundingClientRect().top <= 1 : !onHome;
     };
-    check();
-    window.addEventListener('scroll', check, { passive: true });
-    return () => window.removeEventListener('scroll', check);
-  }, [onHome]);
-  const visible = revealStep >= 3 && pastHero;
+    const update = () => {
+      raf = 0;
+      const y = window.scrollY, dy = y - lastY;
+      if (!inZone()) { setShown(false); lastY = y; return; }
+      if (Math.abs(dy) < NUDGE) return;
+      setShown(dy < 0);
+      lastY = y;
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
+  }, [revealStep, onHome]);
+
+  // the phone menu closes when the bar goes, on a tap elsewhere, and on Escape
+  useEffect(() => { if (!shown) setMenuOpen(false); }, [shown]);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (e: Event) => { if (!(e.target as Element).closest?.('[data-nav-menu]')) setMenuOpen(false); };
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false); };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('keydown', esc);
+    return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', esc); };
+  }, [menuOpen]);
+
+  const visible = shown || menuOpen;
+  const motionProps = {
+    initial: { y: '-160%', opacity: 0 },
+    animate: visible
+      ? { y: '0%', opacity: 1, visibility: 'visible' as const }
+      : { y: reduce ? '0%' : '-160%', opacity: 0, transitionEnd: { visibility: 'hidden' as const } },
+    transition: { duration: reduce ? 0.2 : 0.42, ease: [0.22, 0.61, 0.36, 1] as const },
+  };
+
   // On the home page these stay plain anchors so the existing scroll behaviour is untouched;
-  // from a case study they route home first.
-  const SectionLink = ({ to, className, onClick, children }: { to: string; className?: string; onClick?: () => void; children: React.ReactNode }) =>
+  // from anywhere else they route home first.
+  const SectionLink = ({ to, className, onClick, children }: { to: string; className?: string; onClick?: () => void; children: ReactNode }) =>
     onHome
       ? <a href={`#${to}`} className={className} onClick={onClick}>{children}</a>
       : <Link to={`/#${to}`} className={className} onClick={onClick}>{children}</Link>;
 
-  const textColor = isDarkMode ? 'text-white' : 'text-text-primary';
-  const menuBg = isDarkMode ? 'bg-white/10 border-white/10' : 'bg-white/80 border-white/50';
-  const hoverColor = isDarkMode ? 'hover:text-[#FFAA95]' : 'hover:text-purple-600';
+  const toTop = (e: MouseEvent) => {
+    if (!onHome) return;
+    e.preventDefault();
+    window.scrollTo({ top: pageTop(), behavior: reduce ? 'auto' : 'smooth' });
+  };
+
+  const links: [string, string][] = [['work', 'Work'], ['about', 'About'], ['about', 'Contact']];
 
   return (
     <>
-      {/* Fixed Navbar. It starts 8px down (padding 8px less, so nothing moves) and clips its
-          contents (the cat's box is taller than the cat): Safari 26 samples 4px inside the screen
-          edge for a pinned bar to tint its status bar from, and this keeps the nav out of it. */}
-      <motion.nav 
-        className="fixed top-2 left-0 right-0 z-50 overflow-clip px-8 pt-[calc(1rem+env(safe-area-inset-top))] pb-3 flex justify-between items-center bg-transparent backdrop-blur-sm"
-        // fades in place: sliding in from above would carry it across the edge Safari samples,
-        // and Safari would keep tinting its status bar from it. Fully hidden once faded, so its
-        // links can't be tabbed to while invisible.
-        initial={{ opacity: 0 }}
-        animate={visible
-          ? { opacity: 1, visibility: 'visible' }
-          : { opacity: 0, transitionEnd: { visibility: 'hidden' } }}
-        transition={{
-          duration: 0.6,
-          ease: [0.25, 0.1, 0.25, 1],
-        }}
-      >
-        <Link
-          to="/"
-          className="inline-block font-bold text-xl tracking-tight cursor-pointer group relative"
-          style={{ 
-            backgroundColor: 'transparent',
-            backdropFilter: 'none',
-            WebkitBackdropFilter: 'none',
-            transform: 'scale(1.2)',
-            transformOrigin: 'left center',
-          }}
-          onMouseEnter={() => {
-            setIsNameHovered(true);
-            lottieRef.current?.handleHoverStart();
-          }}
-          onMouseLeave={() => {
-            setIsNameHovered(false);
-            lottieRef.current?.handleHoverEnd();
-          }}
-        >
-          <span className={`${textColor} leading-none transition-colors relative z-10 inline-block ${isNameHovered ? 'text-[#FFAA95]' : ''}`} style={{ backgroundColor: 'transparent' }}>Keerthi Vardhan</span>
-          <div className="absolute left-full top-1/2 flex items-center justify-center shrink-0 overflow-visible pointer-events-none" style={{ marginLeft: '-8px', marginTop: '-8px', transform: 'translateY(-50%)', backgroundColor: 'transparent' }}>
-            <LottieAnimation 
-              ref={lottieRef}
-              path="/lottie/Cat is sleeping and rolling.json"
-              width={80}
-              height={80}
-              loop={true}
-              autoplay={true}
-              className="bg-transparent pointer-events-auto"
-            />
-          </div>
+      {/* name + cat */}
+      <motion.div {...motionProps} className="nav-pill fixed left-4 top-[calc(0.75rem+env(safe-area-inset-top))] z-50 md:left-8 md:top-[calc(1.25rem+env(safe-area-inset-top))]">
+        <Link to="/" onClick={toTop} aria-label="Keerthi Vardhan, back to the top"
+          className="group flex h-full items-center gap-1.5 pl-4 pr-2.5 md:pl-5 md:pr-3"
+          onMouseEnter={() => lottieRef.current?.handleHoverStart()}
+          onMouseLeave={() => lottieRef.current?.handleHoverEnd()}>
+          <span className="text-[15px] font-semibold tracking-[-0.01em] md:text-[16px]">Keerthi Vardhan</span>
+          {/* a window onto the cat's drawing, so the pill stays slim */}
+          <span aria-hidden className="relative block shrink-0 overflow-hidden" style={{ width: CAT.w * CAT.scale, height: CAT.h * CAT.scale }}>
+            <span className="absolute block" style={{ left: -CAT.x0 * CAT.scale, top: -CAT.y0 * CAT.scale, width: catBox, height: catBox }}>
+              <LottieAnimation ref={lottieRef} path="/lottie/Cat is sleeping and rolling.json" width={catBox} height={catBox} loop autoplay className="bg-transparent" />
+            </span>
+          </span>
         </Link>
+      </motion.div>
 
-        {/* Desktop Menu */}
-        <div className={`hidden md:flex items-center gap-8 px-6 py-3 rounded-full border shadow-sm backdrop-blur-md transition-colors duration-300 ${menuBg}`}>
-          <SectionLink to="work" className={`text-sm font-medium transition-colors ${textColor} ${hoverColor}`}>Work</SectionLink>
-          <SectionLink to="about" className={`text-sm font-medium transition-colors ${textColor} ${hoverColor}`}>About</SectionLink>
-          <SectionLink to="about" className={`text-sm font-medium transition-colors ${textColor} ${hoverColor}`}>Contact</SectionLink>
-        </div>
-
-        {/* Mobile Toggle */}
-        <button 
-          onClick={() => setIsOpen(!isOpen)}
-          className={`md:hidden p-2 rounded-full shadow-sm z-50 transition-colors duration-300 ${isDarkMode ? 'bg-white/10 text-white' : 'bg-white text-black'}`}
-        >
-          <div className="w-6 h-6 flex flex-col justify-center gap-1.5">
-            <span className={`block w-full h-0.5 transition-transform ${isDarkMode ? 'bg-white' : 'bg-black'} ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`block w-full h-0.5 transition-opacity ${isDarkMode ? 'bg-white' : 'bg-black'} ${isOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-full h-0.5 transition-transform ${isDarkMode ? 'bg-white' : 'bg-black'} ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-          </div>
+      {/* the menu */}
+      <motion.div {...motionProps} data-nav-menu className="nav-pill fixed right-4 top-[calc(0.75rem+env(safe-area-inset-top))] z-50 md:right-8 md:top-[calc(1.25rem+env(safe-area-inset-top))]">
+        <nav aria-label="Main" className="hidden h-full items-center gap-1 px-2 md:flex">
+          {links.map(([to, label]) => (
+            <SectionLink key={label} to={to} className="nav-link rounded-full px-4 py-2 text-[14px] font-medium">{label}</SectionLink>
+          ))}
+        </nav>
+        <button type="button" onClick={() => setMenuOpen(o => !o)} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close the menu' : 'Open the menu'}
+          className="flex h-full w-11 items-center justify-center md:hidden">
+          <span className="relative block h-3 w-[18px]" aria-hidden>
+            <span className={`absolute left-0 block h-[1.5px] w-full rounded-full bg-current transition-transform duration-300 ${menuOpen ? 'top-[5px] rotate-45' : 'top-0'}`} />
+            <span className={`absolute left-0 block h-[1.5px] w-full rounded-full bg-current transition-transform duration-300 ${menuOpen ? 'top-[5px] -rotate-45' : 'top-[10px]'}`} />
+          </span>
         </button>
-      </motion.nav>
+      </motion.div>
 
-      {/* Mobile Menu Overlay */}
+      {/* the phone menu: its own small glass card under the pill (not inside it: a backdrop blur
+          nested in another one would blur nothing) */}
       <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-[#0f0d16] text-white flex flex-col items-center justify-center gap-8"
-          >
-            <SectionLink to="work" onClick={() => setIsOpen(false)} className="text-2xl font-bold">Work</SectionLink>
-            <SectionLink to="about" onClick={() => setIsOpen(false)} className="text-2xl font-bold">About</SectionLink>
-            <SectionLink to="about" onClick={() => setIsOpen(false)} className="text-2xl font-bold">Contact</SectionLink>
+        {menuOpen && (
+          <motion.div key="menu" data-nav-menu className="nav-card fixed right-4 top-[calc(0.75rem+44px+8px+env(safe-area-inset-top))] z-50 flex w-44 flex-col p-1.5 md:hidden"
+            initial={{ opacity: 0, y: -6, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.2, ease: [0.22, 0.61, 0.36, 1] }} style={{ transformOrigin: 'top right' }}>
+            {links.map(([to, label]) => (
+              <SectionLink key={label} to={to} onClick={() => setMenuOpen(false)} className="nav-link rounded-[12px] px-4 py-3 text-[16px] font-medium">{label}</SectionLink>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>
     </>
   );
 };
-
