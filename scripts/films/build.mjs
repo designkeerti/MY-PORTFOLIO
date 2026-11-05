@@ -177,10 +177,12 @@ async function build(slug) {
   await run('ffmpeg', ['-loglevel', 'error', '-y', ...inputs, '-filter_complex', filt, '-map', '[out]', '-t', String(timing.total), '-c:a', 'aac', '-b:a', '128k', '-ar', '48000', voice]);
 
   // 6. the film
-  const mp4 = path.join(OUT, `${slug}.mp4`);
+  // encode beside the work files and move in when complete, so public/ never holds half a film
+  const mp4 = path.join(work, `${slug}.mp4`);
   await run('ffmpeg', ['-loglevel', 'error', '-y', '-i', silent, '-i', voice, '-map', '0:v', '-map', '1:a',
     '-c:v', 'libx264', '-preset', 'slow', '-crf', process.env.FILM_CRF || '24', '-tune', 'animation', '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', mp4]);
   await run('ffmpeg', ['-loglevel', 'error', '-y', '-ss', String(Math.min(2.6, timing.beats[0].dur - 0.2)), '-i', mp4, '-frames:v', '1', '-vf', 'scale=1280:-2', '-q:v', '4', path.join(OUT, `${slug}.jpg`)]);
+  fs.copyFileSync(mp4, path.join(OUT, `${slug}.mp4`));
 
   // 7. captions and chapters
   let vtt = 'WEBVTT\n\n';
@@ -195,7 +197,7 @@ async function build(slug) {
   fs.writeFileSync(path.join(OUT, `${slug}.vtt`), vtt);
   const chapters = beats.map((b, i) => b.chapter ? { t: timing.beats[i].start, label: b.chapter } : null).filter(Boolean);
   fs.writeFileSync(path.join(OUT, `${slug}.json`), JSON.stringify({ duration: timing.total, chapters }, null, 1));
-  console.log(`${slug}: done, ${(fs.statSync(mp4).size / 1e6).toFixed(1)} MB`);
+  console.log(`${slug}: done, ${(fs.statSync(path.join(OUT, `${slug}.mp4`)).size / 1e6).toFixed(1)} MB`);
 }
 
 for (const slug of process.argv.slice(2)) await build(slug);
