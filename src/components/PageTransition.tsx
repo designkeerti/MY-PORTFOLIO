@@ -128,7 +128,8 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     const { gl, U } = g;
     const canvas = canvasRef.current!;
     const scale = 0.6;
-    canvas.width = Math.round(innerWidth * scale); canvas.height = Math.round(innerHeight * scale);
+    // sized from its own box: on iOS it bleeds past both bars (see .transition-canvas in index.css)
+    canvas.width = Math.round((canvas.clientWidth || innerWidth) * scale); canvas.height = Math.round((canvas.clientHeight || innerHeight) * scale);
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.uniform2f(U('u_res'), canvas.width, canvas.height);
     gl.uniform1f(U('u_mode'), mode === 'fog' ? 0 : 1);
@@ -165,7 +166,10 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={go}>
       {children}
-      <canvas ref={canvasRef} aria-hidden className="fixed inset-0 h-full w-full" style={{ zIndex: 2147483600, visibility: 'hidden', pointerEvents: 'none' }} />
+      {/* in a composited anchor, so iOS Safari doesn't clip it to the space between its bars */}
+      <div aria-hidden className="layer-anchor transition-anchor">
+        <canvas ref={canvasRef} className="transition-canvas" style={{ visibility: 'hidden', pointerEvents: 'none' }} />
+      </div>
     </Ctx.Provider>
   );
 }

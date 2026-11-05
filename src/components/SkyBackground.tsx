@@ -15,6 +15,7 @@ import { SKY_GLSL, skyTime, duskAmount, skyScroll, getClear, onClear, getBack, o
 const FRAG = `
 precision highp float;
 uniform vec2 u_res;
+uniform vec4 u_frame;    // the screen-sized frame inside the canvas (x, y, w, h); the canvas bleeds past it behind iOS's bars
 uniform float u_time;
 uniform float u_dusk;
 uniform float u_sc;
@@ -54,8 +55,9 @@ float sparks(vec2 p, float t) {
 }
 
 void main() {
-  vec2 uv = gl_FragCoord.xy / u_res;
-  float asp = u_res.x / u_res.y;
+  // uv runs 0..1 over the frame and simply continues past it, so the sky keeps its framing
+  vec2 uv = (gl_FragCoord.xy - u_frame.xy) / u_frame.zw;
+  float asp = u_frame.z / u_frame.w;
   vec2 p = vec2(uv.x * asp, uv.y);
   float nd;
   float c = u_clear;
@@ -130,7 +132,7 @@ export function SkyBackground() {
     const gl = canvas.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: true, preserveDrawingBuffer: true });
     if (!gl) return; // the still sky picture on the layer stays as the fallback
 
-    let uRes: WebGLUniformLocation | null = null, uTime: WebGLUniformLocation | null = null;
+    let uRes: WebGLUniformLocation | null = null, uFrame: WebGLUniformLocation | null = null, uTime: WebGLUniformLocation | null = null;
     let uDusk: WebGLUniformLocation | null = null, uScroll: WebGLUniformLocation | null = null, uClear: WebGLUniformLocation | null = null, uBack: WebGLUniformLocation | null = null;
     let ready = false;
     function init() {
@@ -147,7 +149,7 @@ export function SkyBackground() {
       gl!.enableVertexAttribArray(loc);
       gl!.vertexAttribPointer(loc, 2, gl!.FLOAT, false, 0, 0);
       const U = (n: string) => gl!.getUniformLocation(prog, n);
-      uRes = U('u_res'); uTime = U('u_time'); uDusk = U('u_dusk'); uScroll = U('u_sc'); uClear = U('u_clear'); uBack = U('u_back');
+      uRes = U('u_res'); uFrame = U('u_frame'); uTime = U('u_time'); uDusk = U('u_dusk'); uScroll = U('u_sc'); uClear = U('u_clear'); uBack = U('u_back');
       gl!.uniform1f(U('u_octaves'), small ? 5 : 6);
       ready = true;
       fit(true);
@@ -155,14 +157,22 @@ export function SkyBackground() {
 
     // Size to the layer's box (100lvh: the largest viewport height, so toolbars showing and
     // hiding never resize it). Watched with a ResizeObserver, so a box that wasn't laid out
-    // yet when this ran still gets the right size as soon as it is.
+    // yet when this ran still gets the right size as soon as it is. On iOS the box bleeds
+    // past the screen top and bottom (see .sky-layer in index.css); the shader is told
+    // where the screen-sized frame sits in it, so the sky is framed exactly as elsewhere.
     function fit(force = false) {
       if (!ready) return;
-      const w = Math.max(2, Math.round(canvas.clientWidth * SCALE));
-      const h = Math.max(2, Math.round(canvas.clientHeight * SCALE));
+      const cw = canvas.clientWidth, ch = canvas.clientHeight;
+      const w = Math.max(2, Math.round(cw * SCALE));
+      const h = Math.max(2, Math.round(ch * SCALE));
       if (force || canvas.width !== w || canvas.height !== h) {
         canvas.width = w; canvas.height = h; gl!.viewport(0, 0, w, h);
         gl!.uniform2f(uRes, w, h);
+        const cs = getComputedStyle(canvas.parentElement!);
+        const top = parseFloat(cs.getPropertyValue('--bleed-top')) || 0;
+        const bottom = parseFloat(cs.getPropertyValue('--bleed-bottom')) || 0;
+        const k = ch ? h / ch : SCALE;
+        gl!.uniform4f(uFrame, 0, bottom * k, w, Math.max(1, (ch - top - bottom) * k));
         draw();
       }
     }
@@ -248,8 +258,10 @@ export function SkyBackground() {
   // for its bars. Without one, its glass bars show this layer through them. The
   // fallback colour lives on <html> instead (index.css).
   return (
-    <div aria-hidden className="sky-layer pointer-events-none">
-      <canvas ref={ref} className="absolute inset-0 block h-full w-full" />
+    <div aria-hidden className="layer-anchor sky-anchor">
+      <div className="sky-layer pointer-events-none">
+        <canvas ref={ref} className="absolute inset-0 block h-full w-full" />
+      </div>
     </div>
   );
 }

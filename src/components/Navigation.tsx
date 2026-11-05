@@ -35,14 +35,18 @@ export const Navigation = ({ revealStep, isDarkMode = true }: { revealStep: numb
 
   return (
     <>
-      {/* Fixed Navbar */}
+      {/* Fixed Navbar. It starts 8px down (padding 8px less, so nothing moves) and clips its
+          contents (the cat's box is taller than the cat): Safari 26 samples 4px inside the screen
+          edge for a pinned bar to tint its status bar from, and this keeps the nav out of it. */}
       <motion.nav 
-        className="fixed top-0 left-0 right-0 z-50 px-8 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3 flex justify-between items-center bg-transparent backdrop-blur-sm"
-        initial={{ opacity: 0, y: -20 }}
-        // fully hidden once faded, so its links can't be tabbed to while invisible
+        className="fixed top-2 left-0 right-0 z-50 overflow-clip px-8 pt-[calc(1rem+env(safe-area-inset-top))] pb-3 flex justify-between items-center bg-transparent backdrop-blur-sm"
+        // fades in place: sliding in from above would carry it across the edge Safari samples,
+        // and Safari would keep tinting its status bar from it. Fully hidden once faded, so its
+        // links can't be tabbed to while invisible.
+        initial={{ opacity: 0 }}
         animate={visible
-          ? { opacity: 1, y: 0, visibility: 'visible' }
-          : { opacity: 0, y: -20, transitionEnd: { visibility: 'hidden' } }}
+          ? { opacity: 1, visibility: 'visible' }
+          : { opacity: 0, transitionEnd: { visibility: 'hidden' } }}
         transition={{
           duration: 0.6,
           ease: [0.25, 0.1, 0.25, 1],

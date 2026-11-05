@@ -56,7 +56,7 @@ export function FilmPlayer({ slug, info, company, accent, open, onClose }:
     <AnimatePresence>
       {open && (
         <motion.div key="film" role="dialog" aria-modal="true" aria-label={`${company} case study, video`}
-          className="fixed inset-0 z-[2147483000] flex items-center justify-center bg-[#0b0d12]/85 px-3 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] backdrop-blur-xl md:px-8"
+          className="fixed inset-0 z-[2147483000] flex items-center justify-center bg-[#0b0d12] px-3 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] md:px-8"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
           onClick={onClose}>
           <motion.div className="relative w-full max-w-[1120px]" onClick={e => e.stopPropagation()}

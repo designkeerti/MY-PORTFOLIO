@@ -72,9 +72,12 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 
   return (
     <>
-    <section ref={heroRef} className="hero-poster relative w-full" style={{ height: pinned ? '230svh' : undefined }}>
-      {/* No navbar over the hero: the page opens on the poster itself. */}
-      <div className={pinned ? 'sticky top-0 h-[100svh] overflow-hidden' : 'relative'}>
+    <section ref={heroRef} className="hero-poster relative isolate w-full" style={{ height: pinned ? '230svh' : undefined }}>
+      {/* No navbar over the hero: the page opens on the poster itself.
+          The pinned frame has a negative z-index (inside this isolated section, so it paints
+          and takes taps exactly as before): Safari 26 skips screen-sized pinned boxes with one
+          when it picks a flat colour for its bars, and the sky shows behind them instead. */}
+      <div className={pinned ? 'sticky top-0 -z-10 h-[100svh] overflow-hidden' : 'relative'}>
         <div className="relative mx-auto flex h-full w-full max-w-[1360px] flex-col items-center px-5 pt-[calc(3rem+env(safe-area-inset-top))] text-center md:px-10 md:pt-[calc(min(3.5rem,5svh)+env(safe-area-inset-top))]">
 
           {/* The type, centred. The name stays where it is throughout. */}
