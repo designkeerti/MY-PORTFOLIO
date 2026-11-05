@@ -55,6 +55,17 @@ main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
   background: transparent url('/hero/sky-portrait.jpg') center top / cover no-repeat;
 }
 @media (min-aspect-ratio: 1/1) { .sky-layer { background-image: url('/hero/sky-landscape.jpg'); } }
+/* iOS Safari (26+) clips position: fixed to the strip between its bars, and behind the
+   status bar and toolbar draws only ordinary page content over the root colour: hence a
+   flat band top and bottom. So on iOS the sky is sticky instead: part of the page, pinned
+   to the top, the full height of the screen (lvh: toolbars retracted, so it never resizes),
+   with the page pulled up over it. Safari draws it behind both bars, edge to edge.
+   The padding keeps it pinned to the very end, when the toolbar is out and the last
+   screen is shorter than the sky. */
+@supports (-webkit-touch-callout: none) {
+  .sky-layer { position: sticky; top: 0; width: 100%; height: 100lvh; margin-bottom: -100lvh; }
+  main:has(> .sky-layer) { padding-bottom: calc(100lvh - 100svh); }
+}
 /* desktop pointer parallax: the farthest layer, overscaled so its edges never show */
 @media (hover: hover) and (pointer: fine) {
   .sky-layer { scale: 1.14; translate: calc(var(--px, 0) * -60px) calc(var(--py, 0) * -40px); }
