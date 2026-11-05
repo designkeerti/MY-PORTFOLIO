@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { isHex, normHex } from './color';
 import { AnimatePresence, motion } from 'framer-motion';
 
 /** The playground's shared bits, in the site's light glass. */
@@ -62,6 +63,52 @@ export function Toaster() {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/** A colour: the swatch opens the system picker, the hex can be typed or pasted. */
+export function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (hex: string) => void }) {
+  const [text, setText] = useState(value);
+  useEffect(() => setText(value), [value]);
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="pg-label">{label}</span>
+      <span className="flex items-center gap-2.5 rounded-[14px] border border-ink/14 bg-white p-1.5 pr-3">
+        <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-[10px] border border-ink/10" style={{ background: value }}>
+          <input type="color" value={value} onChange={e => onChange(e.target.value)} className="absolute inset-0 h-full w-full cursor-pointer opacity-0" aria-label={`${label}: pick a colour`} />
+        </span>
+        <input value={text} spellCheck={false} aria-label={`${label}: hex`}
+          onChange={e => { setText(e.target.value); if (isHex(e.target.value)) onChange(normHex(e.target.value)); }}
+          onBlur={() => setText(value)}
+          className="w-full min-w-0 bg-transparent font-mono text-[15px] uppercase text-ink outline-none" />
+      </span>
+    </label>
+  );
+}
+
+/** Copy some text, and say so. */
+export function useCopy() {
+  const toast = useToast();
+  return async (text: string, what = 'Copied') => {
+    try { await navigator.clipboard.writeText(text); toast(what === 'Copied' ? what : `${what} copied`); }
+    catch { toast('Copy blocked by the browser'); }
+  };
+}
+
+/** A small set of mutually exclusive options. */
+export function Segmented<T extends string>({ label, value, onChange, options }: { label?: string; value: T; onChange: (v: T) => void; options: { value: T; label: string }[] }) {
+  return (
+    <div>
+      {label && <p className="pg-label">{label}</p>}
+      <div className={`${label ? 'mt-2 ' : ''}flex flex-wrap gap-1.5`}>
+        {options.map(o => (
+          <button key={o.value} type="button" onClick={() => onChange(o.value)} aria-pressed={value === o.value}
+            className={`rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors ${value === o.value ? 'border-ink bg-ink text-white' : 'border-ink/12 bg-white text-ink/70 hover:border-ink/30'}`}>
+            {o.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

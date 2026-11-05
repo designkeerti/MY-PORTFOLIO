@@ -3,13 +3,23 @@
  * data: edit them here and the Picks page and the home tiles follow.
  */
 
-export type Tool = { slug: 'shader' | 'type' | 'picks'; title: string; short: string; blurb: string };
+export type ToolSlug = 'contrast' | 'scales' | 'image-palette' | 'type' | 'type-scale' | 'shader' | 'easing' | 'shadows' | 'grain' | 'picks';
+/** tile: a shorter name for the small home tiles, where the full title would be cut off */
+export type Tool = { slug: ToolSlug; group: 'Colour' | 'Type' | 'Motion & surface' | 'Picks'; title: string; tile?: string; short: string; blurb: string };
 
 export const TOOLS: Tool[] = [
-  { slug: 'shader', title: 'Shader Studio', short: 'Animated gradients you can copy into any site.', blurb: 'A live, animated gradient shader. Pick a preset or your own colours, shape it with the sliders, then copy the code or download a still.' },
-  { slug: 'type', title: 'Type Pairing Checker', short: 'Test two fonts together, with a verdict.', blurb: 'Pick a heading font and a body font and see them working together, as a hero, an article and an interface. It checks the pairing and gives you the CSS.' },
-  { slug: 'picks', title: 'Picks', short: 'Font pairings and colours I keep coming back to.', blurb: 'Font pairings and colour combinations from my work and my notebook. Tap a colour to copy it; open any pairing in the checker.' },
+  { slug: 'contrast', group: 'Colour', title: 'Contrast Checker', short: 'WCAG contrast, with the nearest colours that pass.', blurb: 'Check a text colour on a background against WCAG, for body text, large text and UI. If it fails, get the nearest colour that passes, same hue, only lighter or darker.' },
+  { slug: 'scales', group: 'Colour', title: 'Colour Scales', short: 'One colour into an 11-step scale, plus harmonies.', blurb: 'Turn one colour into a full 50 to 950 scale, evenly spaced to the eye, with its harmonies. Copy it as CSS variables, a Tailwind palette or JSON.' },
+  { slug: 'image-palette', group: 'Colour', title: 'Image Palette', short: 'Pull the colours out of any picture.', blurb: 'Drop in a photo and get its palette, weighted by how much of the picture each colour covers. It all happens in your browser; nothing is uploaded.' },
+  { slug: 'type', group: 'Type', title: 'Type Pairing Checker', tile: 'Type Pairing', short: 'Test two fonts together, with a verdict.', blurb: 'Pick a heading font and a body font and see them working together, as a hero, an article and an interface. It checks the pairing and gives you the CSS.' },
+  { slug: 'type-scale', group: 'Type', title: 'Fluid Type Scale', short: 'A type scale that grows with the screen.', blurb: 'Set a base size and ratio for a small screen and a large one, and get a modular scale that grows smoothly between them, as CSS clamp() values.' },
+  { slug: 'shader', group: 'Motion & surface', title: 'Shader Studio', short: 'Animated gradients you can copy into any site.', blurb: 'A live, animated gradient shader. Pick a preset or your own colours, shape it with the sliders, then copy the code or download a still.' },
+  { slug: 'easing', group: 'Motion & surface', title: 'Easing Editor', short: 'Draw a cubic-bezier, watch it move, copy it.', blurb: 'Drag the handles to shape an easing curve, watch it run against linear, and copy it for CSS or JavaScript. Overshoot allowed.' },
+  { slug: 'shadows', group: 'Motion & surface', title: 'Smooth Shadows', short: 'Layered, natural shadows as one line of CSS.', blurb: 'Several shadows that grow and fade the way light does, instead of one flat blur. Tune the depth and the light, then copy the box-shadow.' },
+  { slug: 'grain', group: 'Motion & surface', title: 'Grain', short: 'A seamless noise texture for a printed feel.', blurb: 'Make a seamless grain tile to lay over gradients and photos. Preview it, download the PNG, and copy the CSS to use it.' },
+  { slug: 'picks', group: 'Picks', title: 'Picks', short: 'Font pairings and colours I keep coming back to.', blurb: 'Font pairings and colour combinations from my work and my notebook. Tap a colour to copy it; open any pairing in the checker.' },
 ];
+export const GROUPS: Tool['group'][] = ['Colour', 'Type', 'Motion & surface', 'Picks'];
 
 /* ---------- fonts ---------- */
 

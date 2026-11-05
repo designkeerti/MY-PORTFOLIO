@@ -1,10 +1,25 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
-import { TOOLS } from '../playground/data';
+import { GROUPS, TOOLS, type ToolSlug } from '../playground/data';
 import { ToolThumb } from '../playground/Thumb';
 import { ShaderStudio } from '../playground/ShaderStudio';
 import { TypeChecker } from '../playground/TypeChecker';
 import { Picks } from '../playground/Picks';
+import { ContrastChecker } from '../playground/ContrastChecker';
+import { ColourScales } from '../playground/ColourScales';
+import { ImagePalette } from '../playground/ImagePalette';
+import { TypeScale } from '../playground/TypeScale';
+import { EasingEditor } from '../playground/EasingEditor';
+import { SmoothShadows } from '../playground/SmoothShadows';
+import { Grain } from '../playground/Grain';
+import type { ComponentType } from 'react';
+
+const VIEWS: Record<ToolSlug, ComponentType> = {
+  contrast: ContrastChecker, scales: ColourScales, 'image-palette': ImagePalette,
+  type: TypeChecker, 'type-scale': TypeScale,
+  shader: ShaderStudio, easing: EasingEditor, shadows: SmoothShadows, grain: Grain,
+  picks: Picks,
+};
 import { Toaster } from '../playground/ui';
 import { TransitionLink } from '../components/PageTransition';
 import { pageTop } from '../lib/pageTop';
@@ -24,6 +39,7 @@ export default function Playground() {
     return () => window.removeEventListener('scroll', on);
   }, []);
   if (tool && !t) return <Navigate to="/playground" replace />;
+  const View = t ? VIEWS[t.slug] : null;
 
   return (
     <article className="relative text-ink">
@@ -52,20 +68,28 @@ export default function Playground() {
 
       {/* the sheet */}
       <div className="relative min-h-[60svh] rounded-t-[32px] bg-[#f7f6f2] pb-24 pt-6 shadow-[0_-30px_60px_-40px_rgba(15,30,55,0.5)] md:rounded-t-[44px] md:pb-28 md:pt-12">
-        {t?.slug === 'shader' && <ShaderStudio />}
-        {t?.slug === 'type' && <TypeChecker />}
-        {t?.slug === 'picks' && <Picks />}
+        {View && <View />}
         {!t && (
-          <div className="mx-auto grid w-full max-w-[1100px] gap-3 px-4 sm:grid-cols-3 md:px-6">
-            {TOOLS.map(x => (
-              <TransitionLink key={x.slug} to={`/playground/${x.slug}`} className="cs-glass group flex flex-col rounded-[22px] p-3 transition-transform duration-300 hover:-translate-y-1">
-                <ToolThumb slug={x.slug} className="aspect-[16/10] w-full rounded-[16px] text-[56px]" />
-                <span className="px-2 pb-2 pt-4">
-                  <span className="block text-[18px] font-semibold tracking-[-0.01em] text-ink">{x.title}</span>
-                  <span className="mt-1 block text-[14px] leading-snug text-ink/60">{x.short}</span>
-                  <span className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink/70">Open <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span></span>
-                </span>
-              </TransitionLink>
+          <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-12 px-4 md:gap-16 md:px-6">
+            {GROUPS.map((g, gi) => (
+              <section key={g} aria-labelledby={'g-' + gi}>
+                <header className="mb-4 flex items-baseline gap-3 px-1">
+                  <span className="pg-label">{String(gi + 1).padStart(2, '0')}</span>
+                  <h2 id={'g-' + gi} className="section-title text-[clamp(24px,3vw,34px)] leading-none">{g}</h2>
+                </header>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {TOOLS.filter(x => x.group === g).map(x => (
+                    <TransitionLink key={x.slug} to={`/playground/${x.slug}`} className="cs-glass group flex flex-col rounded-[22px] p-3 transition-transform duration-300 hover:-translate-y-1">
+                      <ToolThumb slug={x.slug} className="aspect-[16/9] w-full rounded-[16px] text-[52px]" />
+                      <span className="px-2 pb-2 pt-4">
+                        <span className="block text-[18px] font-semibold tracking-[-0.01em] text-ink">{x.title}</span>
+                        <span className="mt-1 block text-[14px] leading-snug text-ink/60">{x.short}</span>
+                        <span className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink/70">Open <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span></span>
+                      </span>
+                    </TransitionLink>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}
