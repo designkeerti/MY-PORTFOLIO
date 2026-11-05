@@ -87,12 +87,12 @@ export const Navigation = ({ revealStep }: { revealStep: number }) => {
   return (
     <>
       {/* name + cat */}
-      <motion.div {...motionProps} className="nav-pill fixed left-4 top-[calc(0.75rem+env(safe-area-inset-top))] z-50 md:left-8 md:top-[calc(1.25rem+env(safe-area-inset-top))]">
+      <motion.div {...motionProps} className="nav-pill fixed font-sans left-4 top-[calc(0.75rem+env(safe-area-inset-top))] z-50 md:left-8 md:top-[calc(1.25rem+env(safe-area-inset-top))]">
         <Link to="/" onClick={toTop} aria-label="Keerthi Vardhan, back to the top"
           className="group flex h-full items-center gap-1.5 pl-4 pr-2.5 md:pl-5 md:pr-3"
           onMouseEnter={() => lottieRef.current?.handleHoverStart()}
           onMouseLeave={() => lottieRef.current?.handleHoverEnd()}>
-          <span className="text-[15px] font-semibold tracking-[-0.01em] md:text-[16px]">Keerthi Vardhan</span>
+          <span className="font-['Chillax',sans-serif] text-[15px] font-semibold tracking-[-0.01em] md:text-[16px]">Keerthi Vardhan</span>
           {/* a window onto the cat's drawing, so the pill stays slim */}
           <span aria-hidden className="relative block shrink-0 overflow-hidden" style={{ width: CAT.w * CAT.scale, height: CAT.h * CAT.scale }}>
             <span className="absolute block" style={{ left: -CAT.x0 * CAT.scale, top: -CAT.y0 * CAT.scale, width: catBox, height: catBox }}>
@@ -103,7 +103,7 @@ export const Navigation = ({ revealStep }: { revealStep: number }) => {
       </motion.div>
 
       {/* the menu */}
-      <motion.div {...motionProps} data-nav-menu className="nav-pill fixed right-4 top-[calc(0.75rem+env(safe-area-inset-top))] z-50 md:right-8 md:top-[calc(1.25rem+env(safe-area-inset-top))]">
+      <motion.div {...motionProps} data-nav-menu className="nav-pill fixed font-sans right-4 top-[calc(0.75rem+env(safe-area-inset-top))] z-50 md:right-8 md:top-[calc(1.25rem+env(safe-area-inset-top))]">
         <nav aria-label="Main" className="hidden h-full items-center gap-1 px-2 md:flex">
           {links.map(([to, label]) => (
             <SectionLink key={label} to={to} className="nav-link rounded-full px-4 py-2 text-[14px] font-medium">{label}</SectionLink>
@@ -122,7 +122,7 @@ export const Navigation = ({ revealStep }: { revealStep: number }) => {
           nested in another one would blur nothing) */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div key="menu" data-nav-menu className="nav-card fixed right-4 top-[calc(0.75rem+44px+8px+env(safe-area-inset-top))] z-50 flex w-44 flex-col p-1.5 md:hidden"
+          <motion.div key="menu" data-nav-menu className="nav-card fixed font-sans right-4 top-[calc(0.75rem+44px+8px+env(safe-area-inset-top))] z-50 flex w-44 flex-col p-1.5 md:hidden"
             initial={{ opacity: 0, y: -6, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: 0.97 }}
             transition={{ duration: 0.2, ease: [0.22, 0.61, 0.36, 1] }} style={{ transformOrigin: 'top right' }}>
             {links.map(([to, label]) => (

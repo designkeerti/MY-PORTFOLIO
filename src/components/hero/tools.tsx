@@ -3,6 +3,18 @@ import type { ReactNode } from 'react';
 const FigmaMark = () => (
   <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true"><path fill="currentColor" d="M8 24a4 4 0 0 0 4-4v-4H8a4 4 0 0 0 0 8Zm-4-12a4 4 0 0 1 4-4h4v8H8a4 4 0 0 1-4-4Zm0-8a4 4 0 0 1 4-4h4v8H8a4 4 0 0 1-4-4Zm8-4h4a4 4 0 0 1 0 8h-4V0Zm8 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" /></svg>
 );
+// Claude's spark: rays of uneven length round a point, in its terracotta
+const CLAUDE_RAYS = [[0, 10], [31, 7.4], [58, 9.6], [92, 8], [121, 10], [149, 7.2], [180, 9.4], [211, 8.2], [238, 10], [270, 7.6], [301, 9.8], [329, 7.8]];
+const ClaudeMark = () => (
+  <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+    <g stroke="#D97757" strokeWidth="1.9" strokeLinecap="round">
+      {CLAUDE_RAYS.map(([a, r]) => {
+        const t = (a * Math.PI) / 180;
+        return <line key={a} x1="12" y1="12" x2={12 + r * Math.cos(t)} y2={12 + r * Math.sin(t)} />;
+      })}
+    </g>
+  </svg>
+);
 // The cards are light: marks stay dark as supplied.
 const Img = ({ src }: { src: string; invert?: boolean }) => (
   <img src={src} alt="" className="h-4 w-4 object-contain opacity-85" draggable={false} />
@@ -35,7 +47,7 @@ export const TOOLS: Tool[] = [
     makes: 'Designs that ship',
     detail: 'Production front-ends, built by directing AI in code.',
     tools: [
-      { name: 'Cursor', mark: <Img src="/work/home/nWQ4pwGhNTr4aeYi8lUshZsc.png" invert={false} /> },
+      { name: 'Claude', mark: <ClaudeMark /> },
       { name: 'ChatGPT', mark: <Img src="/work/home/FRggyEbUloy2PxkUIkcfqmFkXoM.png" /> },
     ],
   },
