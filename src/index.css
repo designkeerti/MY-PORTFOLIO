@@ -116,6 +116,19 @@ html.burned .nav-link:hover, html.burned .nav-link:focus-visible { background: r
 }
 html.burned .nav-card { color: #f1ece4; background: rgba(28, 26, 34, 0.84); border-color: rgba(255, 255, 255, 0.1); }
 
+/* The playground's controls */
+.pg-label { font-size: 11.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgb(var(--ink-rgb) / 0.5); }
+.pg-range { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; }
+.pg-range::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: rgb(var(--ink-rgb) / 0.14); }
+.pg-range::-moz-range-track { height: 4px; border-radius: 4px; background: rgb(var(--ink-rgb) / 0.14); }
+.pg-range::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; border-radius: 50%; background: #fff; border: 1px solid rgb(var(--ink-rgb) / 0.2); box-shadow: 0 3px 10px -3px rgba(15, 30, 55, 0.45); }
+.pg-range::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 1px solid rgb(var(--ink-rgb) / 0.2); box-shadow: 0 3px 10px -3px rgba(15, 30, 55, 0.45); }
+.pg-select { width: 100%; appearance: none; -webkit-appearance: none; border-radius: 14px; border: 1px solid rgb(var(--ink-rgb) / 0.14); background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2317191e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 12px center / 16px no-repeat; padding: 11px 38px 11px 14px; font-size: 15px; color: rgb(var(--ink-rgb)); }
+/* the shader tool's thumbnail: a gradient that drifts, in CSS */
+.pg-thumb-shader { background: radial-gradient(60% 70% at 25% 30%, #8fcbef 0%, transparent 60%), radial-gradient(55% 60% at 80% 70%, #f7f6f2 0%, transparent 60%), radial-gradient(70% 80% at 60% 10%, #ff8a3d 0%, transparent 55%), #1f78bd; background-size: 180% 180%; animation: pg-drift 9s ease-in-out infinite alternate; }
+@keyframes pg-drift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+@media (prefers-reduced-motion: reduce) { .pg-thumb-shader { animation: none; } }
+
 /* the skill cards are light glass: they keep dark ink */
 .skill-card { --ink-rgb: 23 25 30; }
 

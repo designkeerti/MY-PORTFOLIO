@@ -11,6 +11,8 @@ import { pageTop, isIOS } from './lib/pageTop';
 // dev-only page for recording project reels to video
 const ReelCapture = import.meta.env.DEV ? lazy(() => import('./pages/ReelCapture')) : null;
 const FilmCapture = import.meta.env.DEV ? lazy(() => import('./pages/FilmCapture')) : null;
+// the playground loads on demand, so the home page stays as light as it was
+const Playground = lazy(() => import('./pages/Playground'));
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -41,7 +43,8 @@ function App() {
   // Home and the case studies sit on the sky; anything else is dark. Keep the page
   // background and Safari's bar colour in step (index.html sets them before first paint).
   const isCase = location.pathname.startsWith('/work/');
-  const onSky = isHome || isCase;
+  const isPlay = location.pathname === '/playground' || location.pathname.startsWith('/playground/');
+  const onSky = isHome || isCase || isPlay;
   useEffect(() => {
     document.documentElement.classList.toggle('sky', onSky);
     document.documentElement.classList.toggle('ios-top', onSky && isIOS());
@@ -55,10 +58,12 @@ function App() {
         {onSky && <SkyBackground key={location.pathname} />}
         <ScrollToTop />
         {/* case studies have their own top bar */}
-        {!isCase && <Navigation revealStep={isHome ? revealStep : 3} />}
+        {!isCase && !isPlay && <Navigation revealStep={isHome ? revealStep : 3} />}
         <Routes>
           <Route path="/" element={<Home onReveal={handleReveal} />} />
           <Route path="/work/:slug" element={<CaseStudy />} />
+          <Route path="/playground" element={<Suspense fallback={null}><Playground /></Suspense>} />
+          <Route path="/playground/:tool" element={<Suspense fallback={null}><Playground /></Suspense>} />
           {ReelCapture && <Route path="/__reel/:slug" element={<Suspense fallback={null}><ReelCapture /></Suspense>} />}
           {FilmCapture && <Route path="/__film/:slug" element={<Suspense fallback={null}><FilmCapture /></Suspense>} />}
           <Route path="*" element={<Navigate to="/" replace />} />

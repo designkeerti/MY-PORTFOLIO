@@ -82,7 +82,7 @@ export const Navigation = ({ revealStep }: { revealStep: number }) => {
     window.scrollTo({ top: pageTop(), behavior: reduce ? 'auto' : 'smooth' });
   };
 
-  const links: [string, string][] = [['work', 'Work'], ['about', 'About'], ['about', 'Contact']];
+  const links: [string, string][] = [['work', 'Work'], ['playground', 'Playground'], ['about', 'About'], ['about', 'Contact']];
 
   return (
     <>

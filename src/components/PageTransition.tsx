@@ -124,7 +124,8 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     const g = reduce ? null : ensureGL();
     if (!g) { navigate(to); return; }
     busy.current = true;
-    const mode: Mode = to.startsWith('/work/') ? 'fog' : 'burn';
+    // into the light pages (case studies, the playground) the mist; back to the dark home, the burn
+    const mode: Mode = to.startsWith('/work/') || to.startsWith('/playground') ? 'fog' : 'burn';
     const { gl, U } = g;
     const canvas = canvasRef.current!;
     const scale = 0.6;
