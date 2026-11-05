@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState, type MouseEvent } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { projects, bySlug } from '../content/projects';
 import { PreviewPlayer } from '../previews/PreviewPlayer';
 import { BlockView } from '../casestudy/Blocks';
 import type { Glance as GlanceT } from '../content/types';
 import { TransitionLink } from '../components/PageTransition';
+import { pageTop } from '../lib/pageTop';
 import { FilmPlayer, PlayGlyph, mmss, onAccent, useFilm, type FilmInfo } from '../components/FilmPlayer';
 
 /**
@@ -20,15 +21,21 @@ export const CaseStudy = () => {
   const { slug } = useParams();
   const project = bySlug(slug);
   const scenes = useMemo(() => project?.preview() ?? [], [project]);
-  const { scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, { stiffness: 200, damping: 30, mass: 0.3 });
+  // reading progress, measured from the page's top (below the room kept above it on iOS)
+  const { scrollY } = useScroll();
+  const reading = useTransform(scrollY, v => {
+    const top = pageTop();
+    const max = document.documentElement.scrollHeight - window.innerHeight - top;
+    return max > 0 ? Math.min(1, Math.max(0, (v - top) / max)) : 0;
+  });
+  const progress = useSpring(reading, { stiffness: 200, damping: 30, mass: 0.3 });
   const film = useFilm(slug ?? '');
   const [watching, setWatching] = useState(false);
   const closeFilm = useCallback(() => setWatching(false), []);
   // the top bar slims down once you start reading
   const [slim, setSlim] = useState(false);
   useEffect(() => {
-    const on = () => setSlim(window.scrollY > 40);
+    const on = () => setSlim(window.scrollY - pageTop() > 40);
     on(); window.addEventListener('scroll', on, { passive: true });
     return () => window.removeEventListener('scroll', on);
   }, []);

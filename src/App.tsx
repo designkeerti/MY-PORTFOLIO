@@ -6,6 +6,7 @@ import { CaseStudy } from './pages/CaseStudy';
 import { SkyBackground } from './components/SkyBackground';
 import { PageTransitionProvider } from './components/PageTransition';
 import { lazy, Suspense } from 'react';
+import { pageTop, isIOS } from './lib/pageTop';
 
 // dev-only page for recording project reels to video
 const ReelCapture = import.meta.env.DEV ? lazy(() => import('./pages/ReelCapture')) : null;
@@ -14,14 +15,15 @@ const FilmCapture = import.meta.env.DEV ? lazy(() => import('./pages/FilmCapture
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
-    if (!hash) { window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); return; }
+    // the page's top is below the room kept above it on iOS (see src/lib/pageTop.ts)
+    if (!hash) { window.scrollTo({ top: pageTop(), behavior: 'instant' as ScrollBehavior }); return; }
     // the target may render a moment later (the home page mounts its sections after the
     // hero), so look for it for a short while before giving up
     let tries = 0, raf = 0;
     const find = () => {
       const el = document.querySelector(hash);
       if (el) { el.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' }); return; }
-      if (++tries < 60) raf = requestAnimationFrame(find); else window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      if (++tries < 60) raf = requestAnimationFrame(find); else window.scrollTo({ top: pageTop(), behavior: 'instant' as ScrollBehavior });
     };
     find();
     return () => cancelAnimationFrame(raf);
@@ -42,6 +44,7 @@ function App() {
   const onSky = isHome || isCase;
   useEffect(() => {
     document.documentElement.classList.toggle('sky', onSky);
+    document.documentElement.classList.toggle('ios-top', onSky && isIOS());
     document.querySelector('meta[name=theme-color]')?.setAttribute('content', onSky ? '#2c8bc6' : '#0f0d16');
   }, [onSky]);
 

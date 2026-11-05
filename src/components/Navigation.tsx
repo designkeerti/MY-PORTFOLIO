@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { LottieAnimation } from './LottieAnimation';
+import { pageTop } from '../lib/pageTop';
 
 export const Navigation = ({ revealStep, isDarkMode = true }: { revealStep: number; isDarkMode?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +16,7 @@ export const Navigation = ({ revealStep, isDarkMode = true }: { revealStep: numb
     // past the hero = its bottom edge has scrolled above the top of the screen
     const check = () => {
       const hero = document.querySelector('.hero-poster');
-      setPastHero(hero ? hero.getBoundingClientRect().bottom < 80 : window.scrollY > window.innerHeight * 0.8);
+      setPastHero(hero ? hero.getBoundingClientRect().bottom < 80 : window.scrollY - pageTop() > window.innerHeight * 0.8);
     };
     check();
     window.addEventListener('scroll', check, { passive: true });

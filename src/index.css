@@ -73,7 +73,7 @@ main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
 .transition-canvas { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; height: 100lvh; }
 @supports (-webkit-touch-callout: none) {
   .sky-layer, .transition-canvas {
-    --bleed-top: 120px; --bleed-bottom: 160px;
+    --bleed-top: 140px; --bleed-bottom: 160px;
     top: calc(-1 * var(--bleed-top));
     height: calc(100lvh + var(--bleed-top) + var(--bleed-bottom));
   }
@@ -96,6 +96,9 @@ html.burned .logo-ink { filter: brightness(0) invert(0.93); }
 
 /* Home: the sky shows edge to edge, under Safari's bars too (see index.html). */
 html.sky { background-color: #2c8bc6; }
+/* On iOS this colour only shows where Safari clips the page: behind the toolbar at the very
+   end of a page, and past the room above the hero. Both meet the sky near its horizon. */
+@supports (-webkit-touch-callout: none) { html.sky { background-color: #b5dbed; } }
 html.sky body { background-color: transparent; }
 
 body {

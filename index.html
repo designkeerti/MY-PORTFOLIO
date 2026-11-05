@@ -6,14 +6,25 @@
     <meta name="theme-color" content="#2c8bc6" />
     <!-- Before first paint: the home page sits on the sky, so the page behind it (what Safari
          shows under its status bar, toolbar and in the scroll bounce) must be sky-blue, not dark.
-         Other pages are dark. App.tsx keeps this in step when navigating. -->
+         Other pages are dark. App.tsx keeps this in step when navigating.
+
+         iOS (ios-top): Safari 26 clips the page to the document's own bounds, so at the top of
+         the page nothing can draw behind the status bar; it shows only its background colour.
+         So on iOS the sky pages get room above the hero and open scrolled down by exactly that
+         much: the same layout, but the strip behind the clock is now page, with the sky in it.
+         Pulling down past the top just shows more sky. See src/lib/pageTop.ts. -->
     <script>
       (function () {
         var home = location.pathname === '/' || location.pathname === '' || location.pathname.indexOf('/work/') === 0;
-        document.documentElement.className = home ? 'sky' : '';
+        var ios = !!(window.CSS && CSS.supports && CSS.supports('-webkit-touch-callout', 'none'));
+        document.documentElement.className = home ? (ios ? 'sky ios-top' : 'sky') : '';
         if (!home) document.querySelector('meta[name=theme-color]').setAttribute('content', '#0f0d16');
       })();
     </script>
+    <style>
+      html.ios-top { --page-top: 140px; padding-top: var(--page-top); }
+      html.ios-top body { min-height: 100lvh; }
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Keerthi’s Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,6 +32,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <script>
+      // open below the room above the hero (see the note in the head), before the first paint
+      (function () {
+        var html = document.documentElement;
+        if (!html.classList.contains('ios-top')) return;
+        var top = function () { return parseFloat(getComputedStyle(html).paddingTop) || 0; };
+        window.scrollTo(0, top());
+        addEventListener('load', function () { if (window.scrollY < 2) window.scrollTo(0, top()); });
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
