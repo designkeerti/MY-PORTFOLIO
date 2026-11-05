@@ -113,7 +113,7 @@ const dmrc: Film = { slug: 'dmrc', beats: [
     say: 'Then he surveyed 32 people, aged seventeen to forty-three. 72 percent named peak-hour overcrowding as their biggest frustration. 42 percent said the official app lacks real-time crowd information. And 95 percent of women said they feel unsafe.' },
   { show: { kind: 'grid', srcs: [D + 'w7LLs8ryWUSmq6eKft1604BNwOg.webp', D + 'NmHTI5TwZHNjiTeWL0m0xiIfKQg.webp'] },
     say: 'Two personas, Rahul and Priya, kept the work grounded: two commuters, with very different mornings.' },
-  { chapter: 'Ideation', show: { kind: 'image', src: D + 'JqtGUxeaq7ZbGxdpAgFmmdbvJB8.jpg' },
+  { chapter: 'Ideation', show: { kind: 'flow', title: 'Six Thinking Hats', items: ['Facts', 'Benefits', 'Risks', 'Feelings', 'New ideas', 'Process'] },
     say: 'To avoid falling for the first idea, every idea was judged from six directions, using Six Thinking Hats: facts, benefits, risks, feelings, new ideas, and process.' },
   { chapter: 'Proposals', show: { kind: 'cards', lead: 1, items: [{ kicker: '01', title: 'Hybrid carriage system', text: 'Four carriages pre-booked, two open.' }, { kicker: '02', title: 'AR navigation in the station', text: 'Find Your Way, from poster to platform.' }, { kicker: '03', title: 'Top-up at the gate', text: 'No separate queue to recharge.' }] },
     say: 'Three proposals survived, judged on feasibility, impact and fit. A hybrid carriage system, where the first four carriages are pre-booked and the last two stay open. AR navigation inside stations. And smartcard top-up, right at the gate.' },

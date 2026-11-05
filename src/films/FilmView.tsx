@@ -169,14 +169,15 @@ function VisualView({ v, c, t }: { v: Visual; c: Ctx; t: number }) {
     );
     case 'flow': {
       const step = Math.min(1.1, (c.dur * 0.62) / v.items.length);
+      const long = v.items.join('').length > 52;
       return (
         <Area>
           {v.title && <Words text={v.title} delay={0.05} size="46px" color={ink} weight={600} font="'Chillax', sans-serif" align="center" letterSpacing="-0.02em" />}
-          <div style={{ marginTop: 46, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 14, maxWidth: 1120 }}>
+          <div style={{ marginTop: 46, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: long ? 10 : 14, maxWidth: 1120 }}>
             {v.items.map((it, i) => (
-              <Rise key={it} delay={0.5 + i * step} y={16} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <Rise key={it} delay={0.5 + i * step} y={16} style={{ display: 'flex', alignItems: 'center', gap: long ? 10 : 14 }}>
                 {i > 0 && <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c.accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>}
-                <span style={{ padding: '16px 26px', borderRadius: 999, background: '#fff', fontSize: 25, fontWeight: 600, color: ink, boxShadow: '0 1px 0 rgba(23,25,30,.04), 0 18px 40px -28px rgba(15,30,55,.5), 0 0 0 1px rgba(23,25,30,.06)' }}>{it}</span>
+                <span style={{ padding: long ? '14px 20px' : '16px 26px', borderRadius: 999, background: '#fff', fontSize: long ? 20 : 25, fontWeight: 600, color: ink, boxShadow: '0 1px 0 rgba(23,25,30,.04), 0 18px 40px -28px rgba(15,30,55,.5), 0 0 0 1px rgba(23,25,30,.06)' }}>{it}</span>
               </Rise>
             ))}
           </div>

@@ -228,3 +228,6 @@ section {
 /* Case studies: light glass and the numbered-steps rail */
 .cs-glass { background: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 1px 0 rgba(23,25,30,.04), 0 18px 40px -30px rgba(15,30,55,.45); }
 .cs-steps li:not(:last-child)::before { content: ''; position: absolute; left: 13.5px; top: 30px; bottom: 2px; width: 1px; background: rgb(var(--ink-rgb) / 0.14); }
+
+/* captions on the case-study films */
+.film-video::cue { font-family: 'Sofia Sans', system-ui, sans-serif; font-size: 0.95em; line-height: 1.35; color: #fff; background: rgba(10, 12, 16, 0.72); }

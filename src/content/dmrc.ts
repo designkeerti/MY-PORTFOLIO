@@ -48,7 +48,6 @@ export const dmrc: Project = {
       { type: 'quote', text: 'Passengers face severe overcrowding at key interchange stations during peak hours: long waits, unsafe boarding, delays. The existing infrastructure and crowd-management systems cannot handle the demand.' },
     ]},
     { id: 'ideation', title: 'Ideation: Six Thinking Hats', kicker: 'Every idea judged from six directions', blocks: [
-      { type: 'img', src: A + 'JqtGUxeaq7ZbGxdpAgFmmdbvJB8.jpg', alt: 'Six Thinking Hats', size: 'text' },
       { type: 'cards', cols: 3, items: [
         { kicker: 'White · facts', title: 'Bottlenecks are measurable', text: '5.5M daily riders; Rajiv Chowk and Kashmere Gate jam at peak; 65% report delays at ticketing and security.' },
         { kicker: 'Yellow · benefits', title: 'Guide, reconfigure, inform', text: 'In-station navigation, better layouts and escalators, real-time crowd levels in the app.' },

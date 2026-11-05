@@ -83,7 +83,12 @@ async function build(slug) {
   // 4. the picture
   page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: SCALE });
   await page.clock.install({ time: 0 });
-  await page.addInitScript(tm => { window.__filmTiming = tm; }, timing);
+  await page.addInitScript(tm => {
+    window.__filmTiming = tm;
+    // framer-motion hands opacity to the browser's own animation clock when it can, and that
+    // clock cannot be faked; without element.animate it animates in JS, on the fake clock
+    delete Element.prototype.animate;
+  }, timing);
   await page.goto(`${URL_}/__film/${slug}`, { waitUntil: 'networkidle' });
   await page.waitForFunction(() => window.__filmReady === true, null, { timeout: 60000 });
   const now0 = await page.evaluate(() => Date.now());

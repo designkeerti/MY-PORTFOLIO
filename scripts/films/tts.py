@@ -14,6 +14,10 @@ PROXY = os.environ.get('HTTPS_PROXY') or None
 
 async def one(i, text, out):
     mp3 = os.path.join(out, f'b{i}.mp3')
+    key = os.path.join(out, f'b{i}.txt')
+    sig = f'{VOICE}|{RATE}|{text}'
+    if os.path.exists(key) and open(key).read() == sig and os.path.exists(mp3):
+        return  # already made, unchanged
     marks = []
     for attempt in range(4):
         try:
@@ -32,6 +36,8 @@ async def one(i, text, out):
             await asyncio.sleep(2 * (attempt + 1))
     with open(os.path.join(out, f'b{i}.json'), 'w') as f:
         json.dump(marks, f)
+    with open(key, 'w') as f:
+        f.write(sig)
 
 
 async def main():
