@@ -135,7 +135,8 @@ export function PortraitInSky({ src, alt, className, shown }: { src: string; alt
     return () => {
       cancelAnimationFrame(raf); ro.disconnect(); io.disconnect();
       canvas.removeEventListener('webglcontextlost', onLost);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      // only once the canvas is gone: a rerun (or StrictMode's remount) reuses this context
+      if (!canvas.isConnected) gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src, failed]);

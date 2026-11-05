@@ -245,7 +245,9 @@ export function SkyBackground() {
       canvas.removeEventListener('webglcontextlost', onLost);
       canvas.removeEventListener('webglcontextrestored', onRestored);
       document.removeEventListener('visibilitychange', onVis);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      // Free the GPU only when the canvas has really left the page. StrictMode's dev
+      // remount keeps the same canvas, and getContext would hand back the lost context.
+      if (!canvas.isConnected) gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, []);
 

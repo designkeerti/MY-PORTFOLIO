@@ -103,7 +103,8 @@ export function ShaderStudio() {
     raf = requestAnimationFrame(loop);
     const io = new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; });
     io.observe(canvas);
-    return () => { cancelAnimationFrame(raf); io.disconnect(); gl.getExtension('WEBGL_lose_context')?.loseContext(); };
+    // only once the canvas is gone: StrictMode's remount reuses this context
+    return () => { cancelAnimationFrame(raf); io.disconnect(); if (!canvas.isConnected) gl.getExtension('WEBGL_lose_context')?.loseContext(); };
   }, []);
 
   const set = (patch: Partial<Settings>) => { setS(v => ({ ...v, ...patch })); setPreset(''); };
