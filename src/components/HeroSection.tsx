@@ -72,16 +72,20 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 
   return (
     <>
-    <section ref={heroRef} className="hero-poster relative isolate w-full" style={{ height: pinned ? '230svh' : undefined }}>
+    <section ref={heroRef} className="hero-poster relative isolate w-full" style={{ height: pinned ? 'calc(130svh + 100lvh)' : undefined }}>
       {/* No navbar over the hero: the page opens on the poster itself.
           The pinned frame has a negative z-index (inside this isolated section, so it paints
           and takes taps exactly as before): Safari 26 skips screen-sized pinned boxes with one
-          when it picks a flat colour for its bars, and the sky shows behind them instead. */}
-      <div className={pinned ? 'sticky top-0 -z-10 h-[100svh] overflow-hidden' : 'relative'}>
+          when it picks a flat colour for its bars, and the sky shows behind them instead.
+          It is the screen's full height with the toolbars tucked away (lvh, so phones don't
+          leave an empty strip under it; the section grows by the same, so the sequence holds
+          for as long as before), and clips only sideways, so as I sink out of view I run off
+          the bottom of the screen rather than being sliced at the frame's edge. */}
+      <div className={pinned ? 'sticky top-0 -z-10 h-[100lvh] overflow-x-clip' : 'relative'}>
         <div className="relative mx-auto flex h-full w-full max-w-[1360px] flex-col items-center px-5 pt-[calc(3rem+env(safe-area-inset-top))] text-center md:px-10 md:pt-[calc(min(3.5rem,5svh)+env(safe-area-inset-top))]">
 
           {/* The type, centred. The name stays where it is throughout. */}
-          <div className="relative z-30 flex flex-col items-center">
+          <div className="relative z-30 mb-6 flex flex-col items-center md:mb-0">
             <div className="relative">
               <h1 className="leading-[0.86] text-ink">
                 <motion.span {...rise(0.05)} className="hero-name-1 block">Better call</motion.span>
@@ -116,9 +120,12 @@ export const HeroSection = ({ onRevealStepChange }: { onRevealStepChange?: (step
 
           {/* Me, standing in the sky, with the work orbiting round me; sinks away on scroll.
               shrink-0: the pinned frame is one screen tall, and flex would otherwise squash the
-              portrait to fit (it should keep its shape and run off the bottom instead). */}
+              portrait to fit (it should keep its shape and run off the bottom instead).
+              On phones I stand on the bottom edge of the screen (mt-auto), a little larger, so
+              the poster fills the screen instead of leaving sky under me. 76vw keeps the orbit
+              (about 1.25x the stage wide at its widest) inside the screen. */}
           <motion.div
-            className="relative z-10 mt-8 shrink-0 [--stage-w:min(70vw,44svh)] sm:[--stage-w:min(53vw,49svh)] md:mt-12 lg:[--stage-w:min(510px,36vw,53svh)]"
+            className="relative z-10 mt-auto shrink-0 [--stage-w:min(76vw,48svh)] sm:[--stage-w:min(53vw,49svh)] md:mt-12 lg:[--stage-w:min(510px,36vw,53svh)]"
             style={{ width: 'var(--stage-w)', height: `calc(var(--stage-w) / ${PORTRAIT.aspect})`, ...(pinned ? { y: stageY, opacity: stageOpacity } : {}) }}
           >
             <WorkOrbit clips={CLIPS} centre={PORTRAIT.ring} shown={staged} className="absolute inset-0">
