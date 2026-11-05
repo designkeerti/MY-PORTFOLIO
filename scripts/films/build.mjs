@@ -15,6 +15,7 @@
 import { createRequire } from 'node:module';
 import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 
 // Playwright may be installed globally (CommonJS resolution finds it; ESM does not)
@@ -127,23 +128,46 @@ async function build(slug) {
     return;
   }
 
+  // Frames go into 20-second segments that survive a crash: a rerun skips finished ones and
+  // fast-forwards the (deterministic) page to where it left off. The key changes whenever
+  // the script, the timing or the renderer does, so stale segments are never reused.
   const silent = path.join(work, 'picture.mp4');
   const W = Math.round(1280 * SCALE), H = Math.round(720 * SCALE);
-  const ff = spawn('ffmpeg', ['-loglevel', 'error', '-y', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-',
-    '-vf', `scale=${W}:${H}`, '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', silent], { stdio: ['pipe', 'inherit', 'inherit'] });
+  const key = crypto.createHash('sha1').update(JSON.stringify(timing) + SCALE
+    + fs.readFileSync(path.join(ROOT, 'src/films/FilmView.tsx')) + fs.readFileSync(path.join(ROOT, 'src/films/scripts.ts'))).digest('hex').slice(0, 10);
+  const segDir = path.join(work, 'seg-' + key);
+  fs.mkdirSync(segDir, { recursive: true });
   const frames = Math.ceil(Math.min(timing.total, Number(process.env.FILM_SECONDS || Infinity)) * FPS);
-  const started = Date.now();
-  for (let f = 0; f < frames; f++) {
+  const SEG = 20 * FPS, nSeg = Math.ceil(frames / SEG);
+  const step = async () => {
     await page.clock.runFor(1000 / FPS);
     await page.evaluate(() => window.__settle());
     await page.evaluate(() => window.__syncAnims());
-    const buf = await page.screenshot({ type: 'jpeg', quality: 92 });
-    if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
-    if (f % (FPS * 10) === 0) console.log(`  frame ${f}/${frames} (${((Date.now() - started) / 1000).toFixed(0)}s)`);
+  };
+  let pos = 0;
+  const started = Date.now();
+  for (let k = 0; k < nSeg; k++) {
+    const done = path.join(segDir, `${String(k).padStart(3, '0')}.mp4`);
+    if (fs.existsSync(done)) continue;
+    while (pos < k * SEG) { await step(); pos++; }  // catch up without screenshots
+    const part = done.replace('.mp4', '.part.mp4');
+    const ff = spawn('ffmpeg', ['-loglevel', 'error', '-y', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-',
+      '-vf', `scale=${W}:${H}`, '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', part], { stdio: ['pipe', 'inherit', 'inherit'] });
+    const end = Math.min(frames, (k + 1) * SEG);
+    for (; pos < end; pos++) {
+      await step();
+      const buf = await page.screenshot({ type: 'jpeg', quality: 92 });
+      if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
+    }
+    ff.stdin.end();
+    await new Promise(r => ff.on('close', r));
+    fs.renameSync(part, done);
+    console.log(`  ${slug}: segment ${k + 1}/${nSeg} (${((Date.now() - started) / 1000).toFixed(0)}s)`);
   }
-  ff.stdin.end();
-  await new Promise(r => ff.on('close', r));
   await browser.close();
+  const list = path.join(segDir, 'list.txt');
+  fs.writeFileSync(list, [...Array(nSeg).keys()].map(k => `file '${String(k).padStart(3, '0')}.mp4'`).join('\n'));
+  await run('ffmpeg', ['-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', silent]);
 
   // 5. the soundtrack: every line placed at its moment
   const voice = path.join(work, 'voice.m4a');
