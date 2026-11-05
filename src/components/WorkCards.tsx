@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { TransitionLink } from './PageTransition';
 import { projects } from '../content/projects';
 import type { Project } from '../content/types';
+import { CardCat } from './cats/CardCat';
 
 /**
  * The work, as calm cards: a soft gradient panel (tinted by the project's accent)
@@ -69,7 +70,8 @@ function WorkCard({ p }: { p: Project }) {
   );
   const btnClass = 'group mt-4 flex w-full items-center justify-center gap-2 rounded-full py-3 text-[15px] font-medium transition-transform duration-300 hover:-translate-y-0.5';
   return (
-    <article className="flex w-full flex-col rounded-[32px] border border-white/[0.07] bg-[#141312] p-3 md:w-[calc(50%-12px)] md:p-4">
+    <article className="relative flex w-full flex-col rounded-[32px] border border-white/[0.07] bg-[#141312] p-3 md:w-[calc(50%-12px)] md:p-4">
+      <CardCat id={`work-${meta.slug}`} size="lg" tone="dark" />
       {/* the reel, on a soft panel in the project's colour */}
       <div className="rounded-[24px] px-[7%] py-[6%]"
         style={{ background: `linear-gradient(180deg, color-mix(in srgb, ${accent} 26%, #ffffff) 0%, color-mix(in srgb, ${accent} 82%, #0c0b0a) 100%)` }}>

@@ -11,6 +11,8 @@ import { pageTop, isIOS } from './lib/pageTop';
 // dev-only page for recording project reels to video
 const ReelCapture = import.meta.env.DEV ? lazy(() => import('./pages/ReelCapture')) : null;
 const FilmCapture = import.meta.env.DEV ? lazy(() => import('./pages/FilmCapture')) : null;
+const RigDebug = import.meta.env.DEV ? lazy(() => import('./pages/RigDebug')) : null;
+const CatsDebug = import.meta.env.DEV ? lazy(() => import('./pages/CatsDebug')) : null;
 // the playground loads on demand, so the home page stays as light as it was
 const Playground = lazy(() => import('./pages/Playground'));
 
@@ -66,6 +68,8 @@ function App() {
           <Route path="/playground/:tool" element={<Suspense fallback={null}><Playground /></Suspense>} />
           {ReelCapture && <Route path="/__reel/:slug" element={<Suspense fallback={null}><ReelCapture /></Suspense>} />}
           {FilmCapture && <Route path="/__film/:slug" element={<Suspense fallback={null}><FilmCapture /></Suspense>} />}
+          {RigDebug && <Route path="/__rig" element={<Suspense fallback={null}><RigDebug /></Suspense>} />}
+          {CatsDebug && <Route path="/__cats" element={<Suspense fallback={null}><CatsDebug /></Suspense>} />}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

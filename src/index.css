@@ -271,23 +271,16 @@ section {
 
 /* ---- Icons (components/icons/SkillIcons.tsx): motion on hover/focus of a .group ---- */
 .ic * { transform-box: fill-box; transform-origin: center; }
-.ic-spin, .ic-nudge, .ic-tilt, .ic-page, .ic-pop { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.ic-draw { stroke-dasharray: 16; stroke-dashoffset: 0; }
+.ic-turn, .ic-lean, .ic-page { transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.ic-lean { transform-origin: center bottom; }
 .ic-page { transform-origin: left center; }
-.group:is(:hover, :focus-within) .ic-spin { transform: rotate(180deg); transition-duration: 0.9s; }
-.group:is(:hover, :focus-within) .ic-bounce { animation: ic-bounce 0.9s cubic-bezier(0.3, 0, 0.3, 1) infinite; }
-.group:is(:hover, :focus-within) .ic-nudge { transform: translate(-1.2px, 1.2px) rotate(-6deg); }
-.group:is(:hover, :focus-within) .ic-draw { animation: ic-draw 0.8s ease both; }
+.group:is(:hover, :focus-within) .ic-turn { transform: rotate(90deg); }
+.group:is(:hover, :focus-within) .ic-lean { transform: rotate(-12deg); }
 .group:is(:hover, :focus-within) .ic-page { transform: scaleX(-1); }
-.group:is(:hover, :focus-within) .ic-tilt { transform: rotate(-8deg); }
-.group:is(:hover, :focus-within) .ic-pop { animation: ic-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-.group:is(:hover, :focus-within) .ic-d2 { animation-delay: 0.08s; }
-.group:is(:hover, :focus-within) .ic-d3 { animation-delay: 0.16s; }
-.group:is(:hover, :focus-within) .ic-d4 { animation-delay: 0.24s; }
-@keyframes ic-draw { from { stroke-dashoffset: 16; } to { stroke-dashoffset: 0; } }
-@keyframes ic-bounce { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-2.2px); } }
-@keyframes ic-pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
-@media (prefers-reduced-motion: reduce) { .ic * { animation: none !important; transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { .ic * { transition: none !important; } }
+
+/* Light glass cards that sit on the sky: they keep dark ink even while the page is burned */
+.ink-dark { --ink-rgb: 23 25 30; }
 
 /* Section headings in the hero's display face */
 .section-title { font-family: 'Chillax', sans-serif; font-weight: 600; letter-spacing: -0.025em; }
