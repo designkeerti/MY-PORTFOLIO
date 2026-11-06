@@ -2,9 +2,6 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "keerti-portfolio",
   "compatibility_date": "2026-10-01",
-  // wrangler builds the site itself before every deploy or version upload, so Cloudflare's
-  // Git builds (which run only `wrangler deploy` / `versions upload`) have a dist/ to serve
-  "build": { "command": "npm run build" },
   // only the films run through the worker (it adds byte ranges); everything else is static
   "main": "./worker/index.js",
   "assets": {
@@ -13,5 +10,8 @@
     // React Router handles routes client-side, so unknown paths serve index.html
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/films/*"]
-  }
+  },
+  // Cloudflare's Git builds deploy branches with `wrangler preview`, which needs this block
+  // (empty: previews take everything above as it is)
+  "previews": {}
 }
