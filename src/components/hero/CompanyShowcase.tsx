@@ -34,8 +34,12 @@ export function CompanyShowcase({ enter, className }: { enter: MotionValue<numbe
   const y = useTransform(enter, v => `${((1 - v) ** 2 * 8).toFixed(2)}svh`);
   const opacity = useTransform(enter, [0, 0.45], [0, 1]);
   const filter = useTransform(enter, v => (v < 0.6 ? `blur(${((0.6 - v) * 10).toFixed(1)}px)` : 'none'));
+  // the links only take taps once the logos are mostly in, and are truly hidden (no taps, no
+  // tab stops) while they have yet to appear: faded out, they still sit over the hero
+  const pointerEvents = useTransform(enter, v => (v > 0.5 ? 'auto' : 'none'));
+  const visibility = useTransform(enter, v => (v > 0.02 ? 'visible' : 'hidden'));
   return (
-    <motion.div style={{ y, opacity, filter }} className={`flex flex-col items-center gap-10 md:gap-14 ${className ?? ''}`}>
+    <motion.div style={{ y, opacity, filter, pointerEvents, visibility }} className={`flex flex-col items-center gap-10 md:gap-14 ${className ?? ''}`}>
       <div className="flex flex-col items-center gap-4">
         <Label>Currently designing at</Label>
         <Logo c={current} scale={2.1} />
