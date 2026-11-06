@@ -1,0 +1,173 @@
+WEBVTT
+
+00:00:00.950 --> 00:00:03.615
+In India, if you sell imported supplements,
+
+00:00:03.615 --> 00:00:06.963
+your customer’s first question isn’t “do I want this?”
+
+00:00:07.013 --> 00:00:08.287
+It’s “is this real?”
+
+00:00:08.338 --> 00:00:10.717
+This is how Keerthi Vardhan designed a
+
+00:00:10.717 --> 00:00:14.098
+storefront whose whole job is to answer that question.
+
+00:00:15.348 --> 00:00:19.222
+Cross Border Supps imports genuine sports supplements into India,
+
+00:00:19.222 --> 00:00:23.811
+a market where counterfeits and grey-market stock are the default assumption.
+
+00:00:23.861 --> 00:00:26.360
+The usual fix is trust badges.
+
+00:00:26.410 --> 00:00:29.744
+But badges are exactly what every fake store has too.
+
+00:00:30.594 --> 00:00:33.819
+So the brief became: make the trust structural.
+
+00:00:33.869 --> 00:00:36.321
+Something the layout itself asserts,
+
+00:00:36.321 --> 00:00:39.590
+that a copycat would have to rebuild, not paste.
+
+00:00:40.840 --> 00:00:44.428
+Keerthi was the design lead, and the only designer.
+
+00:00:44.477 --> 00:00:49.115
+He owned the design language, every page and every interaction.
+
+00:00:49.165 --> 00:00:52.252
+He ran three separate passes just for mobile.
+
+00:00:52.302 --> 00:00:56.496
+And he didn’t write the code: an AI assistant built it to his direction,
+
+00:00:56.496 --> 00:00:59.292
+directly on the live store while it took orders.
+
+00:01:00.542 --> 00:01:03.480
+The whole design language came from one sentence.
+
+00:01:03.530 --> 00:01:06.874
+Every container in the store is a document of transit.
+
+00:01:07.724 --> 00:01:12.024
+A product is a ticket, with the route it actually travelled printed on the stub.
+
+00:01:12.074 --> 00:01:15.659
+A dashed perforation splits the photo from the details,
+
+00:01:15.659 --> 00:01:18.136
+and two tear notches bite the outline.
+
+00:01:18.986 --> 00:01:24.461
+Each of the eleven brands is a postage stamp, hiding its country’s flag underneath.
+
+00:01:24.511 --> 00:01:26.762
+On phones, where there’s no hover,
+
+00:01:26.762 --> 00:01:30.934
+the flag reveals as the stamp crosses the middle of the screen.
+
+00:01:31.784 --> 00:01:35.127
+A curated bundle is a full boarding pass, barcode and all,
+
+00:01:35.127 --> 00:01:37.401
+because it’s the one thing in the store
+
+00:01:37.401 --> 00:01:40.084
+that’s a recommendation rather than a product.
+
+00:01:40.934 --> 00:01:44.834
+And the first visit of a session starts behind a steel vault door.
+
+00:01:44.884 --> 00:01:49.193
+It plays only once, because a curtain in front of a cart is furniture,
+
+00:01:49.193 --> 00:01:50.362
+not a brand moment.
+
+00:01:51.612 --> 00:01:52.962
+Then came a hard lesson.
+
+00:01:53.012 --> 00:01:56.300
+Version five of the product page went live one morning.
+
+00:01:56.350 --> 00:02:00.149
+Every component on it was correct, and the page was still wrong,
+
+00:02:00.149 --> 00:02:03.296
+because it had been designed one component at a time.
+
+00:02:04.146 --> 00:02:07.242
+He tore it up and rebuilt it that same afternoon,
+
+00:02:07.242 --> 00:02:10.148
+around the order a shopper actually thinks in:
+
+00:02:10.148 --> 00:02:14.462
+understand, judge fit, trust, act, and go deeper only if you want to.
+
+00:02:15.712 --> 00:02:18.725
+Mobile wasn’t treated as a squeezed desktop.
+
+00:02:18.775 --> 00:02:21.025
+It got three separate redesigns.
+
+00:02:21.075 --> 00:02:26.600
+The navigation became one pill that never hides, because the cart lives in it.
+
+00:02:26.650 --> 00:02:29.988
+It dims while you scroll, and wakes when you touch it.
+
+00:02:31.238 --> 00:02:33.026
+He also threw things away.
+
+00:02:33.076 --> 00:02:37.601
+A 3D carousel that stuttered on the client’s phone was deleted the same day.
+
+00:02:37.651 --> 00:02:41.726
+A scroll-pinned promo that lagged in Safari became a native swipe.
+
+00:02:41.776 --> 00:02:46.873
+And when the site crashed on pinch-zoom, his first diagnosis was wrong:
+
+00:02:46.873 --> 00:02:52.474
+the real cost was decoded image memory, which he cut from 144 to 76 megabytes.
+
+00:02:53.724 --> 00:02:59.974
+It launched with 2,656 customers migrated without a single email sent.
+
+00:03:00.024 --> 00:03:03.324
+99 reviews carried across, intact.
+
+00:03:03.374 --> 00:03:09.462
+Blocking time on the home page fell from over 1,200 milliseconds to 81.
+
+00:03:09.512 --> 00:03:11.912
+And layout shift stayed at zero.
+
+00:03:13.162 --> 00:03:15.812
+Looking back, he’d pin far less of the page,
+
+00:03:15.812 --> 00:03:18.462
+and test on the client’s phone much earlier.
+
+00:03:18.512 --> 00:03:22.312
+The question he asks now isn’t whether a section is good.
+
+00:03:22.362 --> 00:03:25.686
+It’s how much of the page is allowed to hold the reader still.
+
+00:03:26.536 --> 00:03:29.336
+Cross Border Supps is live, and selling.
+
+00:03:29.386 --> 00:03:31.380
+Design by Keerthi Vardhan.
+

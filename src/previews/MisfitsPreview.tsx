@@ -1,5 +1,5 @@
 import type { Scene } from './types';
-import { Bg, Words, Slide, Counter, Device, Mono, Shot } from './kit';
+import { Bg, Words, Slide, Counter, Device, Mono, Shot, outro } from './kit';
 
 const A = '/work/misfits/';
 const ink = '#0E0A1C', violet = '#8B5CF6';
@@ -36,7 +36,7 @@ export const misfitsScenes = (): Scene[] => [
     ),
   },
   {
-    id: 'research', duration: 2600, caption: 'Surveys first. The gap was authenticity, and the leap from online to real life',
+    id: 'research', duration: 3200, caption: 'Surveys first. The gap was authenticity, and the leap from online to real life',
     render: () => (
       <Bg color={violet}>
         <div className="absolute inset-0 flex items-center justify-center gap-[8%] px-[6%]">
@@ -45,7 +45,8 @@ export const misfitsScenes = (): Scene[] => [
             <Mono color="rgba(255,255,255,.75)" style={{ marginTop: 6 }}>people surveyed</Mono>
           </div>
           <Slide delay={0.6} from="right" distance={40}>
-            <Words text={'“I want real\nfriends, not\nmore followers.”'} size="clamp(18px, calc(var(--fw) * 0.0300), 36px)" weight={700} color="#fff" letterSpacing="-.02em" lineHeight={1.12} />
+            <Mono color="rgba(255,255,255,.75)" style={{ marginBottom: 10 }}>two gaps</Mono>
+            <Words text={'Authenticity.\nThe leap to\nreal life.'} size="clamp(18px, calc(var(--fw) * 0.0340), 42px)" weight={700} color="#fff" letterSpacing="-.02em" lineHeight={1.1} delay={0.7} />
           </Slide>
         </div>
       </Bg>
@@ -79,4 +80,6 @@ export const misfitsScenes = (): Scene[] => [
       </Bg>
     ),
   },
+  outro({ bg: ink, accent: violet, role: 'My role · UX/UI designer · 5 weeks', caption: 'Research with 200+ people, then a full high-fidelity app',
+    lines: ['Clubs, not profiles.', 'Every path ends in an event.', 'From followers to friends.'] }),
 ];

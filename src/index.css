@@ -2,14 +2,146 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Satoshi (Fontshare, ITF Free Font License), self-hosted variable font */
 @font-face {
   font-family: 'Satoshi';
-  src: url('https://fonts.cdnfonts.com/css/satoshi');
+  src: url('./assets/fonts/Satoshi-Variable.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
 }
+@font-face {
+  font-family: 'Satoshi';
+  src: url('./assets/fonts/Satoshi-VariableItalic.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/*
+ * Sofia Sans (Lettersoup, SIL Open Font License, see assets/fonts/sofia/OFL.txt),
+ * self-hosted. Free stand-in for the poster pairing Proxima Nova Condensed + Sailors:
+ *   Sofia Sans               -> Proxima Nova (reading text)
+ *   Sofia Sans Semi Condensed -> Proxima Nova Condensed (name line, headings)
+ *   Sofia Sans Condensed     -> Sailors (the big display line, in caps)
+ */
+@font-face { font-family: 'Sofia Sans'; src: url('./assets/fonts/sofia/sofia-sans-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Sofia Sans'; src: url('./assets/fonts/sofia/sofia-sans-italic.woff2') format('woff2'); font-weight: 300 900; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Sofia Sans Semi Condensed'; src: url('./assets/fonts/sofia/sofia-sans-semi-condensed-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Sofia Sans Condensed'; src: url('./assets/fonts/sofia/sofia-sans-condensed-normal.woff2') format('woff2'); font-weight: 300 900; font-style: normal; font-display: swap; }
+/* Chillax (Indian Type Foundry, via Fontshare; ITF Free Font License), self-hosted variable 200-700: the name */
+@font-face { font-family: 'Chillax'; src: url('./assets/fonts/chillax/Chillax-Variable.woff2') format('woff2'); font-weight: 200 700; font-style: normal; font-display: swap; }
+
+:root {
+  --font-text: 'Sofia Sans';
+  --font-head: 'Sofia Sans Semi Condensed';
+  --font-display: 'Sofia Sans Condensed';
+  --ink-rgb: 23 25 30;   /* #17191e: text on the sky */
+  --ink: rgb(var(--ink-rgb));
+}
+/* The name in the hero: a condensed line over a big display line, like a poster. */
+/* sized by width and by height, so on short screens the name gives way and the portrait fits */
+.hero-name-1 { font-family: 'Chillax', sans-serif; font-weight: 500; letter-spacing: -0.01em; font-size: clamp(30px, min(4.4vw, 6svh), 70px); line-height: 1.02; }
+.hero-name-2 { font-family: 'Chillax', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: -0.03em; font-size: min(15vw, clamp(56px, min(9vw, 12svh), 144px)); line-height: 0.9; }
+.font-display { font-family: var(--font-head), sans-serif; }
+main :is(h2, h3) { font-family: var(--font-head), sans-serif; }
+
+/* The fixed sky layer (SkyBackground): fills the screen at its largest height, so
+   phone toolbars never resize it; a still picture of the sky sits under the live
+   shader in case a frame is ever dropped. */
+.sky-layer {
+  position: fixed; left: 0; top: 0; z-index: -1;
+  width: 100vw; height: 100vh; height: 100lvh;
+  background: transparent url('/hero/sky-portrait.jpg') center top / cover no-repeat;
+}
+@media (min-aspect-ratio: 1/1) { .sky-layer { background-image: url('/hero/sky-landscape.jpg'); } }
+
+/* Edge to edge on iOS Safari 26. What WebKit does there (LocalFrameView::fixedContainerEdges,
+   RenderLayerCompositor::viewportConstrainedSublayers):
+   - It hit-tests 4px inside the top and bottom of the screen. If what it finds sits in a
+     fixed or sticky box that spans the screen, it covers that bar with a flat colour
+     sampled from it (once, and keeps it while that box exists). Those were the bands.
+     Boxes taller than ~105% of the screen, screen-sized ones with a negative z-index and
+     ones that miss the sample point are skipped, so nothing pinned here qualifies.
+   - It clips fixed and sticky layers to the space between the bars, unless their nearest
+     composited ancestor is something other than the page itself.
+   So the sky sits in a composited anchor (will-change: opacity composites without
+   becoming a containing block for fixed children) and on iOS bleeds past both bars. */
+.layer-anchor { position: absolute; left: 0; top: 0; width: 1px; height: 1px; will-change: opacity; pointer-events: none; }
+.sky-anchor { z-index: -1; }
+.transition-anchor { z-index: 2147483600; }
+.transition-canvas { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; height: 100lvh; }
+@supports (-webkit-touch-callout: none) {
+  .sky-layer, .transition-canvas {
+    --bleed-top: 140px; --bleed-bottom: 160px;
+    top: calc(-1 * var(--bleed-top));
+    height: calc(100lvh + var(--bleed-top) + var(--bleed-bottom));
+  }
+}
+/* desktop pointer parallax: the farthest layer, overscaled so its edges never show */
+@media (hover: hover) and (pointer: fine) {
+  .sky-layer { scale: 1.14; translate: calc(var(--px, 0) * -60px) calc(var(--py, 0) * -40px); }
+}
+
+/* After the burn: charred black (the shader draws it; this is the backing and Safari's
+   bars). Ink flips to a warm light so the name and logos read on the dark. */
+.sky-layer.burned { background-image: none; }
+html.sky.burned { background-color: #0d0c0b; --ink-rgb: 241 236 228; }
+
+.hero-poster h1, .hero-poster p, .hero-poster a { transition: color 0.6s ease; }
+.logo-ink { transition: filter 0.6s ease; }
+html.burned .logo-ink { filter: brightness(0) invert(0.93); }
+/* The nav pills (Navigation): light glass on the sky, dark glass once the page has burned
+   to black, crossfading as it turns. */
+.nav-pill {
+  height: 44px; border-radius: 999px; color: #17191e;
+  background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 12px 30px -18px rgba(15, 30, 55, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
+  transition: background-color .45s ease, border-color .45s ease, color .45s ease, box-shadow .45s ease;
+}
+@media (min-width: 768px) { .nav-pill { height: 48px; } }
+html.burned .nav-pill {
+  color: #f1ece4; background: rgba(28, 26, 34, 0.62); border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.nav-link { color: inherit; opacity: .78; transition: opacity .2s ease, background-color .2s ease; }
+.nav-link:hover, .nav-link:focus-visible { opacity: 1; background: rgba(23, 25, 30, 0.07); }
+html.burned .nav-link:hover, html.burned .nav-link:focus-visible { background: rgba(255, 255, 255, 0.09); }
+.nav-card {
+  border-radius: 18px; color: #17191e;
+  background: rgba(255, 255, 255, 0.86); border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 24px 50px -24px rgba(15, 30, 55, 0.55);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5); backdrop-filter: blur(20px) saturate(1.5);
+}
+html.burned .nav-card { color: #f1ece4; background: rgba(28, 26, 34, 0.84); border-color: rgba(255, 255, 255, 0.1); }
+
+/* The playground's controls */
+.pg-label { font-size: 11.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgb(var(--ink-rgb) / 0.5); }
+.pg-range { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; }
+.pg-range::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: rgb(var(--ink-rgb) / 0.14); }
+.pg-range::-moz-range-track { height: 4px; border-radius: 4px; background: rgb(var(--ink-rgb) / 0.14); }
+.pg-range::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; border-radius: 50%; background: #fff; border: 1px solid rgb(var(--ink-rgb) / 0.2); box-shadow: 0 3px 10px -3px rgba(15, 30, 55, 0.45); }
+.pg-range::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 1px solid rgb(var(--ink-rgb) / 0.2); box-shadow: 0 3px 10px -3px rgba(15, 30, 55, 0.45); }
+.pg-select { width: 100%; appearance: none; -webkit-appearance: none; border-radius: 14px; border: 1px solid rgb(var(--ink-rgb) / 0.14); background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2317191e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 12px center / 16px no-repeat; padding: 11px 38px 11px 14px; font-size: 15px; color: rgb(var(--ink-rgb)); }
+/* the shader tool's thumbnail: a gradient that drifts, in CSS */
+.pg-thumb-shader { background: radial-gradient(60% 70% at 25% 30%, #8fcbef 0%, transparent 60%), radial-gradient(55% 60% at 80% 70%, #f7f6f2 0%, transparent 60%), radial-gradient(70% 80% at 60% 10%, #ff8a3d 0%, transparent 55%), #1f78bd; background-size: 180% 180%; animation: pg-drift 9s ease-in-out infinite alternate; }
+@keyframes pg-drift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+@media (prefers-reduced-motion: reduce) { .pg-thumb-shader { animation: none; } }
+
+/* the skill cards are light glass: they keep dark ink */
+.skill-card { --ink-rgb: 23 25 30; }
+
+/* Home: the sky shows edge to edge, under Safari's bars too (see index.html). */
+html.sky { background-color: #2c8bc6; }
+/* On iOS this colour only shows where Safari clips the page: behind the toolbar at the very
+   end of a page, and past the room above the hero. Both meet the sky near its horizon. */
+@supports (-webkit-touch-callout: none) { html.sky { background-color: #b5dbed; } }
+html.sky body { background-color: transparent; }
 
 body {
   margin: 0;
-  font-family: 'Satoshi', sans-serif;
+  font-family: var(--font-text), sans-serif;
   background-color: #0f0d16;
   color: #f4f2f8;
   color-scheme: dark;
@@ -69,12 +201,12 @@ section {
 .kicker { font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
 
 /* ---------- case study ---------- */
-.cs-prose p { font-size: 17px; line-height: 1.7; color: rgba(244,242,248,.74); margin: 0 0 1.1em; }
+.cs-prose p { font-size: 17px; line-height: 1.7; color: rgb(var(--ink-rgb) / 0.74); margin: 0 0 1.1em; }
 .cs-prose p:last-child { margin-bottom: 0; }
-.cs-prose strong { color: #fff; font-weight: 700; }
+.cs-prose strong { color: rgb(var(--ink-rgb)); font-weight: 650; }
 @media (min-width: 900px) { .cs-prose p { font-size: 18.5px; } }
 
-.fig { border-radius: 18px; overflow: hidden; background: #17151f; box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 20px 50px -30px rgba(0,0,0,.6); }
+.fig { border-radius: 18px; overflow: hidden; background: #f1efe9; box-shadow: 0 0 0 1px rgba(23,25,30,.06), 0 24px 50px -32px rgba(15,30,55,.45); }
 .fig img { display: block; width: 100%; height: auto; }
 .phone { border-radius: 26px; overflow: hidden; background: #111; box-shadow: 0 30px 60px -30px rgba(0,0,0,.6), 0 0 0 6px #111, 0 0 0 7px rgba(255,255,255,.12); }
 .phone img { display: block; width: 100%; height: auto; }
@@ -93,8 +225,12 @@ section {
 
 /* ---------- the work flow: a scrubbed bento that zooms into Cross Border Supps ---------- */
 .work-flow { position: relative; z-index: 20; }
-.work-more { background: #0f0d16; color: #fff; }
-.gallery-wrap { position: relative; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+/* No solid backing: on the home page the work sits on the night sky (SkyBackground). */
+.work-more { background: transparent; color: #fff; }
+/* GSAP pins this with position: fixed, which made it a screen-sized fixed box at the bottom
+   edge that Safari 26 sampled and remembered (a flat band). A negative z-index takes it out
+   of that sampling; nothing in front of it is opaque, so it looks the same. */
+.gallery-wrap { position: relative; z-index: -1; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .gallery { position: relative; width: 100%; height: 100%; flex: none; }
 .gallery__item { position: relative; flex: none; overflow: hidden; border-radius: 16px; background: #17151f; box-shadow: 0 0 0 1px rgba(255,255,255,.08); }
 .gallery__item > img, .gallery__item > video { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -128,3 +264,30 @@ section {
 .bento-card__cta { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; margin-top: 6px; padding: 12px 22px; border-radius: 999px; background: #fff; color: #0b0b0b; font-weight: 600; font-size: 15px; transition: background .3s, transform .3s; }
 .bento-card__cta:hover { background: #6cbde0; transform: translateY(-1px); }
 @media (max-width: 767px) { .bento-card__body { padding: 0 20px 40px; gap: 10px; } .bento-card__blurb { font-size: 14px; } }
+
+/* The hero sits directly on the sky (see SkyBackground). */
+.hero-poster { background: transparent; color: var(--ink); }
+
+
+/* ---- Icons (components/icons/SkillIcons.tsx): motion on hover/focus of a .group ---- */
+.ic * { transform-box: fill-box; transform-origin: center; }
+.ic-turn, .ic-lean, .ic-page { transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.ic-lean { transform-origin: center bottom; }
+.ic-page { transform-origin: left center; }
+.group:is(:hover, :focus-within) .ic-turn { transform: rotate(90deg); }
+.group:is(:hover, :focus-within) .ic-lean { transform: rotate(-12deg); }
+.group:is(:hover, :focus-within) .ic-page { transform: scaleX(-1); }
+@media (prefers-reduced-motion: reduce) { .ic * { transition: none !important; } }
+
+/* Light glass cards that sit on the sky: they keep dark ink even while the page is burned */
+.ink-dark { --ink-rgb: 23 25 30; }
+
+/* Section headings in the hero's display face */
+.section-title { font-family: 'Chillax', sans-serif; font-weight: 600; letter-spacing: -0.025em; }
+
+/* Case studies: light glass and the numbered-steps rail */
+.cs-glass { background: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 1px 0 rgba(23,25,30,.04), 0 18px 40px -30px rgba(15,30,55,.45); }
+.cs-steps li:not(:last-child)::before { content: ''; position: absolute; left: 13.5px; top: 30px; bottom: 2px; width: 1px; background: rgb(var(--ink-rgb) / 0.14); }
+
+/* captions on the case-study films */
+.film-video::cue { font-family: 'Sofia Sans', system-ui, sans-serif; font-size: 0.95em; line-height: 1.35; color: #fff; background: rgba(10, 12, 16, 0.72); }

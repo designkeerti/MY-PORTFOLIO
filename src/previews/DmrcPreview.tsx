@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import type { Scene } from './types';
-import { Bg, Words, Slide, Counter, Device, Mono, Shot, EASE } from './kit';
+import { Bg, Words, Slide, Counter, Device, Mono, Shot, EASE, outro } from './kit';
 
 const A = '/work/dmrc/';
 const navy = '#0A1424';
@@ -96,4 +96,6 @@ export const dmrcScenes = (): Scene[] => [
       </Bg>
     ),
   },
+  outro({ bg: navy, accent: '#FDD835', role: 'My role · UX researcher · 4 weeks', caption: '32 riders surveyed, every idea judged six ways, three proposals ready to pilot',
+    lines: ['32 riders surveyed.', 'Three proposals.', 'Move people with information.'] }),
 ];

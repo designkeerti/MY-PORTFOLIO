@@ -1,4 +1,8 @@
-import { useRive } from 'rive-react';
+import { useRive, RuntimeLoader } from 'rive-react';
+import riveWasmUrl from '@rive-app/canvas/rive.wasm?url';
+
+// Serve the Rive runtime from our own build instead of unpkg/jsDelivr.
+RuntimeLoader.setWasmUrl(riveWasmUrl);
 
 interface RiveAnimationProps {
   src: string;
