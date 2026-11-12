@@ -1,34 +1,38 @@
-import { PALETTES, type IconDef, type Part, type Shape } from './set';
-import { cssFor } from './motion';
+import { cssFor, motionFor } from './motion';
 import { hexToOklch, oklchToHex } from '../color';
 
 /**
- * One drawing, six styles. Each style paints the same parts (so every moving part moves the
- * same way in all of them) and returns a complete <svg>: the page shows exactly what a copy
- * or a download gives you.
+ * Seven styles from Phosphor's drawings (256 grid). Each icon brings three layers:
+ *   line   the regular weight, an outline drawn as a filled shape
+ *   solid  the fill weight, with its details already cut out
+ *   body   the duotone weight's tint layer (the area inside the outline)
+ * Every style returns a complete <svg>: the page shows exactly what a copy or a download
+ * gives you, motion included.
  */
 
-export type IconStyle = 'regular' | 'duotone' | 'filled' | 'graphical' | 'glass' | 'isometric';
+export type IconStyle = 'regular' | 'duotone' | 'filled' | 'graphical' | 'glass' | '3d' | 'isometric';
 export const STYLES: { value: IconStyle; label: string; note: string }[] = [
-  { value: 'regular', label: 'Regular', note: 'Outlines that draw themselves in' },
-  { value: 'duotone', label: 'Duotone', note: 'A soft tint under the line' },
-  { value: 'filled', label: 'Filled', note: 'Solid, with the details cut out' },
-  { value: 'graphical', label: 'Graphical', note: 'Gradients, depth and a passing sheen' },
-  { value: 'glass', label: 'Glass', note: 'Colour seen through frosted glass' },
-  { value: 'isometric', label: 'Isometric', note: 'Raised on a floating tile' },
+  { value: 'regular', label: 'Regular', note: 'Outline' },
+  { value: 'duotone', label: 'Duotone', note: 'Outline over a second tone' },
+  { value: 'filled', label: 'Filled', note: 'Solid' },
+  { value: 'graphical', label: 'Graphical', note: 'Gradient and depth' },
+  { value: 'glass', label: 'Glass', note: 'Frosted pane over colour' },
+  { value: '3d', label: '3D', note: 'Extruded and lit' },
+  { value: 'isometric', label: 'Isometric', note: 'Raised on a tile' },
 ];
+/** the styles that take a palette rather than an ink */
+export const COLOURFUL = new Set<IconStyle>(['graphical', 'glass', '3d', 'isometric']);
 
-export type Palette = { light: string; base: string; dark: string; accent: string };
+export type Geo = { line: string; solid: string; body?: string };
+export type IconRef = { name: string; cats: string[] };
+export type Palette = { light: string; base: string; dark: string };
 export type IconOpts = {
-  /** stroke width on the 24 grid */
-  stroke: number;
-  /** line colour (regular, duotone, filled) */
+  /** ink for the one-colour styles */
   color: string;
-  /** highlight colour (badges, flames) in the one-colour styles */
+  /** the second tone (duotone) */
   accent: string;
-  /** colours for graphical, glass and isometric: the icon's own unless given */
-  palette?: Palette | null;
-  /** unique per rendered icon (ids for gradients, masks and clips) */
+  /** colours for graphical, glass, 3D and isometric */
+  palette: Palette;
   uid: string;
   play?: boolean;
   /** rendered width in px */
@@ -37,154 +41,106 @@ export type IconOpts = {
   css?: boolean;
 };
 
-/** a palette in the hue of one colour */
+/** restrained, one hue per category, for colouring by category */
+export const CATEGORY_HUES: Record<string, string> = {
+  arrows: '#475569', brands: '#4f46e5', commerce: '#c2410c', communications: '#2563eb', design: '#7c3aed',
+  editor: '#334155', finances: '#047857', games: '#be185d', 'health-wellness': '#e11d48', 'maps-travel': '#0f766e',
+  media: '#a21caf', nature: '#15803d', objects: '#b45309', office: '#0369a1', people: '#4f46e5', system: '#475569',
+  'technology-development': '#0e7490', weather: '#0284c7',
+};
+
+/** light, base and dark of one colour */
 export function paletteFrom(hex: string): Palette {
   const [L, C, H] = hexToOklch(hex);
   return {
-    light: oklchToHex(Math.min(0.93, L + 0.2), C * 0.7, H),
+    light: oklchToHex(Math.min(0.9, L + 0.17), C * 0.75, H),
     base: hex,
-    dark: oklchToHex(Math.max(0.25, L - 0.18), C, H),
-    accent: oklchToHex(Math.min(0.85, Math.max(0.72, L + 0.1)), Math.max(0.12, C), (H + 150) % 360),
+    dark: oklchToHex(Math.max(0.22, L - 0.17), C * 0.95, H),
   };
 }
+const shade = (hex: string, dl: number) => { const [L, C, H] = hexToOklch(hex); return oklchToHex(Math.min(0.97, Math.max(0.08, L + dl)), C, H); };
 
-type Paint = (s: Shape, dash: boolean) => string;
-
-/** the parts, as nested groups; moving parts carry their motion */
-function tree(parts: Part[], paint: Paint, dashed = false): string {
-  return parts.map(p => {
-    const dash = dashed || !!p.dash;
-    const own = (p.s ?? []).map(s => paint(s, dash)).join('');
-    const kids = p.kids ? tree(p.kids, paint, dash) : '';
-    const inner = p.under ? kids + own : own + kids;
-    if (!inner) return '';
-    let attrs = '';
-    if (p.a) {
-      const vars = `--a:${p.a};${p.dur ? `--dur:${p.dur}s;` : ''}${p.dl ? `--dl:${p.dl}s;` : ''}${p.ease ? `--ease:${p.ease};` : ''}`;
-      attrs = ` data-a="" style="${vars}transform-origin:${p.o?.[0] ?? 12}px ${p.o?.[1] ?? 12}px"`;
-    } else if (p.dash) attrs = ` data-dash="" style="--dur:${p.dur ?? 2}s"`;
-    return `<g${attrs}>${inner}</g>`;
-  }).join('');
-}
-
-const path = (d: string, attrs: string) => `<path d="${d}"${attrs}/>`;
-const motionsOf = (parts: Part[]): string[] => parts.flatMap(p => [...(p.a ? [p.a] : []), ...(p.kids ? motionsOf(p.kids) : [])]);
-const strokeAttrs = (col: string, w: number) => ` stroke="${col}" stroke-width="${+w.toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"`;
-
-export function iconSvg(def: IconDef, style: IconStyle, o: IconOpts): string {
-  const pal = o.palette ?? PALETTES[def.palette];
-  const C = o.color, A = o.accent, sw = o.stroke, id = (k: string) => `${o.uid}-${k}`;
-  // ghost parts (sparkles) only show while the icon plays
-  const visible = (ps: Part[]): Part[] => ps.filter(p => o.play || !p.ghost).map(p => (p.kids ? { ...p, kids: visible(p.kids) } : p));
-  const parts = visible(def.parts);
-  let defs = '', body = '', vb = '0 0 24 24', w = o.size ?? 24, hgt = w;
-
-  // the solid shapes alone (clip paths for the sheen and the glass)
-  const solids: Paint = s => (s.r === 'body' || s.r === 'accent' ? path(s.d, '') : '');
+export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts): string {
+  const m = motionFor(icon.name, icon.cats);
+  const pal = o.palette, C = o.color, id = (k: string) => `${o.uid}-${k}`;
+  const body = geo.body || geo.solid;
+  const [ox, oy] = m.o ?? [128, 128];
+  // the moving glyph
+  const glyph = (inner: string) =>
+    `<g data-a="" style="--a:${m.a};--dur:${m.dur ?? 2.4}s;${m.ease ? `--ease:${m.ease};` : ''}transform-origin:${ox}px ${oy}px">${inner}</g>`;
+  let defs = '', out = '', vb = '0 0 256 256';
+  const w = o.size ?? 24;
+  let h = w;
 
   if (style === 'regular') {
-    body = `<g class="ic-root" fill="none"${strokeAttrs(C, sw)}>${tree(parts, (s, dash) =>
-      s.r === 'hole' || s.r === 'dot' ? path(s.d, ` fill="${C}" stroke="none"`) : path(s.d, dash ? ' pathLength="1"' : ' pathLength="1" class="dr"'))}</g>`;
+    defs = `<clipPath id="${id('r')}"><circle class="reveal" cx="128" cy="128" r="190"/></clipPath>`;
+    out = `<g class="ic-root" clip-path="url(#${id('r')})">${glyph(`<path d="${geo.line}" fill="${C}"/>`)}</g>`;
   }
 
   else if (style === 'duotone') {
-    body = `<g class="ic-root" fill="none"${strokeAttrs(C, sw)}>${tree(parts, (s, dash) => {
-      const pl = dash ? ' pathLength="1"' : '';
-      if (s.r === 'body') return path(s.d, ` class="tint" fill="${C}" fill-opacity=".16"`);
-      if (s.r === 'accent') return path(s.d, ` fill="${A}"`);
-      if (s.r === 'hole' || s.r === 'dot') return path(s.d, ` fill="${C}" stroke="none"`);
-      return path(s.d, pl);
-    })}</g>`;
+    out = `<g class="ic-root">${glyph(`<path class="tint" d="${body}" fill="${o.accent}" fill-opacity=".2"/><path d="${geo.line}" fill="${C}"/>`)}</g>`;
   }
 
   else if (style === 'filled') {
-    // cuts and holes are knocked out with a mask that moves with the parts
-    defs += `<mask id="${id('m')}" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32"><rect x="-4" y="-4" width="32" height="32" fill="#fff"/>${tree(parts, (s, dash) =>
-      s.r === 'cut' ? path(s.d, ` fill="none"${strokeAttrs('#000', sw * 1.05)}${dash ? ' pathLength="1"' : ''}`) : s.r === 'hole' ? path(s.d, ' fill="#000"') : '')}</mask>`;
-    body = `<g class="ic-root"><g mask="url(#${id('m')})" fill="none"${strokeAttrs(C, sw)}>${tree(parts, s => {
-      if (s.r === 'body') return path(s.d, ` fill="${C}"`);
-      if (s.r === 'accent') return path(s.d, ` fill="${A}" stroke="${A}"`);
-      if (s.r === 'dot') return path(s.d, ` fill="${C}" stroke="none"`);
-      if (s.r === 'line') return path(s.d, '');
-      return '';
-    })}</g></g>`;
+    out = `<g class="ic-root">${glyph(`<path d="${geo.solid}" fill="${C}"/>`)}</g>`;
   }
 
   else if (style === 'graphical') {
-    defs += `<linearGradient id="${id('g')}" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset=".55" stop-color="${pal.base}"/><stop offset="1" stop-color="${pal.dark}"/></linearGradient>`
-      + `<linearGradient id="${id('a')}" x1="6" y1="2" x2="18" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.accent}"/><stop offset="1" stop-color="${shade(pal.accent, -0.12)}"/></linearGradient>`
-      + `<linearGradient id="${id('s')}" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`
-      + `<filter id="${id('f')}" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.2" flood-color="${pal.dark}" flood-opacity=".35"/></filter>`
-      + `<clipPath id="${id('c')}">${tree(parts, solids)}</clipPath>`;
-    body = `<g class="ic-root"><g filter="url(#${id('f')})" fill="none"${strokeAttrs(pal.base, sw)}>${tree(parts, (s, dash) => {
-      const pl = dash ? ' pathLength="1"' : '';
-      if (s.r === 'body') return path(s.d, ` fill="url(#${id('g')})" stroke="none"`);
-      if (s.r === 'accent') return path(s.d, ` fill="url(#${id('a')})" stroke="none"`);
-      if (s.r === 'cut') return path(s.d, ` stroke="#fff" stroke-opacity=".95" stroke-width="${+(sw * 0.9).toFixed(2)}"${pl}`);
-      if (s.r === 'hole') return path(s.d, ' fill="#fff" fill-opacity=".95" stroke="none"');
-      if (s.r === 'dot') return path(s.d, ` fill="${pal.base}" stroke="none"`);
-      return path(s.d, pl);
-    })}</g><g clip-path="url(#${id('c')})"><rect class="sheen" x="9" y="-4" width="5" height="32" fill="url(#${id('s')})"/></g></g>`;
+    defs = `<path id="${id('s')}" d="${geo.solid}"/>`
+      + `<linearGradient id="${id('g')}" x1="40" y1="16" x2="216" y2="240" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset=".55" stop-color="${pal.base}"/><stop offset="1" stop-color="${pal.dark}"/></linearGradient>`
+      + `<linearGradient id="${id('h')}" x1="0" y1="24" x2="0" y2="150" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`
+      + `<linearGradient id="${id('l')}" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`
+      + `<filter id="${id('f')}" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="${pal.dark}" flood-opacity=".28"/></filter>`
+      + `<clipPath id="${id('c')}"><use href="#${id('s')}"/></clipPath>`;
+    out = `<g class="ic-root">${glyph(`<use href="#${id('s')}" fill="url(#${id('g')})" filter="url(#${id('f')})"/><use href="#${id('s')}" fill="url(#${id('h')})"/><g clip-path="url(#${id('c')})"><rect class="sheen" x="100" y="-40" width="48" height="340" fill="url(#${id('l')})"/></g>`)}</g>`;
   }
 
   else if (style === 'glass') {
-    // a soft colour orb behind; the icon is a frosted pane over it, showing the orb blurred
-    // where they overlap, with a bright edge
-    const orb = `<circle cx="15.6" cy="8.6" r="5.8" fill="url(#${id('g')})"/>`;
-    defs += `<linearGradient id="${id('g')}" x1="9" y1="2" x2="21" y2="15" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset=".5" stop-color="${pal.base}"/><stop offset="1" stop-color="${pal.dark}"/></linearGradient>`
-      + `<linearGradient id="${id('p')}" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".55" stop-color="${pal.light}" stop-opacity=".5"/><stop offset="1" stop-color="${pal.light}" stop-opacity=".78"/></linearGradient>`
-      + `<filter id="${id('b')}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.7"/></filter>`
-      + `<filter id="${id('d')}" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="1"/></filter>`
-      + `<clipPath id="${id('c')}">${tree(parts, solids)}</clipPath>`;
-    // a soft shadow under the pane lifts it off a light background
-    const lift = `<g transform="translate(0 1)" filter="url(#${id('d')})" fill="${pal.dark}" fill-opacity=".2">${tree(parts, solids)}</g>`;
-    body = `<g class="ic-root"><g class="gl-back">${orb}</g>${lift}`
-      + `<g clip-path="url(#${id('c')})"><rect x="-2" y="-2" width="28" height="28" fill="#fff" fill-opacity=".35"/><g class="gl-back" filter="url(#${id('b')})">${orb}</g><rect x="-2" y="-2" width="28" height="28" fill="url(#${id('p')})"/></g>`
-      + `<g fill="none"${strokeAttrs('#fff', sw * 0.6)}>${tree(parts, (s, dash) => {
-        const pl = dash ? ' pathLength="1"' : '';
-        if (s.r === 'body') return path(s.d, ` stroke="${pal.dark}" stroke-opacity=".22" stroke-width="${+(sw * 0.45).toFixed(2)}"`) + path(s.d, ' stroke-opacity=".95"');
-        if (s.r === 'accent') return path(s.d, ` fill="${pal.accent}" stroke="#fff" stroke-opacity=".85"`);
-        if (s.r === 'cut') return path(s.d, ` stroke="${pal.dark}" stroke-opacity=".75" stroke-width="${+(sw * 0.85).toFixed(2)}"${pl}`);
-        if (s.r === 'hole') return path(s.d, ` fill="${pal.dark}" fill-opacity=".75" stroke="none"`);
-        if (s.r === 'dot') return path(s.d, ` fill="${pal.base}" stroke="none"`);
-        return path(s.d, ` stroke="${pal.base}" stroke-width="${sw}"${pl}`);
-      })}</g></g>`;
+    // a coloured disc behind a frosted pane cut to the icon
+    defs = `<path id="${id('s')}" d="${geo.solid}"/>`
+      + `<linearGradient id="${id('g')}" x1="110" y1="20" x2="240" y2="170" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset=".5" stop-color="${pal.base}"/><stop offset="1" stop-color="${pal.dark}"/></linearGradient>`
+      + `<linearGradient id="${id('p')}" x1="30" y1="20" x2="226" y2="236" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".8"/><stop offset=".6" stop-color="${pal.light}" stop-opacity=".38"/><stop offset="1" stop-color="${pal.light}" stop-opacity=".66"/></linearGradient>`
+      + `<filter id="${id('b')}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>`
+      + `<filter id="${id('d')}" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="9"/></filter>`
+      + `<clipPath id="${id('c')}"><use href="#${id('s')}"/></clipPath>`;
+    const orb = `<circle cx="168" cy="92" r="64" fill="url(#${id('g')})"/>`;
+    out = `<g class="ic-root"><g class="gl-back">${orb}</g>${glyph(
+      `<use href="#${id('s')}" transform="translate(0 9)" filter="url(#${id('d')})" fill="${pal.dark}" fill-opacity=".16"/>`
+      + `<g clip-path="url(#${id('c')})"><rect width="256" height="256" fill="#fff" fill-opacity=".35"/><g class="gl-back" filter="url(#${id('b')})">${orb}</g><rect width="256" height="256" fill="url(#${id('p')})"/></g>`
+      + `<use href="#${id('s')}" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="3"/>`)}</g>`;
+  }
+
+  else if (style === '3d') {
+    // extruded: copies stacked along a direction that swings as it plays (--t), the face on top
+    vb = '-14 -10 284 290'; h = Math.round(w * 290 / 284);
+    defs = `<path id="${id('s')}" d="${geo.solid}"/>`
+      + `<linearGradient id="${id('g')}" x1="40" y1="10" x2="200" y2="240" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset="1" stop-color="${pal.base}"/></linearGradient>`
+      + `<linearGradient id="${id('h')}" x1="0" y1="20" x2="0" y2="140" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`
+      + `<filter id="${id('f')}" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="8"/></filter>`;
+    const N = 7;
+    const layers = Array.from({ length: N }, (_, k) => N - k).map(i =>
+      `<use href="#${id('s')}" class="layer" style="--i:${i}" fill="${shade(pal.dark, -0.06 * (i / N))}"/>`).join('');
+    out = `<ellipse cx="128" cy="266" rx="88" ry="10" fill="${pal.dark}" opacity=".2" filter="url(#${id('f')})"/>`
+      + `<g class="ic-root">${glyph(`${layers}<use href="#${id('s')}" fill="url(#${id('g')})"/><use href="#${id('s')}" fill="url(#${id('h')})"/>`)}</g>`;
   }
 
   else {
-    // isometric: a rounded tile lying flat, extruded down, with the glyph raised on it in layers
-    vb = '0 -6 48 44'; hgt = Math.round(w * 44 / 48);
+    // isometric: a rounded tile lying flat, extruded down, the icon raised on it in layers
+    vb = '0 -6 48 44'; h = Math.round(w * 44 / 48);
     const F = 'translate(24 14) matrix(.866 .5 -.866 .5 0 0) translate(-12 -12)';
-    const G = 'translate(2.4 2.4) scale(.8)';
+    const G = 'translate(1.1 1.1) scale(.085)';
     const tile = 'M5 0h14a5 5 0 0 1 5 5v14a5 5 0 0 1-5 5H5a5 5 0 0 1-5-5V5a5 5 0 0 1 5-5z';
-    defs += `<linearGradient id="${id('t')}" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e9eef5"/></linearGradient>`
-      + `<linearGradient id="${id('g')}" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset="1" stop-color="${pal.base}"/></linearGradient>`
+    defs = `<path id="${id('s')}" d="${geo.solid}"/><path id="${id('k')}" d="${tile}"/>`
+      + `<linearGradient id="${id('t')}" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e8edf3"/></linearGradient>`
+      + `<linearGradient id="${id('g')}" x1="40" y1="20" x2="216" y2="236" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset="1" stop-color="${pal.base}"/></linearGradient>`
       + `<filter id="${id('b')}" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="1.6"/></filter>`;
-    const sides = [3.6, 3, 2.4, 1.8, 1.2, 0.6].map(k => `<path d="${tile}" transform="translate(0 ${k}) ${F}" fill="#cdd6e2"/>`).join('');
-    const E = 2.4, steps = [0, 0.4, 0.8, 1.2, 1.6, 2];
-    const swG = sw * 1.15; // a touch heavier, it reads smaller on the tile
-    const side = steps.map(k => `<g transform="translate(0 ${-k})"><g transform="${F} ${G}" fill="none"${strokeAttrs(pal.dark, swG)}>${tree(parts, s =>
-      s.r === 'body' ? path(s.d, ` fill="${pal.dark}"`) : s.r === 'accent' ? path(s.d, ` fill="${shade(pal.accent, -0.2)}" stroke="${shade(pal.accent, -0.2)}"`)
-        : s.r === 'dot' ? path(s.d, ` fill="${pal.dark}" stroke="none"`) : s.r === 'line' ? path(s.d, '') : '')}</g></g>`).join('');
-    const top = `<g transform="translate(0 ${-E})"><g transform="${F} ${G}" fill="none"${strokeAttrs(pal.base, swG)}>${tree(parts, (s, dash) => {
-      const pl = dash ? ' pathLength="1"' : '';
-      if (s.r === 'body') return path(s.d, ` fill="url(#${id('g')})" stroke="none"`);
-      if (s.r === 'accent') return path(s.d, ` fill="${pal.accent}" stroke="none"`);
-      if (s.r === 'cut') return path(s.d, ` stroke="#fff" stroke-opacity=".95"${pl}`);
-      if (s.r === 'hole') return path(s.d, ' fill="#fff" stroke="none"');
-      if (s.r === 'dot') return path(s.d, ` fill="${pal.light}" stroke="none"`);
-      return path(s.d, ` stroke="${pal.light}"${pl}`);
-    })}</g></g>`;
-    body = `<ellipse class="iso-shadow" cx="24" cy="34" rx="16" ry="4" fill="${pal.dark}" opacity=".5" filter="url(#${id('b')})"/>`
-      + `<g class="iso-float">${sides}<path d="${tile}" transform="${F}" fill="url(#${id('t')})" stroke="#fff" stroke-width=".5"/>${side}${top}</g>`;
+    const sides = [3, 2.5, 2, 1.5, 1, 0.5].map(k => `<use href="#${id('k')}" transform="translate(0 ${k}) ${F}" fill="#c9d2de"/>`).join('');
+    const raise = [0, 0.4, 0.8, 1.2, 1.6].map(k => `<g transform="translate(0 ${-k}) ${F} ${G}">${glyph(`<use href="#${id('s')}" fill="${pal.dark}"/>`)}</g>`).join('');
+    const top = `<g transform="translate(0 -2) ${F} ${G}">${glyph(`<use href="#${id('s')}" fill="url(#${id('g')})"/>`)}</g>`;
+    out = `<ellipse class="iso-shadow" cx="24" cy="34" rx="16" ry="4" fill="#334155" opacity=".3" filter="url(#${id('b')})"/>`
+      + `<g class="iso-float">${sides}<use href="#${id('k')}" transform="${F}" fill="url(#${id('t')})" stroke="#fff" stroke-width=".4"/>${raise}${top}</g>`;
   }
 
-  const css = o.css ? `<style>${cssFor(motionsOf(parts))}</style>` : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="${w}" height="${hgt}" class="icx s-${style}${o.play ? ' ic-play' : ''}" role="img" aria-label="${def.name}">${css}${defs ? `<defs>${defs}</defs>` : ''}${body}</svg>`;
-}
-
-/** lighter (+) or darker (-) in OKLCH lightness */
-function shade(hex: string, dl: number) {
-  const [L, C, H] = hexToOklch(hex);
-  return oklchToHex(Math.min(0.98, Math.max(0.1, L + dl)), C, H);
+  const css = o.css ? `<style>${cssFor(m.a)}</style>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="${w}" height="${h}" class="icx s-${style}${o.play ? ' ic-play' : ''}" role="img" aria-label="${icon.name.replace(/-/g, ' ')}">${css}${defs ? `<defs>${defs}</defs>` : ''}${out}</svg>`;
 }
