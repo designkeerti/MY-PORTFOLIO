@@ -6,6 +6,13 @@ const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
 export function ToolThumb({ slug, className = '' }: { slug: ToolSlug; className?: string }) {
   const box = `overflow-hidden ${className}`;
   switch (slug) {
+    case 'icons': return (
+      <span aria-hidden className={`flex items-center justify-center gap-[0.18em] bg-[#f7f6f2] ${box}`}>
+        <svg viewBox="0 0 24 24" style={{ width: '0.62em' }} fill="none" stroke="#17191e" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.2s-7.6-4.7-7.6-10.4A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 7.6 2.7c0 5.7-7.6 10.4-7.6 10.4z" /></svg>
+        <svg viewBox="0 0 24 24" style={{ width: '0.78em' }}><defs><linearGradient id="thumb-ic" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stopColor="#ffe08a" /><stop offset=".55" stopColor="#f5a524" /><stop offset="1" stopColor="#c46f0c" /></linearGradient></defs><path d="M12 3.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" fill="url(#thumb-ic)" /></svg>
+        <svg viewBox="0 0 24 24" style={{ width: '0.62em' }} fill="#2c8bc6" stroke="#2c8bc6" strokeWidth="1.6" strokeLinejoin="round"><path d="M6.2 16.6v-5.1a5.8 5.8 0 0 1 11.6 0v5.1l1.6 1.9H4.6z" /><path d="M10 19.4a2 2 0 0 0 4 0z" /></svg>
+      </span>
+    );
     case 'shader': return <span aria-hidden className={`pg-thumb-shader block ${box}`} />;
     case 'type': return (
       <span aria-hidden className={`flex items-center justify-center gap-0.5 bg-[#f7f6f2] text-[#17191e] ${box}`}>

@@ -12,9 +12,11 @@ import { TypeScale } from '../playground/TypeScale';
 import { EasingEditor } from '../playground/EasingEditor';
 import { SmoothShadows } from '../playground/SmoothShadows';
 import { Grain } from '../playground/Grain';
+import { IconLibrary } from '../playground/IconLibrary';
 import type { ComponentType } from 'react';
 
 const VIEWS: Record<ToolSlug, ComponentType> = {
+  icons: IconLibrary,
   contrast: ContrastChecker, scales: ColourScales, 'image-palette': ImagePalette,
   type: TypeChecker, 'type-scale': TypeScale,
   shader: ShaderStudio, easing: EasingEditor, shadows: SmoothShadows, grain: Grain,
@@ -61,7 +63,7 @@ export default function Playground() {
           <p className="text-[12px] font-medium uppercase tracking-[0.24em] text-ink/55">{t ? 'Playground' : 'Keerthi Vardhan'}</p>
           <h1 className="section-title mt-3 text-[clamp(34px,6vw,72px)] leading-[1.02]">{t ? t.title : 'Playground'}</h1>
           <p className="mt-5 max-w-[54ch] text-[16px] leading-relaxed text-ink/70 md:text-[18px]">
-            {t ? t.blurb : 'Small tools I made for the parts of design I do most: gradients, type and colour. Free to use, nothing to sign up for.'}
+            {t ? t.blurb : 'Small tools I made for the parts of design I do most: icons, gradients, type and colour. Free to use, nothing to sign up for.'}
           </p>
         </div>
       </section>
