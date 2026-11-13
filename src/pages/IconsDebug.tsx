@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ICON_CSS } from '../playground/icons/motion';
+import { iconCss } from '../playground/icons/motion';
 import { loadCategory, loadIndex, type IconMeta } from '../playground/icons/data';
 import { STYLES, iconSvg, paletteFrom, type Geo } from '../playground/icons/render';
 
@@ -25,7 +25,7 @@ export default function IconsDebug() {
   const palette = paletteFrom('#2f6bed');
   return (
     <div style={{ background: '#f7f6f2', minHeight: '100vh', padding: 16 }}>
-      <style>{ICON_CSS}</style>
+      <style>{iconCss()}</style>
       <div className="grid gap-x-2 gap-y-3" style={{ gridTemplateColumns: `100px repeat(${STYLES.length}, minmax(0, 1fr))` }}>
         <span />{STYLES.map(s => <span key={s.value} className="pg-label text-center">{s.label}</span>)}
         {list.filter(i => geo[i.name]).map(i => (

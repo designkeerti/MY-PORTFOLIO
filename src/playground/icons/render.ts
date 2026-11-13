@@ -16,7 +16,7 @@ export const STYLES: { value: IconStyle; label: string; note: string }[] = [
   { value: 'duotone', label: 'Duotone', note: 'Outline over a second tone' },
   { value: 'filled', label: 'Filled', note: 'Solid' },
   { value: 'graphical', label: 'Graphical', note: 'Gradient and depth' },
-  { value: 'glass', label: 'Glass', note: 'Frosted pane over colour' },
+  { value: 'glass', label: 'Glass', note: 'Frosted layer over colour' },
   { value: '3d', label: '3D', note: 'Extruded and lit' },
   { value: 'isometric', label: 'Isometric', note: 'Raised on a tile' },
 ];
@@ -60,60 +60,68 @@ export function paletteFrom(hex: string): Palette {
 }
 const shade = (hex: string, dl: number) => { const [L, C, H] = hexToOklch(hex); return oklchToHex(Math.min(0.97, Math.max(0.08, L + dl)), C, H); };
 
+/** a drawing whole again (the data keeps its parts apart with "|") */
+export const whole = (d: string) => d.replace(/\|/g, '');
+
 export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts): string {
   const m = motionFor(icon.name, icon.cats);
   const pal = o.palette, C = o.color, id = (k: string) => `${o.uid}-${k}`;
-  const body = geo.body || geo.solid;
+  const lines = geo.line.split('|'), solids = geo.solid.split('|');
+  const solid = whole(geo.solid), body = geo.body || solid;
   const [ox, oy] = m.o ?? [128, 128];
-  // the moving glyph
-  const glyph = (inner: string) =>
-    `<g data-a="" style="--a:${m.a};--dur:${m.dur ?? 2.4}s;${m.ease ? `--ease:${m.ease};` : ''}transform-origin:${ox}px ${oy}px">${inner}</g>`;
+  // the moving glyph; the later pieces follow the first a beat behind
+  const moving = (inner: string, k = 0) =>
+    `<g data-a="" style="--a:${m.a};--dur:${m.dur}s;--dl:${k * 50}ms;transform-origin:${ox}px ${oy}px">${inner}</g>`;
+  const piece = (inner: string, k: number) => `<g class="pt" style="--k:${k}">${moving(inner, k)}</g>`;
+  // draws the outline on: a wide stroke runs along every edge of each piece, under a mask
+  const drawMask = () => `<mask id="${id('m')}" maskUnits="userSpaceOnUse" x="-40" y="-40" width="336" height="336">`
+    + lines.map((d, k) => d.split(/(?=M)/).map(sub => `<path class="draw" style="--k:${k}" d="${sub}" pathLength="1" fill="none" stroke="#fff" stroke-width="36" stroke-linejoin="round"/>`).join('')).join('')
+    + `<rect class="draw-all" x="-40" y="-40" width="336" height="336" fill="#fff"/></mask>`;
   let defs = '', out = '', vb = '0 0 256 256';
   const w = o.size ?? 24;
   let h = w;
 
-  if (style === 'regular') {
-    defs = `<clipPath id="${id('r')}"><circle class="reveal" cx="128" cy="128" r="190"/></clipPath>`;
-    out = `<g class="ic-root" clip-path="url(#${id('r')})">${glyph(`<path d="${geo.line}" fill="${C}"/>`)}</g>`;
-  }
-
-  else if (style === 'duotone') {
-    out = `<g class="ic-root">${glyph(`<path class="tint" d="${body}" fill="${o.accent}" fill-opacity=".2"/><path d="${geo.line}" fill="${C}"/>`)}</g>`;
+  if (style === 'regular' || style === 'duotone') {
+    defs = drawMask();
+    const tint = style === 'duotone' ? `<g class="tint-in">${moving(`<path class="tint" d="${body}" fill="${o.accent}" fill-opacity=".2"/>`)}</g>` : '';
+    out = `<g class="ic-root">${tint}<g mask="url(#${id('m')})">${lines.map((d, k) => piece(`<path d="${d}" fill="${C}"/>`, k)).join('')}</g></g>`;
   }
 
   else if (style === 'filled') {
-    out = `<g class="ic-root">${glyph(`<path d="${geo.solid}" fill="${C}"/>`)}</g>`;
+    out = `<g class="ic-root">${solids.map((d, k) => piece(`<path d="${d}" fill="${C}"/>`, k)).join('')}</g>`;
   }
 
   else if (style === 'graphical') {
-    defs = `<path id="${id('s')}" d="${geo.solid}"/>`
-      + `<linearGradient id="${id('g')}" x1="40" y1="16" x2="216" y2="240" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset=".55" stop-color="${pal.base}"/><stop offset="1" stop-color="${pal.dark}"/></linearGradient>`
+    defs = `<linearGradient id="${id('g')}" x1="40" y1="16" x2="216" y2="240" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset=".55" stop-color="${pal.base}"/><stop offset="1" stop-color="${pal.dark}"/></linearGradient>`
       + `<linearGradient id="${id('h')}" x1="0" y1="24" x2="0" y2="150" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`
       + `<linearGradient id="${id('l')}" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`
       + `<filter id="${id('f')}" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="${pal.dark}" flood-opacity=".28"/></filter>`
-      + `<clipPath id="${id('c')}"><use href="#${id('s')}"/></clipPath>`;
-    out = `<g class="ic-root">${glyph(`<use href="#${id('s')}" fill="url(#${id('g')})" filter="url(#${id('f')})"/><use href="#${id('s')}" fill="url(#${id('h')})"/><g clip-path="url(#${id('c')})"><rect class="sheen" x="100" y="-40" width="48" height="340" fill="url(#${id('l')})"/></g>`)}</g>`;
+      + `<clipPath id="${id('c')}"><path d="${solid}"/></clipPath>`;
+    out = `<g class="ic-root"><g filter="url(#${id('f')})">${solids.map((d, k) => piece(`<path d="${d}" fill="url(#${id('g')})"/><path d="${d}" fill="url(#${id('h')})"/>`, k)).join('')}</g>`
+      + `<g clip-path="url(#${id('c')})"><rect class="sheen" x="100" y="-40" width="48" height="340" fill="url(#${id('l')})"/></g></g>`;
   }
 
   else if (style === 'glass') {
-    // a coloured disc behind a frosted pane cut to the icon
-    defs = `<path id="${id('s')}" d="${geo.solid}"/>`
-      + `<linearGradient id="${id('g')}" x1="110" y1="20" x2="240" y2="170" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset=".5" stop-color="${pal.base}"/><stop offset="1" stop-color="${pal.dark}"/></linearGradient>`
-      + `<linearGradient id="${id('p')}" x1="30" y1="20" x2="226" y2="236" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".8"/><stop offset=".6" stop-color="${pal.light}" stop-opacity=".38"/><stop offset="1" stop-color="${pal.light}" stop-opacity=".66"/></linearGradient>`
-      + `<filter id="${id('b')}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>`
+    vb = '-8 -16 280 280';
+    // two layers: the icon in colour, set back and to the side, under a frosted pane of itself
+    defs = `<path id="${id('s')}" d="${solid}"/>`
+      + `<linearGradient id="${id('g')}" x1="96" y1="24" x2="232" y2="180" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset=".5" stop-color="${pal.base}"/><stop offset="1" stop-color="${pal.dark}"/></linearGradient>`
+      + `<linearGradient id="${id('p')}" x1="30" y1="20" x2="226" y2="236" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".82"/><stop offset=".6" stop-color="${pal.light}" stop-opacity=".36"/><stop offset="1" stop-color="${pal.light}" stop-opacity=".64"/></linearGradient>`
+      + `<linearGradient id="${id('e')}" x1="40" y1="30" x2="216" y2="226" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity=".85"/></linearGradient>`
+      + `<filter id="${id('b')}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>`
       + `<filter id="${id('d')}" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="9"/></filter>`
       + `<clipPath id="${id('c')}"><use href="#${id('s')}"/></clipPath>`;
-    const orb = `<circle cx="168" cy="92" r="64" fill="url(#${id('g')})"/>`;
-    out = `<g class="ic-root"><g class="gl-back">${orb}</g>${glyph(
+    const orb = `<use href="#${id('s')}" transform="translate(20 -18)" fill="url(#${id('g')})"/>`;
+    out = `<g class="ic-root"><g class="gl-in back"><g class="gl-back">${orb}</g></g><g class="gl-in front">${moving(
       `<use href="#${id('s')}" transform="translate(0 9)" filter="url(#${id('d')})" fill="${pal.dark}" fill-opacity=".16"/>`
-      + `<g clip-path="url(#${id('c')})"><rect width="256" height="256" fill="#fff" fill-opacity=".35"/><g class="gl-back" filter="url(#${id('b')})">${orb}</g><rect width="256" height="256" fill="url(#${id('p')})"/></g>`
-      + `<use href="#${id('s')}" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="3"/>`)}</g>`;
+      + `<g clip-path="url(#${id('c')})"><rect width="256" height="256" fill="#fff" fill-opacity=".5"/><g class="gl-back" filter="url(#${id('b')})">${orb}</g><rect width="256" height="256" fill="url(#${id('p')})"/></g>`
+      + `<use href="#${id('s')}" fill="none" stroke="${pal.dark}" stroke-opacity=".14" stroke-width="5"/><use href="#${id('s')}" fill="none" stroke="url(#${id('e')})" stroke-width="3"/>`)}</g></g>`;
   }
 
   else if (style === '3d') {
     // extruded: copies stacked along a direction that swings as it plays (--t), the face on top
     vb = '-14 -10 284 290'; h = Math.round(w * 290 / 284);
-    defs = `<path id="${id('s')}" d="${geo.solid}"/>`
+    defs = `<path id="${id('s')}" d="${solid}"/>`
       + `<linearGradient id="${id('g')}" x1="40" y1="10" x2="200" y2="240" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset="1" stop-color="${pal.base}"/></linearGradient>`
       + `<linearGradient id="${id('h')}" x1="0" y1="20" x2="0" y2="140" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`
       + `<filter id="${id('f')}" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="8"/></filter>`;
@@ -121,7 +129,7 @@ export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts):
     const layers = Array.from({ length: N }, (_, k) => N - k).map(i =>
       `<use href="#${id('s')}" class="layer" style="--i:${i}" fill="${shade(pal.dark, -0.06 * (i / N))}"/>`).join('');
     out = `<ellipse cx="128" cy="266" rx="88" ry="10" fill="${pal.dark}" opacity=".2" filter="url(#${id('f')})"/>`
-      + `<g class="ic-root">${glyph(`${layers}<use href="#${id('s')}" fill="url(#${id('g')})"/><use href="#${id('s')}" fill="url(#${id('h')})"/>`)}</g>`;
+      + `<g class="ic-root">${moving(`${layers}<use href="#${id('s')}" fill="url(#${id('g')})"/><use href="#${id('s')}" fill="url(#${id('h')})"/>`)}</g>`;
   }
 
   else {
@@ -130,15 +138,15 @@ export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts):
     const F = 'translate(24 14) matrix(.866 .5 -.866 .5 0 0) translate(-12 -12)';
     const G = 'translate(1.1 1.1) scale(.085)';
     const tile = 'M5 0h14a5 5 0 0 1 5 5v14a5 5 0 0 1-5 5H5a5 5 0 0 1-5-5V5a5 5 0 0 1 5-5z';
-    defs = `<path id="${id('s')}" d="${geo.solid}"/><path id="${id('k')}" d="${tile}"/>`
+    defs = `<path id="${id('s')}" d="${solid}"/><path id="${id('k')}" d="${tile}"/>`
       + `<linearGradient id="${id('t')}" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e8edf3"/></linearGradient>`
       + `<linearGradient id="${id('g')}" x1="40" y1="20" x2="216" y2="236" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${pal.light}"/><stop offset="1" stop-color="${pal.base}"/></linearGradient>`
       + `<filter id="${id('b')}" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="1.6"/></filter>`;
     const sides = [3, 2.5, 2, 1.5, 1, 0.5].map(k => `<use href="#${id('k')}" transform="translate(0 ${k}) ${F}" fill="#c9d2de"/>`).join('');
-    const raise = [0, 0.4, 0.8, 1.2, 1.6].map(k => `<g transform="translate(0 ${-k}) ${F} ${G}">${glyph(`<use href="#${id('s')}" fill="${pal.dark}"/>`)}</g>`).join('');
-    const top = `<g transform="translate(0 -2) ${F} ${G}">${glyph(`<use href="#${id('s')}" fill="url(#${id('g')})"/>`)}</g>`;
+    const raise = (j: number, fill: string) => `<g class="raise" style="--j:${j}"><g transform="${F} ${G}">${moving(`<use href="#${id('s')}" fill="${fill}"/>`)}</g></g>`;
     out = `<ellipse class="iso-shadow" cx="24" cy="34" rx="16" ry="4" fill="#334155" opacity=".3" filter="url(#${id('b')})"/>`
-      + `<g class="iso-float">${sides}<use href="#${id('k')}" transform="${F}" fill="url(#${id('t')})" stroke="#fff" stroke-width=".4"/>${raise}${top}</g>`;
+      + `<g class="iso-in"><g class="iso-float">${sides}<use href="#${id('k')}" transform="${F}" fill="url(#${id('t')})" stroke="#fff" stroke-width=".4"/>`
+      + [0, 1, 2, 3, 4].map(j => raise(j, pal.dark)).join('') + raise(5, `url(#${id('g')})`) + `</g></g>`;
   }
 
   const css = o.css ? `<style>${cssFor(m.a)}</style>` : '';

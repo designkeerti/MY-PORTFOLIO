@@ -1,8 +1,8 @@
-import { Suspense, lazy, memo, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, memo, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Panel, Button, ColorField, Segmented, useCopy, useToast } from './ui';
-import { ICON_CSS } from './icons/motion';
+import { iconCss, motionFor } from './icons/motion';
 import { CATEGORIES, loadCategory, loadIndex, search, type IconMeta } from './icons/data';
-import { CATEGORY_HUES, COLOURFUL, STYLES, iconSvg, paletteFrom, type Geo, type IconOpts, type IconStyle, type Palette } from './icons/render';
+import { CATEGORY_HUES, COLOURFUL, STYLES, iconSvg, paletteFrom, whole, type Geo, type IconOpts, type IconStyle, type Palette } from './icons/render';
 import type { Icon3DHandle, Material3D } from './icons/Icon3D';
 
 const Icon3D = lazy(() => import('./icons/Icon3D'));
@@ -20,8 +20,8 @@ type Motion = 'hover' | 'loop' | 'off';
 type ColourMode = 'one' | 'category';
 const PAGE = 96;
 
-const Svg = ({ html, className = '' }: { html: string; className?: string }) => (
-  <span aria-hidden className={`flex items-center justify-center [&>svg]:block [&>svg]:h-auto [&>svg]:max-w-full ${className}`} dangerouslySetInnerHTML={{ __html: html }} />
+const Svg = ({ html, className = '', style }: { html: string; className?: string; style?: CSSProperties }) => (
+  <span aria-hidden style={style} className={`flex items-center justify-center [&>svg]:block [&>svg]:h-auto [&>svg]:max-w-full ${className}`} dangerouslySetInnerHTML={{ __html: html }} />
 );
 
 const save = (href: string, name: string) => { const a = document.createElement('a'); a.href = href; a.download = name; a.click(); };
@@ -120,7 +120,7 @@ export function IconLibrary() {
 
   return (
     <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-4 px-4 md:gap-5 md:px-6">
-      <style>{ICON_CSS}</style>
+      <style>{iconCss()}</style>
 
       {/* style: each choice shows the selected icon in that style */}
       <Panel className="p-2">
@@ -168,8 +168,9 @@ export function IconLibrary() {
           </Panel>
 
           <div className={`grid gap-2 ${big ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6' : 'grid-cols-4 sm:grid-cols-5 md:grid-cols-6 xl:grid-cols-8'}`}>
-            {visible.map(i => (
-              <Cell key={i.name} icon={i} geo={geo[i.name]} style={style} motion={motion} selected={i.name === sel} onPick={pick}
+            {visible.map((i, n) => (
+              // keyed by style too: a new style comes in afresh
+              <Cell key={`${i.name}-${style}`} order={n % PAGE} icon={i} geo={geo[i.name]} style={style} motion={motion} selected={i.name === sel} onPick={pick}
                 opts={opts(i, `g-${i.name}`, false, { size: style === 'isometric' ? 84 : style === '3d' ? 56 : 40 })} />
             ))}
             {!icons && !failed && Array.from({ length: 24 }, (_, k) => <div key={k} className="cs-glass aspect-square animate-pulse rounded-[16px]" />)}
@@ -185,7 +186,7 @@ export function IconLibrary() {
             <div className={`relative flex aspect-[5/4] items-center justify-center overflow-hidden rounded-[18px] ${colourful ? 'bg-[radial-gradient(120%_90%_at_30%_10%,#ffffff,#e9eef4)]' : 'bg-white'}`}>
               {icon && g && style === '3d' && (
                 <Suspense fallback={<Svg html={iconSvg(icon, g, style, opts(icon, `d-${icon.name}`, false, { size: 150 }))} />}>
-                  <Icon3D ref={three} solid={g.solid} color={paletteOf(icon).base} material={material} spin={motion !== 'off' && !still} className="absolute inset-0" />
+                  <Icon3D ref={three} solid={whole(g.solid)} color={paletteOf(icon).base} material={material} spin={motion !== 'off' && !still} className="absolute inset-0" />
                 </Suspense>
               )}
               {icon && g && style !== '3d' && (
@@ -264,23 +265,33 @@ export function IconLibrary() {
   );
 }
 
-type CellProps = { icon: IconMeta; geo?: Geo; style: IconStyle; motion: Motion; selected: boolean; onPick: (name: string) => void; opts: IconOpts };
+type CellProps = { icon: IconMeta; geo?: Geo; style: IconStyle; motion: Motion; selected: boolean; onPick: (name: string) => void; opts: IconOpts; order: number };
 
-const Cell = memo(function Cell({ icon, geo, style, motion, selected, onPick, opts }: CellProps) {
-  const [hover, setHover] = useState(false);
-  // a touch shows the motion too: play for a moment after a tap
-  const [tapped, setTapped] = useState(false);
-  useEffect(() => { if (!tapped) return; const t = setTimeout(() => setTapped(false), 2400); return () => clearTimeout(t); }, [tapped]);
-  const play = motion === 'loop' || (motion === 'hover' && (hover || tapped));
+const Cell = memo(function Cell({ icon, geo, style, motion, selected, onPick, opts, order }: CellProps) {
+  // a hover or a tap plays the motion once, through to its end
+  const [playing, setPlaying] = useState(false);
+  const timer = useRef(0);
+  const dur = useMemo(() => motionFor(icon.name, icon.cats).dur, [icon]);
+  const play = () => {
+    if (playing) return;
+    setPlaying(true);
+    timer.current = window.setTimeout(() => setPlaying(false), dur * 1000 + 450);
+  };
+  useEffect(() => () => clearTimeout(timer.current), []);
   const { color, accent, palette, size } = opts;
-  const html = useMemo(() => geo ? iconSvg(icon, geo, style, { ...opts, play }) : '',
+  const html = useMemo(() => geo ? iconSvg(icon, geo, style, opts) : '',
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [icon, geo, style, play, color, accent, palette, size]);
+    [icon, geo, style, color, accent, palette, size]);
+  // it comes in once, in a ripple down the grid; after that a new colour just repaints it
+  const delay = Math.min(order, 48) * 16;
+  const [settled, setSettled] = useState(false);
+  useEffect(() => { if (!html || settled) return; const t = setTimeout(() => setSettled(true), delay + 1900); return () => clearTimeout(t); }, [!!html]);
+  const cls = `${motion === 'loop' ? 'ic-play' : playing && motion === 'hover' ? 'ic-play ic-once' : ''} ${settled ? 'ic-settled' : ''}`;
   return (
-    <button type="button" onClick={() => { onPick(icon.name); setTapped(true); }} aria-pressed={selected} aria-label={icon.name.replace(/-/g, ' ')} title={icon.name}
-      onPointerEnter={e => e.pointerType === 'mouse' && setHover(true)} onPointerLeave={e => e.pointerType === 'mouse' && setHover(false)}
+    <button type="button" onClick={() => { onPick(icon.name); play(); }} aria-pressed={selected} aria-label={icon.name.replace(/-/g, ' ')} title={icon.name}
+      onPointerEnter={e => e.pointerType === 'mouse' && play()}
       className={`cs-glass group flex aspect-square min-w-0 flex-col items-center justify-center gap-1.5 rounded-[16px] p-2 transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 ${selected ? 'ring-2 ring-ink ring-offset-2 ring-offset-[#f7f6f2]' : ''}`}>
-      {html ? <Svg html={html} className="h-[62%] w-full" /> : <span className="h-[62%]" />}
+      {html ? <Svg html={html} className={`h-[62%] w-full ${cls}`} style={{ '--in': `${delay}ms` } as CSSProperties} /> : <span className="h-[62%]" />}
       <span className="max-w-full truncate text-[11px] font-medium text-ink/50 group-hover:text-ink">{icon.name}</span>
     </button>
   );
