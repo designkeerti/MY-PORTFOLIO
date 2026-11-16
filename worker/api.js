@@ -68,10 +68,14 @@ export async function api(request, env, url) {
   if (path === '/api/jobs/himalayas' && request.method === 'GET') {
     const q = clip(url.searchParams.get('q'), 80);
     const page = Math.max(1, Math.min(5, Number(url.searchParams.get('page')) || 1));
-    const r = await fetch(`https://himalayas.app/jobs/api/search?q=${encodeURIComponent(q)}&page=${page}`, {
-      headers: { 'user-agent': 'Mozilla/5.0 (job finder; keerti-portfolio)' },
-      cf: { cacheTtl: 3600, cacheEverything: true },
+    // Himalayas limits keyless requests from Cloudflare's shared addresses: a free key
+    // (HIMALAYAS_KEY, a secret) lifts that; without one, a refusal is retried once and never cached
+    const go = () => fetch(`https://himalayas.app/jobs/api/search?q=${encodeURIComponent(q)}&page=${page}`, {
+      headers: { 'user-agent': 'Mozilla/5.0 (job finder; keerti-portfolio)', ...(env.HIMALAYAS_KEY ? { authorization: `Bearer ${env.HIMALAYAS_KEY}` } : {}) },
+      cf: { cacheTtlByStatus: { '200-299': 3600, '400-599': 0 }, cacheEverything: true },
     });
+    let r = await go();
+    if (r.status === 429) { await new Promise(res => setTimeout(res, 1200)); r = await go(); }
     // passed straight through: no parsing, so it costs the worker next to nothing
     return new Response(r.body, { status: r.status, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=1800' } });
   }
