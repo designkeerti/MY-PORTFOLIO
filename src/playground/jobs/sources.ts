@@ -200,8 +200,10 @@ export async function gather(titles: string[], at: { near: boolean; places: stri
   const tasks: (() => Promise<Job[]>)[] = [
     ...BOARDS.map(b => () => board(b)),
     () => remoteok(),
+    // Himalayas turns away bursts from Cloudflare's shared addresses: one search, the best title
+    ...qs.slice(0, 1).map(q => () => himalayas(q, 1)),
     ...qs.flatMap(q => [
-      () => remotive(q), () => jobicy(q), () => himalayas(q, 1), () => himalayas(q, 2),
+      () => remotive(q), () => jobicy(q),
       () => workable(q), ...(place ? [() => workable(q, place)] : []),
       () => smartrecruiters(q), () => hackerNews(q),
       ...(country ? [() => adzuna(q, country)] : []),
