@@ -5,7 +5,7 @@ import { projects, bySlug } from '../content/projects';
 import { PreviewPlayer } from '../previews/PreviewPlayer';
 import { BlockView } from '../casestudy/Blocks';
 import type { Glance as GlanceT } from '../content/types';
-import { TransitionLink } from '../components/PageTransition';
+import { TransitionLink, cameFrom } from '../components/PageTransition';
 import { pageTop } from '../lib/pageTop';
 import { FilmPlayer, PlayGlyph, mmss, onAccent, useFilm, type FilmInfo } from '../components/FilmPlayer';
 
@@ -57,7 +57,7 @@ export const CaseStudy = () => {
           pinned bar to tint its status bar from; missing it, the page shows behind the clock */}
       <header className={`fixed inset-x-0 top-[6px] z-50 px-3 transition-[padding] duration-300 md:px-6 ${slim ? 'pt-[calc(0.4rem-6px+env(safe-area-inset-top))]' : 'pt-[calc(0.75rem-6px+env(safe-area-inset-top))]'}`}>
         <div className={`relative mx-auto flex max-w-[1100px] items-center justify-between rounded-full border transition-[height,padding] duration-300 ${slim ? 'h-11 px-1.5' : 'h-14 px-2'} border-white/80 bg-white/70 shadow-[0_12px_30px_-20px_rgba(15,30,55,0.5)] backdrop-blur-xl`}>
-          <TransitionLink to="/#work" aria-label="Back to the work"
+          <TransitionLink back to={cameFrom(`/work/${slug}`, '/#work')} aria-label="Back"
             className={`flex items-center justify-center rounded-full bg-white text-ink shadow-[0_2px_8px_-2px_rgba(15,30,55,0.25)] transition-[width,height,transform] duration-300 hover:-translate-x-0.5 ${slim ? 'h-8 w-8' : 'h-10 w-10'}`}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden><path d="M15 6l-6 6 6 6" /></svg>
           </TransitionLink>

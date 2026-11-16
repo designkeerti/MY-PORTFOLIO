@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 import { GROUPS, TOOLS, type ToolSlug } from '../playground/data';
 import { ToolThumb } from '../playground/Thumb';
 import { ShaderStudio } from '../playground/ShaderStudio';
@@ -24,7 +24,7 @@ const VIEWS: Record<ToolSlug, ComponentType> = {
   picks: Picks,
 };
 import { Toaster } from '../playground/ui';
-import { TransitionLink } from '../components/PageTransition';
+import { TransitionLink, cameFrom } from '../components/PageTransition';
 import { pageTop } from '../lib/pageTop';
 
 /**
@@ -34,6 +34,7 @@ import { pageTop } from '../lib/pageTop';
  */
 export default function Playground() {
   const { tool } = useParams();
+  const { pathname } = useLocation();
   const t = tool ? TOOLS.find(x => x.slug === tool) : undefined;
   const [slim, setSlim] = useState(false);
   useEffect(() => {
@@ -49,7 +50,8 @@ export default function Playground() {
       {/* top bar: starts 6px down, like the case studies' (keeps Safari's status bar clear) */}
       <header className={`fixed inset-x-0 top-[6px] z-50 px-3 transition-[padding] duration-300 md:px-6 ${slim ? 'pt-[calc(0.4rem-6px+env(safe-area-inset-top))]' : 'pt-[calc(0.75rem-6px+env(safe-area-inset-top))]'}`}>
         <div className={`relative mx-auto flex max-w-[1100px] items-center justify-between rounded-full border transition-[height,padding] duration-300 ${slim ? 'h-11 px-1.5' : 'h-14 px-2'} border-white/80 bg-white/70 shadow-[0_12px_30px_-20px_rgba(15,30,55,0.5)] backdrop-blur-xl`}>
-          <TransitionLink to={t ? '/playground' : '/#playground'} aria-label={t ? 'Back to the playground' : 'Back home'}
+          {/* back to wherever they came from: the home page's tiles, the list, Picks */}
+          <TransitionLink back to={cameFrom(pathname, t ? '/playground' : '/#playground')} aria-label="Back"
             className={`flex items-center justify-center rounded-full bg-white text-ink shadow-[0_2px_8px_-2px_rgba(15,30,55,0.25)] transition-[width,height,transform] duration-300 hover:-translate-x-0.5 ${slim ? 'h-8 w-8' : 'h-10 w-10'}`}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden><path d="M15 6l-6 6 6 6" /></svg>
           </TransitionLink>

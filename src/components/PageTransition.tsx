@@ -176,10 +176,33 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
 }
 
 /** An internal link that plays the page transition. */
-export function TransitionLink({ to, onClick, children, ...rest }: { to: string; children: ReactNode } & AnchorHTMLAttributes<HTMLAnchorElement>) {
+/* ---------- where each page was opened from, for its back button ---------- */
+
+const CAME = 'came-from';
+const pathOf = (to: string) => to.split(/[?#]/)[0] || '/';
+const read = (): Record<string, string> => { try { return JSON.parse(sessionStorage.getItem(CAME) ?? '{}'); } catch { return {}; } };
+
+/** note that `to` is being opened from here: on the home page, from the section the link sits in */
+function remember(to: string, link: HTMLElement) {
+  const here = location.pathname === '/'
+    ? `/${link.closest('[id]')?.id ? `#${link.closest('[id]')!.id}` : ''}`
+    : location.pathname + location.search;
+  if (pathOf(to) === location.pathname) return;
+  try { sessionStorage.setItem(CAME, JSON.stringify({ ...read(), [pathOf(to)]: here })); } catch { /* private mode: the fallback will do */ }
+}
+
+/** where the page at `path` was opened from, or `fallback` when it was opened directly */
+export const cameFrom = (path: string, fallback: string) => read()[pathOf(path)] ?? fallback;
+
+/**
+ * A link that plays the transition. `back` marks a back button: following it doesn't count as
+ * coming from here (else the page it returns to would send you back again).
+ */
+export function TransitionLink({ to, onClick, back, children, ...rest }: { to: string; back?: boolean; children: ReactNode } & AnchorHTMLAttributes<HTMLAnchorElement>) {
   const go = useTransitionTo();
   const handle = (e: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e);
+    if (!back) remember(to, e.currentTarget);
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     go(to);
