@@ -90,7 +90,8 @@ export function JobFinder() {
     setError(''); setStage('searching'); seen.current.clear();
     setProgress({ done: 0, total: 0, found: 0 });
     let found = 0;
-    const jobs = await gather(profile.titles, (part, done, total) => { found += part.length; setProgress({ done, total, found }); });
+    const at = { near: now.current.where === 'near', places: now.current.placeList };
+    const jobs = await gather(profile.titles, at, (part, done, total) => { found += part.length; setProgress({ done, total, found }); });
     setAll(jobs);
     await rerank(jobs, profile);
     requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
@@ -215,7 +216,7 @@ export function JobFinder() {
 function Intro() {
   const steps = [
     ['Reads your resume', 'An open model picks out the roles you fit, your skills, where you are and where you’ve worked. You can edit all of it.'],
-    ['Searches the boards', `${BOARDS.length} company job boards (Stripe, Figma, Airbnb, Linear, Spotify, Groww…) and three remote job sites, Remotive, Jobicy and Himalayas.`],
+    ['Searches the boards', `${BOARDS.length} company job boards (Stripe, Figma, Airbnb, Linear, Spotify, Zomato, Groww…), Workable’s and SmartRecruiters’ job searches across thousands of companies, the Hacker News hiring thread, and the remote job boards Remotive, RemoteOK, Jobicy and Himalayas.`],
     ['Ranks by meaning', 'Not just matching words: “led usability studies” counts for a role that asks for user research.'],
     ['Finds you a way in', 'For each job: what it asks for, what you’re missing, the people to ask for a referral on LinkedIn, and a note to send them.'],
   ];

@@ -19,6 +19,9 @@ const SAME: Record<string, string> = {
   developer: 'engineer', dev: 'engineer', swe: 'engineer', designer: 'design',
   ux: 'product', ui: 'product', interaction: 'product', experience: 'product', user: 'product',
 };
+// nouns that say what a job is: one of these in a title that the asked-for title lacks makes it another job
+const ROLES = new Set(['manager', 'engineer', 'analyst', 'scientist', 'specialist', 'consultant', 'coordinator', 'director', 'accountant',
+  'technician', 'architect', 'researcher', 'marketer', 'writer', 'recruiter', 'administrator', 'representative', 'associate', 'officer', 'executive', 'strategist', 'developer']);
 const words = (s: string) => s.toLowerCase().replace(LEVEL, ' ').replace(/[^a-z0-9+#.]+/g, ' ').split(' ').filter(w => w && !STOP.has(w)).map(w => SAME[w] ?? w);
 
 /**
@@ -37,6 +40,8 @@ export function titleFit(title: string, targets: string[]) {
     if (!have.has(head)) continue;
     const wantQ = want.filter(w => w !== head), haveQ = words0.filter(w => w !== head);
     if (wantQ.length && haveQ.length && !wantQ.some(q => have.has(q))) continue;
+    // a different kind of role named alongside ("Senior Manager, ... Design") is that role
+    if (words0.some(w => ROLES.has(w) && !want.includes(w))) continue;
     best = Math.max(best, want.filter(w => have.has(w)).length / want.length, wantQ.length && !haveQ.length ? 0.6 : 0);
   }
   return best;

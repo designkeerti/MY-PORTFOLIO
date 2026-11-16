@@ -1,6 +1,9 @@
 /**
  * The job finder's backend. The browser fetches most job boards itself; this does the rest:
- *   GET  /api/jobs/himalayas?q=&page=  Himalayas' search (it doesn't allow browser requests)
+ *   GET  /api/jobs/himalayas?q=&page=         Himalayas' search      } these don't allow requests
+ *   GET  /api/jobs/workable?q=&where=&next=   Workable's job search  } from a browser, so they're
+ *   GET  /api/jobs/smartrecruiters?q=&offset= SmartRecruiters' search} passed through, unread
+ *   GET  /api/jobs/adzuna?q=&country=&page=   Adzuna (only with ADZUNA_ID and ADZUNA_KEY secrets)
  *   POST /api/profile  {text}          a resume's text into a profile, by an open model
  *   POST /api/rank     {query, docs}   how close each posting is to the profile, by meaning
  *   POST /api/match    {profile, job}  why it fits, what it asks for, the gaps, a referral note
@@ -62,22 +65,46 @@ async function ask(env, system, user, schema, maxTokens) {
   return parsed(out);
 }
 
+const ADZUNA = new Set(['gb', 'us', 'at', 'au', 'be', 'br', 'ca', 'ch', 'de', 'es', 'fr', 'in', 'it', 'mx', 'nl', 'nz', 'pl', 'sg', 'za']);
+
+/** a job search passed straight through (no parsing, so it costs the worker next to nothing) */
+async function through(target, headers = {}) {
+  const go = () => fetch(target, {
+    headers: { 'user-agent': 'Mozilla/5.0 (job finder; keerti-portfolio)', accept: 'application/json', ...headers },
+    // a refusal is never cached, so one bad moment doesn't stick for an hour
+    cf: { cacheTtlByStatus: { '200-299': 3600, '400-599': 0 }, cacheEverything: true },
+  });
+  let r = await go();
+  if (r.status === 429) { await new Promise(res => setTimeout(res, 1200)); r = await go(); }
+  return new Response(r.body, { status: r.status, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=1800' } });
+}
+
 export async function api(request, env, url) {
   const path = url.pathname;
+  const q = clip(url.searchParams.get('q'), 80);
+
+  if (path === '/api/jobs/workable' && request.method === 'GET') {
+    const where = clip(url.searchParams.get('where'), 60), next = clip(url.searchParams.get('next'), 400);
+    return through(`https://jobs.workable.com/api/v1/jobs?query=${encodeURIComponent(q)}${where ? `&location=${encodeURIComponent(where)}` : ''}${next ? `&pageToken=${encodeURIComponent(next)}` : ''}`);
+  }
+  if (path === '/api/jobs/smartrecruiters' && request.method === 'GET') {
+    const offset = Math.max(0, Math.min(300, Number(url.searchParams.get('offset')) || 0));
+    // quoted, it searches for the phrase; bare, it matches any one of the words
+    return through(`https://jobs.smartrecruiters.com/sr-jobs/search?keyword=${encodeURIComponent(`"${q}"`)}&limit=100&offset=${offset}`);
+  }
+  if (path === '/api/jobs/adzuna' && request.method === 'GET') {
+    if (!env.ADZUNA_ID || !env.ADZUNA_KEY) return json({ results: [] });
+    const country = ADZUNA.has(url.searchParams.get('country')) ? url.searchParams.get('country') : 'in';
+    const page = Math.max(1, Math.min(5, Number(url.searchParams.get('page')) || 1));
+    return through(`https://api.adzuna.com/v1/api/jobs/${country}/search/${page}?app_id=${env.ADZUNA_ID}&app_key=${env.ADZUNA_KEY}&results_per_page=50&what_phrase=${encodeURIComponent(q)}&content-type=application/json`);
+  }
 
   if (path === '/api/jobs/himalayas' && request.method === 'GET') {
-    const q = clip(url.searchParams.get('q'), 80);
+    // Himalayas limits keyless requests from Cloudflare's shared addresses; a free key
+    // (HIMALAYAS_KEY, a secret) lifts that
     const page = Math.max(1, Math.min(5, Number(url.searchParams.get('page')) || 1));
-    // Himalayas limits keyless requests from Cloudflare's shared addresses: a free key
-    // (HIMALAYAS_KEY, a secret) lifts that; without one, a refusal is retried once and never cached
-    const go = () => fetch(`https://himalayas.app/jobs/api/search?q=${encodeURIComponent(q)}&page=${page}`, {
-      headers: { 'user-agent': 'Mozilla/5.0 (job finder; keerti-portfolio)', ...(env.HIMALAYAS_KEY ? { authorization: `Bearer ${env.HIMALAYAS_KEY}` } : {}) },
-      cf: { cacheTtlByStatus: { '200-299': 3600, '400-599': 0 }, cacheEverything: true },
-    });
-    let r = await go();
-    if (r.status === 429) { await new Promise(res => setTimeout(res, 1200)); r = await go(); }
-    // passed straight through: no parsing, so it costs the worker next to nothing
-    return new Response(r.body, { status: r.status, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=1800' } });
+    return through(`https://himalayas.app/jobs/api/search?q=${encodeURIComponent(q)}&page=${page}`,
+      env.HIMALAYAS_KEY ? { authorization: `Bearer ${env.HIMALAYAS_KEY}` } : {});
   }
 
   if (request.method !== 'POST' || !['/api/profile', '/api/rank', '/api/match'].includes(path)) return json({ error: 'Not found' }, 404);
