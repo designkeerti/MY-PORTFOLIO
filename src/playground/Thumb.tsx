@@ -13,6 +13,18 @@ export function ToolThumb({ slug, className = '' }: { slug: ToolSlug; className?
         <svg viewBox="0 0 24 24" style={{ width: '0.62em' }} fill="#2c8bc6" stroke="#2c8bc6" strokeWidth="1.6" strokeLinejoin="round"><path d="M6.2 16.6v-5.1a5.8 5.8 0 0 1 11.6 0v5.1l1.6 1.9H4.6z" /><path d="M10 19.4a2 2 0 0 0 4 0z" /></svg>
       </span>
     );
+    case 'jobs': return (
+      // three openings, each with how well it fits
+      <span aria-hidden className={`flex flex-col justify-center gap-[0.12em] bg-[#f7f6f2] px-[0.5em] ${box}`}>
+        {[['#17191e', 92], ['#2f6bed', 81], ['#9aa3b2', 64]].map(([c, n]) => (
+          <span key={n} className="flex items-center gap-[0.18em] rounded-[0.12em] bg-white px-[0.16em] py-[0.1em] shadow-[0_1px_3px_rgba(15,30,55,0.12)]">
+            <span className="h-[0.28em] w-[0.28em] shrink-0 rounded-[0.06em]" style={{ background: c as string }} />
+            <span className="h-[0.08em] flex-1 rounded-full bg-[#17191e]/20" />
+            <span className="text-[0.2em] font-semibold tabular-nums text-[#17191e]/70">{n}%</span>
+          </span>
+        ))}
+      </span>
+    );
     case 'shader': return <span aria-hidden className={`pg-thumb-shader block ${box}`} />;
     case 'type': return (
       <span aria-hidden className={`flex items-center justify-center gap-0.5 bg-[#f7f6f2] text-[#17191e] ${box}`}>

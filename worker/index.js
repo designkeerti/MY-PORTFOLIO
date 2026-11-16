@@ -1,5 +1,8 @@
+import { api } from './api.js';
+
 /**
- * Everything is served from static assets, except that the case-study films need byte
+ * Everything is served from static assets, except two things. /api/* is the job finder's
+ * small backend (api.js). And the case-study films need byte
  * ranges: Safari will not play a video whose server ignores `Range`, and the static asset
  * handler answers with the whole file. So /films/* runs through here first, and a ranged
  * request gets a 206 with just the bytes asked for.
@@ -7,6 +10,7 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith('/api/')) return api(request, env, url);
     const range = request.headers.get('Range');
     if (!url.pathname.startsWith('/films/')) return env.ASSETS.fetch(request);
 

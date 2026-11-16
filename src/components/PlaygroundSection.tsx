@@ -16,13 +16,15 @@ export function PlaygroundSection() {
       </header>
       <div className="mx-auto grid max-w-[560px] grid-cols-2 gap-2 md:max-w-none md:grid-cols-6 md:gap-3">
         {TOOLS.map(t => {
-          // the icon library leads, twice as wide, so eleven tools fill two rows exactly
-          const lead = t.slug === 'icons';
+          // the two newest lead, wide (half a row each on big screens); Picks closes the last row
+          // the same way, so twelve tools fill three rows of six, or six rows of two on phones
+          const lead = t.slug === 'icons' || t.slug === 'jobs';
+          const wide = lead || t.slug === 'picks';
           return (
           <TransitionLink key={t.slug} to={`/playground/${t.slug}`}
-            className={`skill-card group relative flex items-center gap-2.5 rounded-[14px] border border-white/80 bg-white/80 p-2 text-ink shadow-[0_20px_44px_-24px_rgba(15,30,55,0.5)] backdrop-blur-md transition-transform duration-300 hover:-translate-y-0.5 md:flex-col md:items-stretch md:gap-0 md:p-2.5 ${lead ? 'col-span-2' : ''}`}>
+            className={`skill-card group relative flex items-center gap-2.5 rounded-[14px] border border-white/80 bg-white/80 p-2 text-ink shadow-[0_20px_44px_-24px_rgba(15,30,55,0.5)] backdrop-blur-md transition-transform duration-300 hover:-translate-y-0.5 md:flex-col md:items-stretch md:gap-0 md:p-2.5 ${lead ? 'col-span-2' : ''} ${wide ? 'md:col-span-3' : ''}`}>
             <CardCat id={`tool-${t.slug}`} size="sm" />
-            <ToolThumb slug={t.slug} className={`h-10 w-10 shrink-0 rounded-[9px] text-[15px] md:h-auto md:w-full md:rounded-[10px] md:text-[34px] ${lead ? 'md:aspect-[32/9]' : 'md:aspect-[16/9]'}`} />
+            <ToolThumb slug={t.slug} className={`h-10 w-10 shrink-0 rounded-[9px] text-[15px] md:h-auto md:w-full md:rounded-[10px] md:text-[34px] ${wide ? 'md:aspect-[48/9]' : 'md:aspect-[16/9]'}`} />
             <span className="min-w-0 md:px-1 md:pb-1 md:pt-2.5">
               <span className="block truncate text-[13.5px] font-semibold leading-tight tracking-[-0.01em] md:text-[14.5px]"><span className="md:hidden">{t.tile ?? t.title}</span><span className="hidden md:inline">{t.title}</span>{lead && <span className="ml-2 rounded-full bg-ink px-1.5 py-0.5 align-[2px] text-[10px] font-semibold uppercase tracking-[0.12em] text-white">New</span>}</span>
               <span className="mt-0.5 hidden text-[12.5px] leading-snug text-ink/60 md:line-clamp-2">{t.short}</span>

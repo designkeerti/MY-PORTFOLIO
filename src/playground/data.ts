@@ -3,12 +3,13 @@
  * data: edit them here and the Picks page and the home tiles follow.
  */
 
-export type ToolSlug = 'icons' | 'contrast' | 'scales' | 'image-palette' | 'type' | 'type-scale' | 'shader' | 'easing' | 'shadows' | 'grain' | 'picks';
+export type ToolSlug = 'icons' | 'jobs' | 'contrast' | 'scales' | 'image-palette' | 'type' | 'type-scale' | 'shader' | 'easing' | 'shadows' | 'grain' | 'picks';
 /** tile: a shorter name for the small home tiles, where the full title would be cut off */
-export type Tool = { slug: ToolSlug; group: 'Icons' | 'Colour' | 'Type' | 'Motion & surface' | 'Picks'; title: string; tile?: string; short: string; blurb: string };
+export type Tool = { slug: ToolSlug; group: 'Icons' | 'Career' | 'Colour' | 'Type' | 'Motion & surface' | 'Picks'; title: string; tile?: string; short: string; blurb: string };
 
 export const TOOLS: Tool[] = [
   { slug: 'icons', group: 'Icons', title: 'Icon Library', tile: 'Icons', short: '1,500 animated icons in seven styles, with real 3D.', blurb: 'Over 1,500 icons in seven styles: regular, duotone, filled, graphical, glass, 3D and isometric. Each one moves in a way that suits it. Copy any of them as an SVG, still or animated, or turn one in real 3D and save it as a PNG.' },
+  { slug: 'jobs', group: 'Career', title: 'Job Finder', short: 'Upload a resume, get jobs that fit and who to ask.', blurb: 'Drop in your resume and it searches 60-odd company job boards and three remote job sites for roles that fit, ranked by meaning rather than keywords. Each job shows what it asks for, what you’re missing, and who to ask for a referral, with a note to send them. Open models read the resume; nothing is stored.' },
   { slug: 'contrast', group: 'Colour', title: 'Contrast Checker', short: 'WCAG contrast, with the nearest colours that pass.', blurb: 'Check a text colour on a background against WCAG, for body text, large text and UI. If it fails, get the nearest colour that passes, same hue, only lighter or darker.' },
   { slug: 'scales', group: 'Colour', title: 'Colour Scales', short: 'One colour into an 11-step scale, plus harmonies.', blurb: 'Turn one colour into a full 50 to 950 scale, evenly spaced to the eye, with its harmonies. Copy it as CSS variables, a Tailwind palette or JSON.' },
   { slug: 'image-palette', group: 'Colour', title: 'Image Palette', short: 'Pull the colours out of any picture.', blurb: 'Drop in a photo and get its palette, weighted by how much of the picture each colour covers. It all happens in your browser; nothing is uploaded.' },
@@ -20,7 +21,7 @@ export const TOOLS: Tool[] = [
   { slug: 'grain', group: 'Motion & surface', title: 'Grain', short: 'A seamless noise texture for a printed feel.', blurb: 'Make a seamless grain tile to lay over gradients and photos. Preview it, download the PNG, and copy the CSS to use it.' },
   { slug: 'picks', group: 'Picks', title: 'Picks', short: 'Font pairings and colours I keep coming back to.', blurb: 'Font pairings and colour combinations from my work and my notebook. Tap a colour to copy it; open any pairing in the checker.' },
 ];
-export const GROUPS: Tool['group'][] = ['Icons', 'Colour', 'Type', 'Motion & surface', 'Picks'];
+export const GROUPS: Tool['group'][] = ['Icons', 'Career', 'Colour', 'Type', 'Motion & surface', 'Picks'];
 
 /* ---------- fonts ---------- */
 

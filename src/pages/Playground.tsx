@@ -13,10 +13,11 @@ import { EasingEditor } from '../playground/EasingEditor';
 import { SmoothShadows } from '../playground/SmoothShadows';
 import { Grain } from '../playground/Grain';
 import { IconLibrary } from '../playground/IconLibrary';
+import { JobFinder } from '../playground/JobFinder';
 import type { ComponentType } from 'react';
 
 const VIEWS: Record<ToolSlug, ComponentType> = {
-  icons: IconLibrary,
+  icons: IconLibrary, jobs: JobFinder,
   contrast: ContrastChecker, scales: ColourScales, 'image-palette': ImagePalette,
   type: TypeChecker, 'type-scale': TypeScale,
   shader: ShaderStudio, easing: EasingEditor, shadows: SmoothShadows, grain: Grain,
