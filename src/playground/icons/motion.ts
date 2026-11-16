@@ -13,7 +13,17 @@
  * The root class is icx (the about section's own icons use .ic).
  */
 
-export type Motion = { a: string; o?: [number, number]; dur: number };
+/** a piece that moves on its own: parts of the drawing by rank (biggest first) in the outline
+ *  (`parts`) and the solid (`solid`) weights, or else a band of the 256 grid cut out (`clip`) */
+export type Track = { parts?: number[]; solid?: number[]; clip?: [number, number, number, number]; a: string; o?: [number, number]; dl?: number };
+/** an effect drawn around the icon while it plays */
+export type Accent = { kind: 'sparkle' | 'ripple' | 'waves' | 'lines' | 'flash'; at?: [number, number]; dir?: 'l' | 'r' | 'd' | 'dl' };
+/**
+ * a: the motion of the whole (or of what the tracks leave); soft: the whole icon's motion where
+ * pieces can't move apart (glass, 3D, isometric, or a solid with no such parts); draw: the
+ * outline redraws itself as its motion
+ */
+export type Motion = { a: string; o?: [number, number]; dur: number; tracks?: Track[]; accent?: Accent; soft?: string; draw?: boolean };
 
 type Ch = { x?: number; y?: number; r?: number; s?: number; sx?: number; sy?: number; k?: number; o?: number; d?: number };
 type Def = { T: number; f: (t: number) => Ch; loop?: boolean };
@@ -32,6 +42,8 @@ const go = (t: number, to: number, f: number, z = 0.5, d = 0) => {
   const w = TAU * f, q = sqrt(1 - z * z);
   return to * (1 - exp(-z * w * t) * (cos(w * q * t) + z / q * sin(w * q * t)));
 };
+/** off by `far`, accelerating, then back in from the other side with a spring */
+const out = (t: number, far: number) => t < 0.3 ? far * (t / 0.3) ** 2 : -far * (1 - go(t - 0.3, 1, 1.5, 0.62));
 /** bounces off the floor, smaller each time */
 const bounce = (t: number, a: number, f: number, z = 0.12) => -abs(kick(t, a, f, z));
 
@@ -80,6 +92,41 @@ const D: Record<string, Def> = {
   'm-click': { T: 0.8, f: t => ({ s: 1 + kick(t, -0.12, 2.6, 0.45) }) },
   'm-drop': { T: 1.3, f: t => ({ y: bounce(t, 18, 1.3, 0.16) }) },
   'm-float': { T: 3, loop: true, f: t => ({ y: -5 * sin(TAU * t / 3) }) },
+  'm-none': { T: 1, f: () => ({ r: 0 }) },
+  // off one side and back in from the other, settling with a touch of overshoot
+  'm-out-r': { T: 1.1, f: t => ({ x: out(t, 170) }) },
+  'm-out-l': { T: 1.1, f: t => ({ x: out(t, -170) }) },
+  'm-out-u': { T: 1.1, f: t => ({ y: out(t, -170) }) },
+  'm-out-d': { T: 1.1, f: t => ({ y: out(t, 170) }) },
+  'm-out-ur': { T: 1.1, f: t => ({ x: out(t, 160), y: out(t, -160) }) },
+  'm-spin-full': { T: 1.2, f: t => ({ r: go(t, 360, 1, 0.55) }) },
+  // pieces
+  'm-clapper': { T: 1.5, f: t => ({ r: kick(t, -26, 3.2, 0.12, 0.07) }) },
+  'm-lid': { T: 1.3, f: t => ({ y: kick(t, -18, 1.4, 0.32), r: kick(t, -16, 1.4, 0.32) }) },
+  'm-shackle': { T: 1.3, f: t => ({ y: kick(t, -26, 1.3, 0.34) }) },
+  'm-thud': { T: 1.3, f: t => ({ y: kick(t, 5, 3, 0.3, 0.42) }) },
+  'm-light': { T: 0.9, f: t => ({ o: t < 0.02 ? 0.18 : Math.min(1, 0.18 + (t - 0.02) / 0.14) }) },
+  'm-type': { T: 1, f: t => ({ y: kick(t, -22, 2, 0.32) }) },
+  'm-drop-in': { T: 1.2, f: t => ({ y: kick(t, 30, 1.5, 0.36), o: 1 }) },
+  'm-lift-out': { T: 1.2, f: t => ({ y: kick(t, -30, 1.5, 0.36) }) },
+  'm-squash': { T: 1.2, f: t => ({ sy: 1 + kick(t, -0.1, 2.4, 0.34, 0.12) }) },
+  'm-hand': { T: 1.2, f: t => ({ r: go(t, 360, 0.9, 0.55) }) },
+  'm-ray': { T: 1, f: t => ({ s: 1 + kick(t, 0.22, 2, 0.32) }) },
+  'm-look': { T: 1.3, f: t => ({ x: kick(t, 18, 1.1, 0.22) }) },
+  'm-lens': { T: 1, f: t => ({ s: 1 + kick(t, -0.18, 2.2, 0.34) }) },
+  'm-bar': { T: 1, f: t => ({ y: kick(t, -16, 2.4, 0.3) }) },
+  'm-link-a': { T: 1.2, f: t => ({ x: kick(t, -14, 1.5, 0.34), y: kick(t, 14, 1.5, 0.34) }) },
+  'm-link-b': { T: 1.2, f: t => ({ x: kick(t, 14, 1.5, 0.34), y: kick(t, -14, 1.5, 0.34) }) },
+  'm-fall': { T: 1.2, f: t => (t < 0.45 ? { y: 40 * (t / 0.45) ** 2, o: 1 - t / 0.45 } : { y: -24 * (1 - Math.min(1, (t - 0.45) / 0.3)), o: Math.min(1, (t - 0.45) / 0.3) }) },
+  'm-flame': { T: 1.8, loop: true, f: t => ({ sy: 1 + 0.08 * sin(TAU * t / 0.45) + 0.05 * sin(TAU * t / 0.19) }) },
+  'm-moon': { T: 1.3, f: t => ({ r: kick(t, -14, 1.3, 0.3) }) },
+  // effects around the icon
+  'ac-sparkle': { T: 0.9, f: t => { const p = Math.min(1, t / 0.7); const k = sin(PI * p); return { s: k, r: 90 * p, o: Math.min(1, k * 4) }; } },
+  'ac-ripple': { T: 0.9, f: t => { const p = Math.min(1, t / 0.8); return { s: 0.55 + 0.75 * (1 - (1 - p) ** 3), o: 0.6 * (1 - p) }; } },
+  'ac-wave-l': { T: 1, f: t => { const p = Math.min(1, t / 0.6); return { x: -12 * p, o: sin(PI * p) }; } },
+  'ac-wave-r': { T: 1, f: t => { const p = Math.min(1, t / 0.6); return { x: 12 * p, o: sin(PI * p) }; } },
+  'ac-lines': { T: 1, f: t => { const p = Math.min(1, t / 0.5); return { x: -36 * p, o: sin(PI * p) }; } },
+  'ac-flash': { T: 0.7, f: t => { const p = Math.min(1, t / 0.45); return { s: 0.75 + 0.4 * p, o: sin(PI * p) }; } },
   // entrances
   'ic-in-pop': { T: 0.75, f: t => ({ s: 0.55 + 0.45 * go(t, 1, 1.6, 0.48), o: Math.min(1, t / 0.12) }) },
   'ic-in-rise': { T: 0.85, f: t => ({ y: 26 * (1 - go(t, 1, 1.4, 0.55)), o: Math.min(1, t / 0.15) }) },
@@ -141,17 +188,70 @@ const RULES: [RegExp, string, [number, number]?][] = [
   [/package|box|archive|gift|basket|shopping|bag|cube|stack|tote/, 'm-settle', [128, 236]],
 ];
 
+type Rig = Omit<Motion, 'dur'>;
+const C: [number, number] = [128, 128];
+/**
+ * Icons whose pieces move on their own: the clapper swings after the bell, a trash lid lifts,
+ * wifi lights up bar by bar, a chat bubble types. Part ranks are by size, biggest first, and
+ * were read off Phosphor's drawings.
+ */
+const RIGS: [RegExp, Rig][] = [
+  [/^bell(-simple)?$/, { a: 'm-ring', o: [128, 30], tracks: [{ clip: [0, 202, 256, 54], a: 'm-clapper', o: [128, 200] }], accent: { kind: 'waves' }, soft: 'm-ring' }],
+  [/^bell-ringing$/, { a: 'm-ring', o: [128, 30], tracks: [{ parts: [1], solid: [1], a: 'm-light', dl: 150 }, { parts: [2], solid: [2], a: 'm-light', dl: 150 }], soft: 'm-ring' }],
+  [/^trash(-simple)?$/, { a: 'm-none', tracks: [{ clip: [0, 0, 256, 62], a: 'm-lid', o: [40, 62] }], soft: 'm-wobble' }],
+  [/^lock(-simple|-key)?$/, { a: 'm-thud', tracks: [{ clip: [0, 0, 256, 86], a: 'm-shackle', o: C }], soft: 'm-jiggle' }],
+  [/^wifi-(high|medium)$/, { a: 'm-none', tracks: [{ parts: [3], a: 'm-light' }, { parts: [2], a: 'm-light', dl: 120 }, { parts: [1], a: 'm-light', dl: 240 }, { parts: [0], a: 'm-light', dl: 360 }], soft: 'm-pulse' }],
+  [/^(download|download-simple|tray-arrow-down)$/, { a: 'm-none', tracks: [{ parts: [1], solid: [1], a: 'm-drop-in' }, { parts: [0], solid: [0], a: 'm-squash', o: [128, 216], dl: 120 }], soft: 'm-go-d' }],
+  [/^(upload|upload-simple|tray-arrow-up)$/, { a: 'm-none', tracks: [{ parts: [1], solid: [1], a: 'm-lift-out' }], soft: 'm-go-u' }],
+  [/^chat(-circle|-centered|-teardrop)?-dots$/, { a: 'm-none', tracks: [{ parts: [3], a: 'm-type' }, { parts: [2], a: 'm-type', dl: 110 }, { parts: [1], a: 'm-type', dl: 220 }], soft: 'm-bob' }],
+  [/^sun$/, { a: 'm-pulse', tracks: [1, 2, 3, 4, 5, 6, 7].map((r, i) => ({ parts: [r], solid: [r], a: 'm-ray', o: C, dl: i * 55 })), soft: 'm-spin-slow' }],
+  [/^(clock|clock-clockwise|alarm)$/, { a: 'm-none', tracks: [{ parts: [1], a: 'm-hand', o: C }], soft: 'm-tick' }],
+  [/^camera$/, { a: 'm-pop', tracks: [{ parts: [1], a: 'm-lens', o: [128, 132] }], accent: { kind: 'flash' }, soft: 'm-pop' }],
+  [/^eye$/, { a: 'm-blink', tracks: [{ parts: [1], a: 'm-look' }], soft: 'm-blink' }],
+  [/^(map-pin|map-pin-simple|push-pin)$/, { a: 'm-drop', o: [128, 236], accent: { kind: 'ripple', at: [128, 232] }, soft: 'm-drop' }],
+  [/^fire$/, { a: 'm-flicker', o: [128, 230], tracks: [{ parts: [1], a: 'm-flame', o: [156, 200] }], soft: 'm-flicker' }],
+  [/^pause(-circle)?$/, { a: 'm-none', tracks: [{ parts: [0], solid: [0], a: 'm-bar' }, { parts: [1], solid: [1], a: 'm-bar', dl: 140 }], soft: 'm-pop' }],
+  [/^link(-simple)?$/, { a: 'm-none', tracks: [{ parts: [0], a: 'm-link-a' }, { parts: [1], a: 'm-link-b' }], soft: 'm-pop' }],
+  [/^cloud-rain$/, { a: 'm-drift', tracks: [{ parts: [1], solid: [1], a: 'm-fall' }], soft: 'm-drift' }],
+  [/^speaker-(high|low)$/, { a: 'm-pulse', tracks: [{ parts: [2], solid: [3], a: 'm-light' }, { parts: [1], solid: [2], a: 'm-light', dl: 140 }], soft: 'm-pulse' }],
+  [/^battery-(high|full|medium)$/, { a: 'm-none', tracks: [{ parts: [3], a: 'm-light' }, { parts: [4], a: 'm-light', dl: 120 }, { parts: [2], a: 'm-light', dl: 240 }], soft: 'm-pulse' }],
+  [/^(check|check-circle|check-square|checks|check-fat|seal-check|list-checks|signature)$/, { a: 'm-pop', draw: true, soft: 'm-pop' }],
+  [/^(heart|heart-straight|heartbeat)$/, { a: 'm-beat', accent: { kind: 'ripple' }, soft: 'm-beat' }],
+  [/^(star|star-four|sparkle|shooting-star|magic-wand|trophy|crown|crown-simple|medal|confetti|seal|diamond)$/, { a: 'm-twinkle', accent: { kind: 'sparkle' }, soft: 'm-twinkle' }],
+  [/^(gift|balloon|party)/, { a: 'm-settle', o: [128, 236], accent: { kind: 'sparkle' }, soft: 'm-settle' }],
+  [/^(moon|moon-stars)$/, { a: 'm-moon', o: C, accent: { kind: 'sparkle' }, soft: 'm-moon' }],
+  [/^(lightning|lightning-a|flashlight)$/, { a: 'm-pulse', accent: { kind: 'flash' }, soft: 'm-pulse' }],
+  [/^(play|play-circle|record|radio-button|broadcast|target)$/, { a: 'm-pop', accent: { kind: 'ripple' }, soft: 'm-pop' }],
+  [/^(microphone|megaphone|megaphone-simple|speaker-simple-high|phone-call|phone-incoming)$/, { a: 'm-pulse', accent: { kind: 'waves' }, soft: 'm-pulse' }],
+  [/^arrows?-(clockwise|counter-clockwise)$/, { a: 'm-spin-full', o: C, soft: 'm-spin-full' }],
+  [/^arrow-(fat-|line-)?(right)$/, { a: 'm-out-r', accent: { kind: 'lines', dir: 'r' }, soft: 'm-go-r' }],
+  [/^arrow-(fat-|line-)?(left)$/, { a: 'm-out-l', accent: { kind: 'lines', dir: 'l' }, soft: 'm-go-l' }],
+  [/^arrow-(fat-|line-)?(up)$/, { a: 'm-out-u', soft: 'm-go-u' }],
+  [/^arrow-(fat-|line-)?(down)$/, { a: 'm-out-d', soft: 'm-go-d' }],
+  [/^arrow-(line-)?up-right$/, { a: 'm-out-ur', soft: 'm-go-ur' }],
+  [/^(paper-plane|paper-plane-right|paper-plane-tilt|rocket|rocket-launch|airplane-takeoff)$/, { a: 'm-out-ur', accent: { kind: 'lines', dir: 'dl' }, soft: 'm-fly' }],
+  [/^(car-profile|truck|van|bus|bicycle|motorcycle|scooter|train|airplane-tilt|sailboat|boat)$/, { a: 'm-out-r', o: [128, 220], accent: { kind: 'lines', dir: 'r' }, soft: 'm-drive' }],
+  [/^(sign-out|share|share-fat|export|arrow-square-out)$/, { a: 'm-out-ur', soft: 'm-go-ur' }],
+];
+
 const BY_CATEGORY: Record<string, [string, [number, number]?]> = {
   arrows: ['m-pop'], brands: ['m-pop'], weather: ['m-drift'], nature: ['m-sway', [128, 236]], people: ['m-nod', [128, 220]],
   media: ['m-pop'], games: ['m-roll'], finances: ['m-coin'], 'maps-travel': ['m-drop', [128, 236]], commerce: ['m-settle', [128, 236]],
   communications: ['m-bob'], 'health-wellness': ['m-beat'],
 };
 
+/** how long one go of a motion lasts, with its rest */
+export const durOf = (a: string) => { const def = D[a]; return +(def.loop ? def.T : def.T + REST).toFixed(2); };
+
+/** how long a hover has to let it play: the longest of its pieces and effects, with their delays */
+export const playTime = (m: Motion) => Math.max(m.dur, ...(m.tracks ?? []).map(t => durOf(t.a) + (t.dl ?? 0) / 1000), m.accent ? 2 : 0);
+
 export function motionFor(name: string, cats: string[]): Motion {
+  const rig = RIGS.find(([re]) => re.test(name))?.[1];
+  if (rig) return { ...rig, dur: durOf(rig.a) };
   const hit = RULES.find(([re]) => re.test(name));
   const [a, o] = hit ? [hit[1], hit[2]] : BY_CATEGORY[cats[0]] ?? ['m-pop'];
-  const def = D[a];
-  return { a, o, dur: +(def.loop ? def.T : def.T + REST).toFixed(2) };
+  return { a, o, dur: durOf(a) };
 }
 
 const n1 = (v: number) => +v.toFixed(1), n3 = (v: number) => +v.toFixed(3);
@@ -179,6 +279,8 @@ function keyframes(name: string): string {
 
 const STATIC: Record<string, string> = {
   'ic-draw': 'from{stroke-dashoffset:1}to{stroke-dashoffset:0}',
+  'ic-redraw': '0%{stroke-dashoffset:1}40%,100%{stroke-dashoffset:0}',
+  'ic-cover': '0%,48%{opacity:0}49%,100%{opacity:1}',
   'ic-show': 'from{opacity:0}to{opacity:1}',
   'ic-tint': '0%,100%{fill-opacity:.2}50%{fill-opacity:.34}',
   'ic-sheen': '0%{transform:translateX(-300px) skewX(-20deg)}55%,100%{transform:translateX(300px) skewX(-20deg)}',
@@ -208,6 +310,10 @@ const BASE = `
 .s-isometric .iso-in{transform-origin:24px 20px;animation:ic-in-iso 1s linear var(--in,0ms) both}
 .s-isometric .raise{animation:ic-in-raise 1s linear var(--in,0ms) both}
 .ic-settled :is(.pt,.draw,.draw-all,.tint-in,.gl-in,.ic-root,.iso-in,.raise){animation:none}
+.icx .acc [data-a]{opacity:0}
+.ic-play .m-draw .draw,.ic-play.m-draw .draw{animation:ic-redraw var(--dur) cubic-bezier(.55,0,.25,1) calc(var(--k,0) * 90ms) infinite both}
+.ic-play .m-draw .draw-all,.ic-play.m-draw .draw-all{animation:ic-cover var(--dur) linear infinite both}
+.ic-once .m-draw :is(.draw,.draw-all){animation-iteration-count:1}
 .ic-play .tint{animation:ic-tint 2.2s ease-in-out infinite}
 .icx .sheen{transform:translateX(-300px)}
 .ic-play .sheen{animation:ic-sheen 2.6s cubic-bezier(.5,0,.3,1) infinite}
@@ -225,6 +331,7 @@ let cache: string | null = null;
 export const iconCss = () => (cache ??= BASE + Object.entries(all()).map(([k, v]) => `@keyframes ${k}{${v}}`).join(''));
 
 /** only what one exported icon uses */
-export function cssFor(motion: string) {
-  return BASE + Object.entries(all()).filter(([k]) => k === motion || k.startsWith('ic-')).map(([k, v]) => `@keyframes ${k}{${v}}`).join('');
+export function cssFor(m: Motion) {
+  const used = new Set([m.a, m.soft, ...(m.tracks ?? []).map(t => t.a)].filter(Boolean));
+  return BASE + Object.entries(all()).filter(([k]) => used.has(k) || k.startsWith('ic-') || (m.accent && k.startsWith('ac-'))).map(([k, v]) => `@keyframes ${k}{${v}}`).join('');
 }

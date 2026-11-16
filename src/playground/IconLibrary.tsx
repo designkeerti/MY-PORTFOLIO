@@ -1,6 +1,6 @@
 import { Suspense, lazy, memo, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Panel, Button, ColorField, Segmented, useCopy, useToast } from './ui';
-import { iconCss, motionFor } from './icons/motion';
+import { iconCss, motionFor, playTime } from './icons/motion';
 import { CATEGORIES, loadCategory, loadIndex, search, type IconMeta } from './icons/data';
 import { CATEGORY_HUES, COLOURFUL, STYLES, iconSvg, paletteFrom, whole, type Geo, type IconOpts, type IconStyle, type Palette } from './icons/render';
 import type { Icon3DHandle, Material3D } from './icons/Icon3D';
@@ -271,7 +271,7 @@ const Cell = memo(function Cell({ icon, geo, style, motion, selected, onPick, op
   // a hover or a tap plays the motion once, through to its end
   const [playing, setPlaying] = useState(false);
   const timer = useRef(0);
-  const dur = useMemo(() => motionFor(icon.name, icon.cats).dur, [icon]);
+  const dur = useMemo(() => playTime(motionFor(icon.name, icon.cats)), [icon]);
   const play = () => {
     if (playing) return;
     setPlaying(true);

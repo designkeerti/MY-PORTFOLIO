@@ -1,4 +1,4 @@
-import { cssFor, motionFor } from './motion';
+import { cssFor, durOf, motionFor, type Accent, type Motion } from './motion';
 import { hexToOklch, oklchToHex } from '../color';
 
 /**
@@ -63,16 +63,85 @@ const shade = (hex: string, dl: number) => { const [L, C, H] = hexToOklch(hex); 
 /** a drawing whole again (the data keeps its parts apart with "|") */
 export const whole = (d: string) => d.replace(/\|/g, '');
 
+type Move = { a: string; o?: [number, number]; dl?: number };
+const anim = (mv: Move, dl = 0) => {
+  const [x, y] = mv.o ?? [128, 128];
+  return `--a:${mv.a};--dur:${durOf(mv.a)}s;--dl:${(mv.dl ?? 0) + dl}ms;transform-origin:${x}px ${y}px`;
+};
+
+/** the effect around an icon (sparkles, a ripple, sound waves, speed lines, a flash), in the 256 grid */
+function accentSvg(ac: Accent, color: string) {
+  const g = (a: string, o: [number, number], inner: string, dl = 0) => `<g data-a="" style="${anim({ a, o }, dl)}">${inner}</g>`;
+  if (ac.kind === 'sparkle') {
+    const star = (x: number, y: number, r: number, dl: number) =>
+      g('ac-sparkle', [x, y], `<path d="M${x} ${y - r}C${x + r * 0.14} ${y - r * 0.3} ${x + r * 0.3} ${y - r * 0.14} ${x + r} ${y}C${x + r * 0.3} ${y + r * 0.14} ${x + r * 0.14} ${y + r * 0.3} ${x} ${y + r}C${x - r * 0.14} ${y + r * 0.3} ${x - r * 0.3} ${y + r * 0.14} ${x - r} ${y}C${x - r * 0.3} ${y - r * 0.14} ${x - r * 0.14} ${y - r * 0.3} ${x} ${y - r}Z" fill="${color}"/>`, dl);
+    return star(34, 40, 20, 0) + star(226, 70, 14, 140) + star(212, 220, 17, 260);
+  }
+  if (ac.kind === 'ripple') {
+    const [x, y] = ac.at ?? [128, 128];
+    const ring = ac.at ? `<ellipse cx="${x}" cy="${y}" rx="70" ry="18" fill="none" stroke="${color}" stroke-width="8"/>` : `<circle cx="${x}" cy="${y}" r="104" fill="none" stroke="${color}" stroke-width="8"/>`;
+    return g('ac-ripple', [x, y], ring) + g('ac-ripple', [x, y], ring, 220);
+  }
+  if (ac.kind === 'waves') {
+    const arc = (x: number, flip: number, r: number) => `<path d="M${x} ${128 - r}Q${x - flip * r * 0.55} 128 ${x} ${128 + r}" fill="none" stroke="${color}" stroke-width="12" stroke-linecap="round"/>`;
+    return g('ac-wave-l', [30, 128], arc(26, 1, 30) + arc(8, 1, 46), 0) + g('ac-wave-r', [226, 128], arc(230, -1, 30) + arc(248, -1, 46), 0);
+  }
+  if (ac.kind === 'lines') {
+    // trails behind the way it goes
+    const rot = ac.dir === 'l' ? 'rotate(180 128 128)' : ac.dir === 'dl' ? 'rotate(-45 128 128)' : ac.dir === 'd' ? 'rotate(-90 128 128)' : '';
+    const ln = (y: number, len: number) => `<path d="M${40 - len} ${y}H40" stroke="${color}" stroke-width="12" stroke-linecap="round"/>`;
+    return `<g transform="${rot}">${g('ac-lines', [20, 128], ln(100, 34)) + g('ac-lines', [20, 128], ln(128, 52), 70) + g('ac-lines', [20, 128], ln(156, 30), 140)}</g>`;
+  }
+  // flash: short rays all round
+  const rays = Array.from({ length: 8 }, (_, i) => {
+    const t = (i / 8) * Math.PI * 2, c = Math.cos(t), sn = Math.sin(t);
+    return `<path d="M${128 + c * 112} ${128 + sn * 112}L${128 + c * 132} ${128 + sn * 132}" stroke="${color}" stroke-width="12" stroke-linecap="round"/>`;
+  }).join('');
+  return g('ac-flash', [128, 128], rays);
+}
+
 export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts): string {
-  const m = motionFor(icon.name, icon.cats);
+  const m: Motion = motionFor(icon.name, icon.cats);
   const pal = o.palette, C = o.color, id = (k: string) => `${o.uid}-${k}`;
   const lines = geo.line.split('|'), solids = geo.solid.split('|');
   const solid = whole(geo.solid), body = geo.body || solid;
-  const [ox, oy] = m.o ?? [128, 128];
-  // the moving glyph; the later pieces follow the first a beat behind
-  const moving = (inner: string, k = 0) =>
-    `<g data-a="" style="--a:${m.a};--dur:${m.dur}s;--dl:${k * 50}ms;transform-origin:${ox}px ${oy}px">${inner}</g>`;
-  const piece = (inner: string, k: number) => `<g class="pt" style="--k:${k}">${moving(inner, k)}</g>`;
+  const outline = style === 'regular' || style === 'duotone';
+  // the whole icon's motion where its pieces can't move apart
+  const lone: Move = { a: m.soft ?? m.a, o: m.o };
+  const moving = (inner: string, mv: Move = lone, dl = 0) => `<g data-a="" style="${anim(mv, dl)}">${inner}</g>`;
+  const piece = (inner: string, k: number, mv: Move = lone, dl = k * 50) => `<g class="pt" style="--k:${k}">${moving(inner, mv, dl)}</g>`;
+  let extra = '';
+  /**
+   * The drawing as moving pieces: each of the rig's tracks takes its parts (or its cut-out
+   * band), the rest moves with the main motion. Without a rig, the later parts follow the
+   * first a beat behind.
+   */
+  const rigged = (paths: string[], kind: 'line' | 'solid', paint: (d: string) => string) => {
+    const used = new Set<number>(), cuts: [number, number, number, number][] = [], out: string[] = [];
+    for (const t of m.tracks ?? []) {
+      const ranks = kind === 'line' ? t.parts : t.solid;
+      if (ranks && ranks.every(r => r < paths.length && !used.has(r))) {
+        ranks.forEach(r => used.add(r));
+        out.push(piece(ranks.map(r => paint(paths[r])).join(''), out.length, t, 0));
+      } else if (t.clip) {
+        const [x, y, w, h] = t.clip, cid = id(`k${out.length}`);
+        extra += `<clipPath id="${cid}"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath>`;
+        cuts.push(t.clip);
+        out.push(piece(`<g clip-path="url(#${cid})">${paint(paths.join(''))}</g>`, out.length, t, 0));
+      }
+    }
+    if (!m.tracks) return paths.map((d, k) => piece(paint(d), k)).join('');
+    const main: Move = out.length ? { a: m.a, o: m.o } : lone;
+    const rest = paths.filter((_, i) => !used.has(i));
+    if (cuts.length) {
+      const mid = id('cut');
+      extra += `<mask id="${mid}" maskUnits="userSpaceOnUse" x="-40" y="-40" width="336" height="336"><rect x="-40" y="-40" width="336" height="336" fill="#fff"/>${cuts.map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}"/>`).join('')}</mask>`;
+      out.unshift(piece(`<g mask="url(#${mid})">${paint(rest.join(''))}</g>`, 0, main, 0));
+    } else if (rest.length) out.unshift(piece(rest.map(paint).join(''), 0, main, 0));
+    return out.join('');
+  };
+  // the effect plays in the icon's colour
+  const acc = m.accent ? `<g class="acc">${accentSvg(m.accent, outline || style === 'filled' ? (style === 'duotone' ? o.accent : C) : pal.base)}</g>` : '';
   // draws the outline on: a wide stroke runs along every edge of each piece, under a mask
   const drawMask = () => `<mask id="${id('m')}" maskUnits="userSpaceOnUse" x="-40" y="-40" width="336" height="336">`
     + lines.map((d, k) => d.split(/(?=M)/).map(sub => `<path class="draw" style="--k:${k}" d="${sub}" pathLength="1" fill="none" stroke="#fff" stroke-width="36" stroke-linejoin="round"/>`).join('')).join('')
@@ -81,14 +150,16 @@ export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts):
   const w = o.size ?? 24;
   let h = w;
 
-  if (style === 'regular' || style === 'duotone') {
+  if (outline) {
     defs = drawMask();
-    const tint = style === 'duotone' ? `<g class="tint-in">${moving(`<path class="tint" d="${body}" fill="${o.accent}" fill-opacity=".2"/>`)}</g>` : '';
-    out = `<g class="ic-root">${tint}<g mask="url(#${id('m')})">${lines.map((d, k) => piece(`<path d="${d}" fill="${C}"/>`, k)).join('')}</g></g>`;
+    const glyph = rigged(lines, 'line', d => `<path d="${d}" fill="${C}"/>`);
+    const tintMove: Move = m.tracks && m.a !== 'm-none' ? { a: m.a, o: m.o } : lone;
+    const tint = style === 'duotone' ? `<g class="tint-in">${moving(`<path class="tint" d="${body}" fill="${o.accent}" fill-opacity=".2"/>`, m.draw ? { a: 'm-none' } : tintMove)}</g>` : '';
+    out = `<g class="ic-root">${tint}<g mask="url(#${id('m')})">${m.draw ? lines.map((d, k) => piece(`<path d="${d}" fill="${C}"/>`, k, { a: 'm-none' })).join('') : glyph}</g>${acc}</g>`;
   }
 
   else if (style === 'filled') {
-    out = `<g class="ic-root">${solids.map((d, k) => piece(`<path d="${d}" fill="${C}"/>`, k)).join('')}</g>`;
+    out = `<g class="ic-root">${rigged(solids, 'solid', d => `<path d="${d}" fill="${C}"/>`)}${acc}</g>`;
   }
 
   else if (style === 'graphical') {
@@ -97,8 +168,8 @@ export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts):
       + `<linearGradient id="${id('l')}" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`
       + `<filter id="${id('f')}" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="${pal.dark}" flood-opacity=".28"/></filter>`
       + `<clipPath id="${id('c')}"><path d="${solid}"/></clipPath>`;
-    out = `<g class="ic-root"><g filter="url(#${id('f')})">${solids.map((d, k) => piece(`<path d="${d}" fill="url(#${id('g')})"/><path d="${d}" fill="url(#${id('h')})"/>`, k)).join('')}</g>`
-      + `<g clip-path="url(#${id('c')})"><rect class="sheen" x="100" y="-40" width="48" height="340" fill="url(#${id('l')})"/></g></g>`;
+    out = `<g class="ic-root"><g filter="url(#${id('f')})">${rigged(solids, 'solid', d => `<path d="${d}" fill="url(#${id('g')})"/><path d="${d}" fill="url(#${id('h')})"/>`)}</g>`
+      + `<g clip-path="url(#${id('c')})"><rect class="sheen" x="100" y="-40" width="48" height="340" fill="url(#${id('l')})"/></g>${acc}</g>`;
   }
 
   else if (style === 'glass') {
@@ -115,7 +186,7 @@ export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts):
     out = `<g class="ic-root"><g class="gl-in back"><g class="gl-back">${orb}</g></g><g class="gl-in front">${moving(
       `<use href="#${id('s')}" transform="translate(0 9)" filter="url(#${id('d')})" fill="${pal.dark}" fill-opacity=".16"/>`
       + `<g clip-path="url(#${id('c')})"><rect width="256" height="256" fill="#fff" fill-opacity=".5"/><g class="gl-back" filter="url(#${id('b')})">${orb}</g><rect width="256" height="256" fill="url(#${id('p')})"/></g>`
-      + `<use href="#${id('s')}" fill="none" stroke="${pal.dark}" stroke-opacity=".14" stroke-width="5"/><use href="#${id('s')}" fill="none" stroke="url(#${id('e')})" stroke-width="3"/>`)}</g></g>`;
+      + `<use href="#${id('s')}" fill="none" stroke="${pal.dark}" stroke-opacity=".14" stroke-width="5"/><use href="#${id('s')}" fill="none" stroke="url(#${id('e')})" stroke-width="3"/>`)}</g>${acc}</g>`;
   }
 
   else if (style === '3d') {
@@ -129,7 +200,7 @@ export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts):
     const layers = Array.from({ length: N }, (_, k) => N - k).map(i =>
       `<use href="#${id('s')}" class="layer" style="--i:${i}" fill="${shade(pal.dark, -0.06 * (i / N))}"/>`).join('');
     out = `<ellipse cx="128" cy="266" rx="88" ry="10" fill="${pal.dark}" opacity=".2" filter="url(#${id('f')})"/>`
-      + `<g class="ic-root">${moving(`${layers}<use href="#${id('s')}" fill="url(#${id('g')})"/><use href="#${id('s')}" fill="url(#${id('h')})"/>`)}</g>`;
+      + `<g class="ic-root">${moving(`${layers}<use href="#${id('s')}" fill="url(#${id('g')})"/><use href="#${id('s')}" fill="url(#${id('h')})"/>`)}${acc}</g>`;
   }
 
   else {
@@ -149,6 +220,9 @@ export function iconSvg(icon: IconRef, geo: Geo, style: IconStyle, o: IconOpts):
       + [0, 1, 2, 3, 4].map(j => raise(j, pal.dark)).join('') + raise(5, `url(#${id('g')})`) + `</g></g>`;
   }
 
-  const css = o.css ? `<style>${cssFor(m.a)}</style>` : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="${w}" height="${h}" class="icx s-${style}${o.play ? ' ic-play' : ''}" role="img" aria-label="${icon.name.replace(/-/g, ' ')}">${css}${defs ? `<defs>${defs}</defs>` : ''}${out}</svg>`;
+  const css = o.css ? `<style>${cssFor(m)}</style>` : '';
+  defs += extra;
+  // an outline that redraws itself as its motion carries the time on the root
+  const draw = m.draw && outline;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="${w}" height="${h}" class="icx s-${style}${draw ? ' m-draw' : ''}${o.play ? ' ic-play' : ''}"${draw ? ` style="--dur:${m.dur}s"` : ''} role="img" aria-label="${icon.name.replace(/-/g, ' ')}">${css}${defs ? `<defs>${defs}</defs>` : ''}${out}</svg>`;
 }
