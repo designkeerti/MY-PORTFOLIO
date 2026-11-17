@@ -9,7 +9,7 @@ import { oklabToHex, readableOn, rgbToOklab } from './color';
 
 type Swatch = { hex: string; share: number };
 
-function extract(img: HTMLImageElement, k: number): Swatch[] {
+export function extract(img: HTMLImageElement, k: number): Swatch[] {
   const max = 140, scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
   const w = Math.max(1, Math.round(img.naturalWidth * scale)), h = Math.max(1, Math.round(img.naturalHeight * scale));
   const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;

@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useCopy, useToast } from '../ui';
-import type { Resolved } from './model';
+import type { Resolved, State } from './model';
+import type { Edit } from './choices';
 import { dtcgFiles, dtcgReadme, figmaPlugin, slug, toCss, toTailwind, tokenList, type ValueStyle } from './export';
 import { download, zip } from './zip';
 import { Seg } from './controls';
 
 type Tab = 'figma' | 'css' | 'tailwind' | 'json';
 
-export function ExportPanel({ res, onClose }: { res: Resolved; onClose: () => void }) {
+export function ExportPanel({ res, st, edit, onClose }: { res: Resolved; st: State; edit: Edit; onClose: () => void }) {
   const [tab, setTab] = useState<Tab>('figma');
   const [style, setStyle] = useState<ValueStyle>('objects');
   const [prefix, setPrefix] = useState('');
@@ -39,8 +40,13 @@ export function ExportPanel({ res, onClose }: { res: Resolved; onClose: () => vo
       <div role="dialog" aria-modal aria-label="Export" onClick={e => e.stopPropagation()}
         className="tk-fade flex max-h-[92svh] w-full max-w-[920px] flex-col overflow-hidden rounded-t-[26px] bg-[#f7f6f2] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] md:rounded-[26px]">
         <header className="flex items-center justify-between gap-3 border-b border-ink/[0.08] px-5 py-4">
-          <div>
-            <h2 className="text-[20px] font-semibold tracking-[-0.01em] text-ink">Export {res.name}</h2>
+          <div className="min-w-0">
+            <label className="flex items-center gap-2">
+              <span className="text-[20px] font-semibold tracking-[-0.01em] text-ink">Export</span>
+              <input value={st.name} maxLength={24} aria-label="System name" spellCheck={false}
+                onChange={e => { const v = e.target.value; edit(x => ({ ...x, name: v }), 'name'); }}
+                className="min-w-0 max-w-[220px] rounded-[10px] border border-ink/12 bg-white px-2 py-0.5 text-[20px] font-semibold tracking-[-0.01em] text-ink outline-none focus:border-ink/40" />
+            </label>
             <p className="text-[13px] text-ink/55">{counts.primitives} primitives, {counts.semantic} semantic colours in two modes, {res.type.styles.length} text styles, spacing, radius, shadows and grids.</p>
           </div>
           <button type="button" onClick={onClose} aria-label="Close" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-ink shadow-sm hover:bg-ink/5">

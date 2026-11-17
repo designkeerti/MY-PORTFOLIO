@@ -14,13 +14,14 @@ import { SmoothShadows } from '../playground/SmoothShadows';
 import { Grain } from '../playground/Grain';
 import { IconLibrary } from '../playground/IconLibrary';
 import { JobFinder } from '../playground/JobFinder';
+import { PaletteGenerator } from '../playground/PaletteGenerator';
 import type { ComponentType } from 'react';
 
 // the biggest tool loads only when it's opened
 const DesignTokens = lazy(() => import('../playground/DesignTokens').then(m => ({ default: m.DesignTokens })));
 
 const VIEWS: Record<ToolSlug, ComponentType> = {
-  tokens: DesignTokens, icons: IconLibrary, jobs: JobFinder,
+  tokens: DesignTokens, palette: PaletteGenerator, icons: IconLibrary, jobs: JobFinder,
   contrast: ContrastChecker, scales: ColourScales, 'image-palette': ImagePalette,
   type: TypeChecker, 'type-scale': TypeScale,
   shader: ShaderStudio, easing: EasingEditor, shadows: SmoothShadows, grain: Grain,

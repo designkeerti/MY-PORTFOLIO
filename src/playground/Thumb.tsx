@@ -15,6 +15,11 @@ export function ToolThumb({ slug, className = '' }: { slug: ToolSlug; className?
         <span className="flex items-center justify-center gap-[0.07em] rounded-[0.08em] bg-white">{[0, 0.07, 0.16].map(r => <span key={r} className="h-[0.3em] w-[0.3em] border-[0.035em] border-[#17191e]" style={{ borderRadius: `${r}em` }} />)}</span>
       </span>
     );
+    case 'palette': return (
+      <span aria-hidden className={`flex ${box}`}>
+        {['#f3ecdf', '#e8b04b', '#d4572a', '#2f5d62', '#1c2433'].map((c, i) => <span key={c} className="relative flex-1" style={{ background: c }}>{i === 2 && <span className="absolute bottom-[14%] left-1/2 h-[0.16em] w-[0.16em] -translate-x-1/2 rounded-full bg-white/90" />}</span>)}
+      </span>
+    );
     case 'icons': return (
       <span aria-hidden className={`flex items-center justify-center gap-[0.18em] bg-[#f7f6f2] ${box}`}>
         <svg viewBox="0 0 24 24" style={{ width: '0.62em' }} fill="none" stroke="#17191e" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.2s-7.6-4.7-7.6-10.4A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 7.6 2.7c0 5.7-7.6 10.4-7.6 10.4z" /></svg>

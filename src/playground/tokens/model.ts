@@ -159,7 +159,7 @@ export const DEFAULT: State = {
   v: 1,
   name: 'Tidal',
   color: {
-    brand: '#2f6bed', accent: '#ff7a45', success: '#16a34a', warning: '#f59e0b', danger: '#dc2626', info: '#0891b2',
+    brand: '#2f6bed', accent: '#ed7b1a', success: '#16a34a', warning: '#f59e0b', danger: '#dc2626', info: '#0891b2',
     lean: 'brand', tint: 0.3, harmonize: 0.2, range: 0.5, depth: 'dark', map: {},
   },
   type: {
@@ -488,7 +488,7 @@ function resolveType(t: State['type']): { styles: TypeStyle[]; weights: Record<'
 export type Layer = { y: number; blur: number; spread: number; rgb: [number, number, number]; a: number };
 const LEVEL_D: Record<Level, number> = { xs: 1, sm: 2.5, md: 7, lg: 16, xl: 30 };
 const LEVEL_N: Record<Level, number> = { xs: 2, sm: 3, md: 4, lg: 5, xl: 5 };
-function shadows(s: State['shadow'], hue: number, mode: Mode): Record<Level, Layer[]> {
+export function shadows(s: State['shadow'], hue: number, mode: Mode): Record<Level, Layer[]> {
   const rgb = hexToRgb(mode === 'dark' ? '#000000' : oklchToHex(0.22, 0.07 * s.tint, hue));
   const out = {} as Record<Level, Layer[]>;
   LEVELS.forEach((lv, li) => {

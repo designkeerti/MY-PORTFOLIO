@@ -183,7 +183,7 @@ const pathOf = (to: string) => to.split(/[?#]/)[0] || '/';
 const read = (): Record<string, string> => { try { return JSON.parse(sessionStorage.getItem(CAME) ?? '{}'); } catch { return {}; } };
 
 /** note that `to` is being opened from here: on the home page, from the section the link sits in */
-function remember(to: string, link: HTMLElement) {
+export function remember(to: string, link: HTMLElement) {
   const here = location.pathname === '/'
     ? `/${link.closest('[id]')?.id ? `#${link.closest('[id]')!.id}` : ''}`
     : location.pathname + location.search;
