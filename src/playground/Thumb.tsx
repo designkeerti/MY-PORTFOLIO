@@ -6,6 +6,15 @@ const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg
 export function ToolThumb({ slug, className = '' }: { slug: ToolSlug; className?: string }) {
   const box = `overflow-hidden ${className}`;
   switch (slug) {
+    case 'tokens': return (
+      // a palette, a type sample, a spacing staircase and three corners
+      <span aria-hidden className={`grid grid-cols-2 gap-[0.07em] bg-[#f7f6f2] p-[0.16em] ${box}`}>
+        <span className="flex overflow-hidden rounded-[0.08em]">{['#e1ecff', '#a2c2ff', '#4e86f9', '#2f6bed', '#0636a2'].map(c => <span key={c} className="flex-1" style={{ background: c }} />)}</span>
+        <span className="flex items-center justify-center rounded-[0.08em] bg-white font-semibold text-[#17191e]" style={{ fontSize: '0.42em', fontFamily: "'Chillax', sans-serif" }}>Aa</span>
+        <span className="flex items-end gap-[0.04em] rounded-[0.08em] bg-white p-[0.07em]">{[0.25, 0.45, 0.7, 1].map(h => <span key={h} className="flex-1 rounded-[0.02em] bg-[#2f6bed]" style={{ height: `${h * 100}%` }} />)}</span>
+        <span className="flex items-center justify-center gap-[0.07em] rounded-[0.08em] bg-white">{[0, 0.07, 0.16].map(r => <span key={r} className="h-[0.3em] w-[0.3em] border-[0.035em] border-[#17191e]" style={{ borderRadius: `${r}em` }} />)}</span>
+      </span>
+    );
     case 'icons': return (
       <span aria-hidden className={`flex items-center justify-center gap-[0.18em] bg-[#f7f6f2] ${box}`}>
         <svg viewBox="0 0 24 24" style={{ width: '0.62em' }} fill="none" stroke="#17191e" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20.2s-7.6-4.7-7.6-10.4A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 7.6 2.7c0 5.7-7.6 10.4-7.6 10.4z" /></svg>

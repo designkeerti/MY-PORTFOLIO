@@ -25,8 +25,11 @@ function ScrollToTop() {
     // the target may render a moment later (the home page mounts its sections after the
     // hero), so look for it for a short while before giving up
     let tries = 0, raf = 0;
+    // only plain ids are anchors; anything else in the hash (a shared token system, say) isn't
+    const id = /^#[\w-]+$/.test(hash) ? hash.slice(1) : '';
     const find = () => {
-      const el = document.querySelector(hash);
+      const el = id ? document.getElementById(id) : null;
+      if (!id) { window.scrollTo({ top: pageTop(), behavior: 'instant' as ScrollBehavior }); return; }
       if (el) { el.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' }); return; }
       if (++tries < 60) raf = requestAnimationFrame(find); else window.scrollTo({ top: pageTop(), behavior: 'instant' as ScrollBehavior });
     };

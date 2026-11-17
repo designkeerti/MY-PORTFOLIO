@@ -3,11 +3,12 @@
  * data: edit them here and the Picks page and the home tiles follow.
  */
 
-export type ToolSlug = 'icons' | 'jobs' | 'contrast' | 'scales' | 'image-palette' | 'type' | 'type-scale' | 'shader' | 'easing' | 'shadows' | 'grain' | 'picks';
+export type ToolSlug = 'tokens' | 'icons' | 'jobs' | 'contrast' | 'scales' | 'image-palette' | 'type' | 'type-scale' | 'shader' | 'easing' | 'shadows' | 'grain' | 'picks';
 /** tile: a shorter name for the small home tiles, where the full title would be cut off */
-export type Tool = { slug: ToolSlug; group: 'Icons' | 'Career' | 'Colour' | 'Type' | 'Motion & surface' | 'Picks'; title: string; tile?: string; short: string; blurb: string };
+export type Tool = { slug: ToolSlug; group: 'Systems' | 'Icons' | 'Career' | 'Colour' | 'Type' | 'Motion & surface' | 'Picks'; title: string; tile?: string; short: string; blurb: string };
 
 export const TOOLS: Tool[] = [
+  { slug: 'tokens', group: 'Systems', title: 'Design Tokens', tile: 'Tokens', short: 'Build a design system, watch a live site use it, take it to Figma.', blurb: 'Set colour, type, spacing, radius, depth and grids, and watch a real website rebuild itself as you go, in light and dark. Every semantic token points at a primitive. It checks contrast as you work, shows you the tokens behind anything you hover, and exports CSS, Tailwind, DTCG JSON, or a Figma plugin that builds the variables and styles for you.' },
   { slug: 'icons', group: 'Icons', title: 'Icon Library', tile: 'Icons', short: '1,500 animated icons in seven styles, with real 3D.', blurb: 'Over 1,500 icons in seven styles: regular, duotone, filled, graphical, glass, 3D and isometric. Each one moves in a way that suits it. Copy any of them as an SVG, still or animated, or turn one in real 3D and save it as a PNG.' },
   { slug: 'jobs', group: 'Career', title: 'Job Finder', short: 'Upload a resume, get jobs that fit and who to ask.', blurb: 'Drop in your resume and it searches 130-odd company job boards, Workable’s and SmartRecruiters’ job searches, Hacker News and four remote job boards for roles that fit, ranked by meaning rather than keywords. Each job shows what it asks for, what you’re missing, and who to ask for a referral, with a note to send them. Open models read the resume; nothing is stored.' },
   { slug: 'contrast', group: 'Colour', title: 'Contrast Checker', short: 'WCAG contrast, with the nearest colours that pass.', blurb: 'Check a text colour on a background against WCAG, for body text, large text and UI. If it fails, get the nearest colour that passes, same hue, only lighter or darker.' },
@@ -21,7 +22,7 @@ export const TOOLS: Tool[] = [
   { slug: 'grain', group: 'Motion & surface', title: 'Grain', short: 'A seamless noise texture for a printed feel.', blurb: 'Make a seamless grain tile to lay over gradients and photos. Preview it, download the PNG, and copy the CSS to use it.' },
   { slug: 'picks', group: 'Picks', title: 'Picks', short: 'Font pairings and colours I keep coming back to.', blurb: 'Font pairings and colour combinations from my work and my notebook. Tap a colour to copy it; open any pairing in the checker.' },
 ];
-export const GROUPS: Tool['group'][] = ['Icons', 'Career', 'Colour', 'Type', 'Motion & surface', 'Picks'];
+export const GROUPS: Tool['group'][] = ['Systems', 'Icons', 'Career', 'Colour', 'Type', 'Motion & surface', 'Picks'];
 
 /* ---------- fonts ---------- */
 

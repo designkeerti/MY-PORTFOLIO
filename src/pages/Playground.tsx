@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import { GROUPS, TOOLS, type ToolSlug } from '../playground/data';
 import { ToolThumb } from '../playground/Thumb';
@@ -16,8 +16,11 @@ import { IconLibrary } from '../playground/IconLibrary';
 import { JobFinder } from '../playground/JobFinder';
 import type { ComponentType } from 'react';
 
+// the biggest tool loads only when it's opened
+const DesignTokens = lazy(() => import('../playground/DesignTokens').then(m => ({ default: m.DesignTokens })));
+
 const VIEWS: Record<ToolSlug, ComponentType> = {
-  icons: IconLibrary, jobs: JobFinder,
+  tokens: DesignTokens, icons: IconLibrary, jobs: JobFinder,
   contrast: ContrastChecker, scales: ColourScales, 'image-palette': ImagePalette,
   type: TypeChecker, 'type-scale': TypeScale,
   shader: ShaderStudio, easing: EasingEditor, shadows: SmoothShadows, grain: Grain,
@@ -73,7 +76,7 @@ export default function Playground() {
 
       {/* the sheet */}
       <div className="relative min-h-[60svh] rounded-t-[32px] bg-[#f7f6f2] pb-24 pt-6 shadow-[0_-30px_60px_-40px_rgba(15,30,55,0.5)] md:rounded-t-[44px] md:pb-28 md:pt-12">
-        {View && <View />}
+        {View && <Suspense fallback={<div className="mx-auto h-[60svh] max-w-[1100px] animate-pulse rounded-[22px] bg-white/60" />}><View /></Suspense>}
         {!t && (
           <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-12 px-4 md:gap-16 md:px-6">
             {GROUPS.map((g, gi) => (
