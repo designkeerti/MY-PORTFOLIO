@@ -1,0 +1,29 @@
+{
+ "duration": 127.344,
+ "chapters": [
+  {
+   "t": 0,
+   "label": "Intro"
+  },
+  {
+   "t": 21.004,
+   "label": "Research"
+  },
+  {
+   "t": 43.232,
+   "label": "Decisions"
+  },
+  {
+   "t": 82.386,
+   "label": "Process"
+  },
+  {
+   "t": 93.928,
+   "label": "Outcome"
+  },
+  {
+   "t": 106.286,
+   "label": "Looking back"
+  }
+ ]
+}

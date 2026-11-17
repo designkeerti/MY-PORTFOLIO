@@ -4,7 +4,7 @@ window.jQuery && jQuery.fn && !jQuery.fn.slick && (jQuery.fn.slick=function(){re
 (function(){
   var variants = ["fill","regular","duotone"];
   variants.forEach(function(v){
-    var href = "https://unpkg.com/@phosphor-icons/web@2.1.1/src/"+v+"/style.css";
+    var href = "/vendor/phosphor/"+v+"/style.css";
     if (!document.querySelector("link[href=\""+href+"\"]")) {
       var l = document.createElement("link"); l.rel = "stylesheet"; l.href = href; document.head.appendChild(l);
     }
@@ -663,7 +663,7 @@ jQuery(document).on('click touchend', '.woocommerce-wishlist a.product_type_vari
     var link = document.createElement('link');
     link.id   = 'cbs-phosphor-css';
     link.rel  = 'stylesheet';
-    link.href = 'https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css';
+    link.href = '/vendor/phosphor/bold/style.css';
     document.head.appendChild(link);
   }
   loadPhosphor();

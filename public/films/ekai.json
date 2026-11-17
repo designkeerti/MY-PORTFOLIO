@@ -1,0 +1,41 @@
+{
+ "duration": 157.41,
+ "chapters": [
+  {
+   "t": 0,
+   "label": "Intro"
+  },
+  {
+   "t": 12.358,
+   "label": "The problem"
+  },
+  {
+   "t": 35.306,
+   "label": "His role"
+  },
+  {
+   "t": 49.344,
+   "label": "Research"
+  },
+  {
+   "t": 76.804,
+   "label": "Structure"
+  },
+  {
+   "t": 87.962,
+   "label": "Directions"
+  },
+  {
+   "t": 111.558,
+   "label": "Alive sections"
+  },
+  {
+   "t": 130.57,
+   "label": "Outcome"
+  },
+  {
+   "t": 139.112,
+   "label": "Looking back"
+  }
+ ]
+}

@@ -1,5 +1,5 @@
 import type { Scene } from './types';
-import { Bg, Words, Slide, Device, Mono, Shot, Browser } from './kit';
+import { Bg, Words, Slide, Device, Mono, Shot, Browser, outro } from './kit';
 
 const A = '/work/realestate/';
 const ink = '#0E1418', gold = '#C9A96E';
@@ -60,4 +60,6 @@ export const infinityScenes = (): Scene[] => [
       </Bg>
     ),
   },
+  outro({ bg: ink, accent: gold, role: 'My role · UX designer · 8 weeks', caption: 'A website and a client app, from first conversations to final designs',
+    lines: ['Price first.', 'The site, not a status.', 'Money you can follow.'] }),
 ];

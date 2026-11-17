@@ -9,6 +9,12 @@ export const cbs: Project = {
   expertise: 'Art direction · Design system · Interaction design',
   facts: ['Design lead', 'Live and selling', '11 brands, one system', 'Three mobile passes'],
   summary: 'Cross Border Supps sells genuine imported supplements and apparel into India, a market where the customer’s first question is not “do I want this” but “is this real”. I designed the entire storefront: the design language, every surface, the interactions, and three dedicated mobile passes. Built with an AI assistant doing the implementation, directly on a live store taking daily orders. Everything on this page is the store itself, embedded.',
+  glance: {
+    problem: 'In India, imported supplements are assumed to be fake until proven otherwise, and trust badges are exactly what the fake stores have too. The storefront had to prove the stock is genuine through its design, not through claims.',
+    role: 'Design lead and the only designer: the design language, every surface, the interactions and three dedicated mobile passes. I directed the implementation through an AI assistant, on the live store, while it took orders.',
+    did: ['Turned one sentence about the brand into a system: boarding passes, postage stamps, a vault door', 'Built four component surfaces that hold 11 brands without breaking', 'Redesigned mobile three separate times instead of letting it squeeze', 'Killed three things I had built when they did not work on a real phone'],
+    outcome: 'Live and selling at crossbordersupps.com. 2,656 customers migrated off Shopify without a single email sent, 99 reviews carried across, blocking time on the home page cut from 1,249 ms to 81 ms, and layout shift held at zero.',
+  },
   link: { href: 'https://crossbordersupps.com', label: 'Visit crossbordersupps.com' },
   preview: cbsScenes,
   chapters: [
@@ -47,14 +53,14 @@ export const cbs: Project = {
       { type: 'p', text: 'And the pieces that only exist to be consistent: the two hero buttons, the stats bar, the toast that confirms a cart add, the section heading with its cyan second line, the barcode stub, a boarding pass with its benefits open and one that is sold out. Same radius, same mono, same hairline, every time.' },
       { type: 'live', id: 'cbs-parts' },
     ]},
-    { id: 'composition', title: 'I shipped the product page, then tore it up the same day', kicker: 'Composition over components', blocks: [
+    { id: 'composition', nav: 'Tearing up the product page', title: 'I shipped the product page, then tore it up the same day', kicker: 'Composition over components', blocks: [
       { type: 'lead', text: 'V5 went live in the morning. Every component on it was, individually, correct. And the page was wrong, because I had been designing it one component at a time. “You’re looking at one component at a time. Composition is key.”' },
       { type: 'p', text: 'I rebuilt it that afternoon around a shopper’s actual sequence, **understand → judge fit → trust → act → go deeper on demand**, as one viewport in two columns. The gallery is capped at `minmax(260px, 440px)` so it stops dominating: a tub on a black background does not reward being large. Share and wishlist stack top-right, prev and next sit bottom-right, thumbnails run under a second perforation, so the gallery reads as one object. The tool buttons are frosted glass because many of these photos are shot on pure black and a flat button vanishes into them.' },
       { type: 'img', src: S + 'pdp.jpg', alt: 'The live product page: the boarding-pass gallery on the left, the buy column on the right, the product dossier below', caption: 'The product page as it is live. One viewport, two columns, and a “product dossier” panel below that is itself a second boarding pass.', size: 'full', ratio: '16/10' },
       { type: 'p', text: 'Two smaller things I want on the record: removing the breadcrumb revealed it had been silently providing the page’s top clearance under the floating nav, and I learned to calibrate spacing logged out, because an admin toolbar was adding thirty-two pixels of breathing room a customer never gets.' },
       { type: 'img', src: S + 'category.jpg', alt: 'The live category page: the honest inventory count, the filters toolbar and the first row of boarding-pass cards', caption: 'The category archive, live.', size: 'full', ratio: '16/10' },
     ]},
-    { id: 'mobile', title: 'Mobile as its own design problem', kicker: 'Not responsive. Three separate redesigns.', blocks: [
+    { id: 'mobile', nav: 'Mobile, three times', title: 'Mobile as its own design problem', kicker: 'Not responsive. Three separate redesigns.', blocks: [
       { type: 'live', id: 'cbs-mobile' },
       { type: 'list', items: ['**Pass one** made the cards fill their space and stopped the navigation from hiding itself.', '**Pass two** collapsed the whole navigation into one top pill and threw away the separate floating search. Search opens as a dropdown docked under the pill, not an overlay covering the header you just tapped. The hero was rebuilt to match desktop and fit one viewport.', '**Pass three** was craft: the illustration absorbs every spare pixel of height so the stats bar lands on a deliberate 26px baseline; CTA type is fluid-clamped against the longest label so a no-wrap pill can never clip (measured 164 of 164); a backdrop blur under the flag button, invisible beneath its own scrim, was removed because it cost a blur surface every frame.'] },
       { type: 'grid', cols: 3, phone: true, bg: '#0b0b0b', images: [
@@ -64,7 +70,7 @@ export const cbs: Project = {
       ], caption: 'Pass three, as shipped, at 390 points.' },
       { type: 'p', text: 'The most useful thing in pass three was a deletion. A blanket rule from an earlier session forced text to full opacity and was blocking the load-in fade, so on phones the headline snapped into existence while desktop faded. The pill originally hid on scroll like every pill does; it now never hides, it dims to 52% and wakes on touch, because the cart and wishlist counts live in it. Each pass ran as a three-lens design panel (rhythm, components, atmosphere), a synthesis where I rejected a product drop-shadow that reintroduced a known Safari regression, and an adversarial review that caught four real issues before shipping.' },
     ]},
-    { id: 'killed', title: 'Three things I built, then threw away', blocks: [
+    { id: 'killed', nav: 'What I threw away', title: 'Three things I built, then threw away', blocks: [
       { type: 'cards', cols: 3, items: [
         { kicker: 'Deleted', title: 'A GSAP 3D coverflow carousel', text: 'Built for the two product rails. Stuttered on the client’s phone. Reverted the same day, then a gentler additive version was rejected too. Replaced by CSS scroll-snap with arrows and an auto-advance that stops permanently the first time you touch it. I was verifying in Chrome; Blink will not reproduce a WebKit compositor bug.' },
         { kicker: 'Rebuilt', title: 'The pinned promo scroller', text: 'Scroll-driven transforms lag in iOS Safari because scroll updates arrive late during momentum. Ripped out for a native scroll-snap swipe: about 7,000 inline style writes per pass became zero, and the library stopped loading on mobile at all.' },

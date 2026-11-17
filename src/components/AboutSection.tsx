@@ -1,177 +1,164 @@
-import { motion } from 'framer-motion';
+import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { setBack } from './sky/sky';
+import type { ReactNode } from 'react';
+import { BallIcon, PenIcon, BookIcon } from './icons/SkillIcons';
+import { CatStory } from './cats/CatStory';
+import { CardCat } from './cats/CardCat';
+
+/**
+ * About, in the language of the rest of the site: frosted glass on the returning sky,
+ * Chillax only for the section title (card headings in the work cards' face), quiet uppercase eyebrows, label-and-value chips as in the
+ * case studies, hairline rules instead of coloured tiles. One sheet holds the portrait
+ * and the bio; under it, the quote and the offline interests; then the footer.
+ */
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+// light glass, as the case studies' frames; .ink-dark keeps its text dark while the page is burned
+const GLASS = 'ink-dark rounded-[28px] border border-white/80 bg-white/70 backdrop-blur-xl shadow-[0_40px_80px_-44px_rgba(15,30,55,0.6)] md:rounded-[32px]';
+const EYEBROW = 'text-[12px] font-medium uppercase tracking-[0.24em] text-ink/50';
+
+const rise = (delay = 0) => ({
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '0px 0px -10% 0px' },
+  transition: { duration: 0.9, delay, ease: EASE },
+});
+
+const INTERESTS = [
+  { icon: <BallIcon />, title: 'Basketball', desc: 'Teamwork & rhythm' },
+  { icon: <PenIcon />, title: 'Poetry', desc: 'Finding clarity in verse' },
+  { icon: <BookIcon />, title: 'Novels', desc: 'Exploring new worlds' },
+];
+
+const SOCIALS = [
+  { href: 'https://www.linkedin.com/in/vardhankeerti/', label: 'LinkedIn' },
+  { href: 'https://x.com/ikeerthivardhan', label: 'Twitter' },
+  { href: 'https://www.instagram.com/poemsbyraahgir/', label: 'Instagram' },
+  { href: 'mailto:design.keerti@gmail.com', label: 'Email' },
+];
 
 export const AboutSection = () => {
+  // the sky rolls back in over the burn as this section rises into view (and back out on the way up)
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 60%'] });
+  useMotionValueEvent(scrollYProgress, 'change', v => setBack(v));
+  useEffect(() => { setBack(scrollYProgress.get()); return () => setBack(0); }, [scrollYProgress]);
+
   return (
-    <section id="about" className="w-full relative z-10 py-20 md:py-32 overflow-hidden">
-      
-      {/* Ambient Background Glows - Optimized: Removed mix-blend-mode, reduced blur */}
-      <div className="absolute top-1/2 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#DF95FF]/10 rounded-full blur-[60px] -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#FFAA95]/10 rounded-full blur-[60px] translate-y-1/4 translate-x-1/2 pointer-events-none" />
+    <section ref={ref} id="about" className="relative z-10 w-full scroll-mt-16 px-4 pb-10 pt-24 md:px-8 md:pb-14 md:pt-36">
+      <div className="mx-auto flex w-full max-w-[1180px] flex-col">
+        <motion.header {...rise()} className="mb-8 flex flex-col items-center text-center md:mb-14">
+          <p className={EYEBROW}>About me</p>
+          <h2 className="section-title mt-3 text-[clamp(34px,5vw,64px)] leading-[1.02] text-ink">More than just pixels.</h2>
+        </motion.header>
 
-      <div className="w-full max-w-[1200px] mx-auto px-6 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex flex-col gap-8 md:gap-12"
-        >
-          {/* Section Header */}
-          <div className="flex flex-col items-center text-center gap-4 mb-4 md:mb-8">
-            <div className="inline-flex items-center gap-2 bg-white/[.06] backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10">
-              <span>👋</span>
-              <span className="text-sm font-bold text-white/65 uppercase tracking-wider">About Me</span>
+        {/* the portrait and the bio, on one sheet */}
+        <motion.article {...rise(0.05)} className={`${GLASS} relative grid gap-2 p-2 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-4 md:p-3`}>
+          <CardCat id="about-bio" size="lg" />
+          <figure className="relative aspect-[4/5] overflow-hidden rounded-[22px] md:aspect-auto md:min-h-[520px] md:rounded-[24px]">
+            <img src="/work/home/HJQw8ElsRLJCST5Te5LibBGNdY.webp" alt="Keerthi Vardhan, smiling, on a metro platform"
+              loading="lazy" className="absolute inset-0 h-full w-full object-cover object-[60%_30%]" />
+            <div aria-hidden className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/45 to-transparent" />
+            <figcaption className="absolute bottom-5 left-5 text-white md:bottom-6 md:left-6">
+              <span className="block text-[15px] font-semibold">That’s me.</span>
+              <span className="block text-[13px] text-white/75">Always smiling</span>
+            </figcaption>
+          </figure>
+
+          <div className="flex flex-col justify-between gap-10 px-4 pb-5 pt-6 md:px-8 md:py-10 lg:px-12 lg:py-12">
+            <div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+                <h3 className="font-display text-[clamp(28px,3vw,38px)] font-semibold leading-[1.02] tracking-[-0.02em] text-ink">I’m Keerthi Vardhan.</h3>
+                <span className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white/70 px-3 py-1.5">
+                  <span className="relative flex h-2 w-2" aria-hidden>
+                    <span className="absolute inset-0 animate-ping rounded-full bg-[#2f9e6a]/60 motion-reduce:hidden" />
+                    <span className="relative h-2 w-2 rounded-full bg-[#2f9e6a]" />
+                  </span>
+                  <span className="text-[11.5px] font-medium uppercase tracking-[0.18em] text-ink/70">Open to work</span>
+                </span>
+              </div>
+              <p className="mt-5 font-display text-[clamp(19px,1.8vw,24px)] font-medium leading-snug text-ink/55">
+                Designing with purpose, heart, &amp; <span className="text-ink">rhythm.</span>
+              </p>
+              <p className="mt-6 max-w-[54ch] text-[16px] leading-[1.7] text-ink/70 md:text-[17px]">
+                I’m an experience designer. I started with a{' '}
+                <span className="font-medium text-ink">B.Tech in Aerospace Engineering</span>, then went on to a{' '}
+                <span className="font-medium text-ink">Master’s in UX Design</span>, so the road here hasn’t exactly been
+                ordinary. What I bring to every project is empathy, a lot of curiosity and a bit of fun.
+              </p>
+              <p className="mt-4 max-w-[54ch] text-[16px] leading-[1.7] text-ink/70 md:text-[17px]">
+                I love exploring new ideas, and I’ll happily try anything I haven’t done before, whether it’s a new tool,
+                a new medium or a new way of working. <span className="font-medium text-ink">Freedom</span> matters a lot
+                to me too: room to wander, follow what interests me and choose my own path. It’s what keeps me curious.
+              </p>
             </div>
-            <h2 className="text-3xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/55 pb-2">
-              More than just pixels.
-            </h2>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <a href="/resume.pdf" download
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 text-[15px] font-medium text-white transition-transform duration-300 hover:-translate-y-0.5">
+                Download resume
+                <span aria-hidden className="transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
+              </a>
+              <a href="mailto:design.keerti@gmail.com"
+                className="inline-flex items-center justify-center rounded-full border border-ink/20 bg-white/40 px-6 py-3.5 text-[15px] font-medium text-ink transition-colors duration-300 hover:border-ink/50">
+                Send me a message
+              </a>
+            </div>
           </div>
+        </motion.article>
 
-          {/* Bento Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:auto-rows-[minmax(280px,auto)]">
-            
-            {/* 1. Main Bio Card - Optimized: No blur, high opacity */}
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="md:col-span-2 bg-white/[.05] rounded-[32px] p-6 md:p-12 flex flex-col justify-between gap-8 border border-white/10 hover:border-white/20 transition-all duration-300 group relative overflow-hidden"
-            >
-               <div className="relative z-10">
-                 <div className="flex flex-wrap items-center gap-3 mb-4 md:mb-6">
-                   <h3 className="text-2xl md:text-4xl font-bold text-white leading-tight">
-                     I'm Keerthi Vardhan.
-                   </h3>
-                   <span className="px-3 py-1 bg-green-400/15 text-green-300 text-xs font-bold rounded-full border border-green-400/30 flex items-center gap-1.5 animate-pulse">
-                     <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                     OPEN TO WORK
-                   </span>
-                 </div>
-                 
-                 <h4 className="text-lg md:text-xl text-white/55 font-medium mb-4 md:mb-6">
-                   Designing with purpose, heart, & <span className="text-[#DF95FF]">rhythm.</span>
-                 </h4>
+        <div className="mt-2 grid gap-2 md:mt-4 md:grid-cols-2 md:gap-4">
+          {/* the quote, set large, like a line on a poster */}
+          <QuoteCard />
 
-                 <p className="text-white/65 text-base md:text-lg leading-relaxed max-w-2xl">
-                   I’m an Experience Designer who blends empathy, creativity, and a touch of fun. 
-                   With a <span className="text-white font-semibold bg-[#DF95FF]/25 px-1 rounded">B.Tech in Aerospace Engineering</span> and a <span className="text-white font-semibold bg-[#FFAA95]/25 px-1 rounded">Master’s in UX Design</span>, my journey has been anything but ordinary.
-                 </p>
-               </div>
-               
-               <div className="flex flex-col md:flex-row gap-3 md:gap-4 relative z-10">
-                 <button className="w-full md:w-auto px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-[#DF95FF] hover:scale-105 transition-all duration-300 shadow-lg shadow-[#DF95FF]/20">
-                   Download Resume
-                 </button>
-                 <button className="w-full md:w-auto px-6 py-3 bg-white/[.06] text-white border border-white/15 rounded-full font-medium hover:bg-white/10 hover:scale-105 transition-all duration-300">
-                   Send me a message
-                 </button>
-               </div>
+          {/* offline: a short list on hairlines */}
+          <motion.div {...rise(0.15)} className={`${GLASS} relative flex flex-col justify-between gap-8 p-7 md:p-10`}>
+            <CardCat id="about-offline" size="lg" />
+            <p className={EYEBROW}>Offline mode</p>
+            <ul className="divide-y divide-ink/10 border-t border-ink/10">
+              {INTERESTS.map(i => <Interest key={i.title} {...i} />)}
+            </ul>
+          </motion.div>
+        </div>
 
-               {/* Decorative Gradient Blob */}
-               <div className="absolute top-0 right-0 w-48 md:w-64 h-48 md:h-64 bg-gradient-to-br from-[#DF95FF]/10 to-[#FFAA95]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-            </motion.div>
-
-            {/* 2. Photo Card - Interactive */}
-            <motion.div 
-              whileHover={{ scale: 1.02 }}
-              className="md:col-span-1 md:row-span-2 h-[300px] md:h-auto rounded-[32px] overflow-hidden relative shadow-lg border border-white/20 group"
-            >
-               <img 
-                 src="https://framerusercontent.com/images/HJQw8ElsRLJCST5Te5LibBGNdY.jpeg" 
-                 alt="Keerthi" 
-                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-               />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
-               <div className="absolute bottom-6 md:bottom-8 left-6 md:left-8 text-white z-10 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                 <p className="font-bold text-lg">That's me! 📸</p>
-                 <p className="text-white/80 text-sm">Always smiling</p>
-               </div>
-            </motion.div>
-
-            {/* 3. Philosophy Card - Vibrant Gradient */}
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="bg-gradient-to-br from-[#DF95FF] to-[#FFAA95] rounded-[32px] p-8 md:p-10 flex flex-col justify-center items-center text-center shadow-lg shadow-[#FFAA95]/30 border border-white/20 relative overflow-hidden group min-h-[240px]"
-            >
-               <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-               
-               <span className="text-4xl md:text-5xl mb-4 md:mb-6 transform group-hover:scale-125 transition-transform duration-300 drop-shadow-md">✨</span>
-               <p className="text-lg md:text-2xl font-bold text-white leading-relaxed relative z-10 drop-shadow-sm">
-                 "Great design isn’t just about how it works, it’s about how it feels."
-               </p>
-            </motion.div>
-
-            {/* 4. Personal Interests - Optimized: No blur */}
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className="bg-white/[.05] rounded-[32px] p-8 flex flex-col border border-white/10 hover:border-[#FFAA95]/50 transition-colors group"
-            >
-               <h3 className="text-white/45 font-bold mb-6 uppercase tracking-widest text-xs flex items-center gap-2">
-                 <span className="w-1.5 h-1.5 bg-white/40 rounded-full"></span>
-                 Offline Mode
-               </h3>
-               
-               <div className="flex flex-col gap-5 justify-center flex-1">
-                 <InterestRow 
-                   icon="🏀" 
-                   bg="bg-orange-400/20" 
-                   title="Basketball" 
-                   desc="Teamwork & Rhythm" 
-                 />
-                 <InterestRow 
-                   icon="✍️" 
-                   bg="bg-purple-400/20" 
-                   title="Poetry" 
-                   desc="Finding clarity in verse" 
-                 />
-                 <InterestRow 
-                   icon="📚" 
-                   bg="bg-blue-400/20" 
-                   title="Novels" 
-                   desc="Exploring new worlds" 
-                 />
-               </div>
-            </motion.div>
-
-            {/* 5. Footer Integration - Sleek & Full Width */}
-            <motion.div 
-              className="md:col-span-3 mt-4 md:mt-8 border-t border-white/10 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 opacity-60 hover:opacity-100 transition-opacity duration-500 pb-12 md:pb-0"
-            >
-               <div className="flex flex-col gap-1 text-center md:text-left order-2 md:order-1">
-                 <span className="text-lg md:text-xl font-bold text-white">Keerthi Vardhan</span>
-                 <p className="text-white/55 text-xs md:text-sm">© 2025. Vibecoded the shit out of this.</p>
-               </div>
-
-               <div className="flex flex-wrap justify-center gap-4 md:gap-8 order-1 md:order-2">
-                 <SocialLink href="https://www.linkedin.com/in/vardhankeerti/" label="LinkedIn" />
-                 <SocialLink href="https://x.com/ikeerthivardhan" label="Twitter" />
-                 <SocialLink href="https://www.instagram.com/poemsbyraahgir/?next=%2Fpoemsbyraahgir%2F&hl=en" label="Instagram" />
-                 <SocialLink href="mailto:design.keerti@gmail.com" label="Email" />
-               </div>
-            </motion.div>
-
+        <motion.footer {...rise()} className="mt-20 flex flex-col items-center gap-6 border-t border-ink/15 pt-8 md:mt-28 md:flex-row md:justify-between">
+          <div className="order-2 text-center md:order-1 md:text-left">
+            <p className="font-display text-[20px] font-semibold tracking-[-0.02em] text-ink">Keerthi Vardhan</p>
+            <p className="mt-1 text-[13px] text-ink/55">© {new Date().getFullYear()}. Vibecoded the shit out of this.</p>
           </div>
-        </motion.div>
+          <nav aria-label="Elsewhere" className="order-1 flex flex-wrap justify-center gap-2 md:order-2">
+            {SOCIALS.map(s => (
+              <a key={s.label} href={s.href} {...(s.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                className="group inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/60 px-4 py-2 text-[14px] font-medium text-ink/75 backdrop-blur-md transition-colors duration-300 hover:bg-white/85 hover:text-ink">
+                {s.label}
+                <span aria-hidden className="text-ink/40 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">↗</span>
+              </a>
+            ))}
+          </nav>
+        </motion.footer>
       </div>
     </section>
   );
 };
 
-const InterestRow = ({ icon, bg, title, desc }: { icon: string, bg: string, title: string, desc: string }) => (
-  <div className="flex items-center gap-4 group/item hover:translate-x-2 transition-transform duration-300">
-    <div className={`w-12 h-12 ${bg} rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover/item:scale-110 transition-transform`}>
-      {icon}
-    </div>
-    <div>
-      <p className="font-bold text-white/90 text-lg leading-tight">{title}</p>
-      <p className="text-sm text-white/55">{desc}</p>
-    </div>
-  </div>
-);
+// The quote, set large, over a little story that keeps playing: the cats come to be fed
+function QuoteCard() {
+  return (
+    <motion.figure {...rise(0.1)} className={`${GLASS} relative flex min-h-[320px] flex-col gap-4 overflow-hidden p-7 md:min-h-[420px] md:p-10`}>
+      <p className={EYEBROW}>The real goal</p>
+      <CatStory className="min-h-[110px] flex-1" />
+      <blockquote className="font-display text-[clamp(26px,2.6vw,36px)] font-semibold leading-[1.12] tracking-[-0.02em] text-ink">
+        <span aria-hidden className="-ml-[0.42em]">“</span>I just want to be rich enough to feed every animal around me.”
+      </blockquote>
+    </motion.figure>
+  );
+}
 
-const SocialLink = ({ href, label }: { href: string; label: string }) => (
-  <a 
-    href={href} 
-    className="text-white/55 hover:text-[#DF95FF] font-medium transition-colors relative group"
-  >
-    {label}
-    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#DF95FF] transition-all duration-300 group-hover:w-full" />
-  </a>
+const Interest = ({ icon, title, desc }: { icon: ReactNode; title: string; desc: string }) => (
+  <li className="group flex items-center gap-4 py-4 md:py-5">
+    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink/10 bg-white/60 p-[11px] text-ink/70">{icon}</span>
+    <span className="min-w-0 flex-1 font-display text-[20px] font-semibold leading-tight tracking-[-0.01em] text-ink md:text-[22px]">{title}</span>
+    <span className="text-right text-[14px] text-ink/50 md:text-[15px]">{desc}</span>
+  </li>
 );

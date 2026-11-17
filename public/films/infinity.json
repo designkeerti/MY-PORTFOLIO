@@ -1,0 +1,29 @@
+{
+ "duration": 126.174,
+ "chapters": [
+  {
+   "t": 0,
+   "label": "Intro"
+  },
+  {
+   "t": 11.662,
+   "label": "The problem"
+  },
+  {
+   "t": 22.316,
+   "label": "His role"
+  },
+  {
+   "t": 35.082,
+   "label": "Research"
+  },
+  {
+   "t": 54.376,
+   "label": "Decisions"
+  },
+  {
+   "t": 106.844,
+   "label": "Looking back"
+  }
+ ]
+}

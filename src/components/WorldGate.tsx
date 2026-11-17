@@ -13,7 +13,7 @@ const tiles: Tile[] = [
   { src: '/world/cats-turf.jpg', alt: 'Two cats on a green lawn', pos: '50% 45%' },
   { src: '/world/bougainvillea-sky.jpg', alt: 'Bougainvillea against a summer sky', pos: '50% 52%' },
   { src: '/world/self-love.jpg', alt: 'A bookshop shelf with a self-love sign', pos: '50% 52%' },
-  { src: '/world/metro.jpg', alt: 'Keerthi on a metro platform, smiling', pos: '50% 28%' },
+  { src: '/world/kittens-rug.jpg', alt: 'Three ginger kittens curled up together on a rug', pos: '56% 55%' },
   { src: '/world/cat-bench.jpg', alt: 'A cat perched on a wooden bench', pos: '50% 29%' },
   { src: '/world/poems-roses.jpg', alt: 'A book of poems with white roses', pos: '50% 48%' },
   { src: '/world/flowers-notebook.jpg', alt: 'Bougainvillea and a scarf on a notebook', pos: '50% 30%' },

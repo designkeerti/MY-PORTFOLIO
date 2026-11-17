@@ -5,11 +5,16 @@ const A = '/work/dmrc/';
 export const dmrc: Project = {
   meta: { slug: 'dmrc', title: 'Redesigning the Delhi Metro experience', oneLiner: 'One of the busiest metro systems on earth, 5.5 million riders a day, and a crowd-management problem at its interchanges. Research, global benchmarks, structured ideation and three proposals.', role: 'UX Researcher', year: '2024', company: 'DMRC', accent: '#E53935', accent2: '#0A1424', tag: 'Public transport' },
   cover: A + 'YijBlctGzn0Mk4J6rFwf6TL43P0.png',
-  externalLink: 'https://keerthivardhan.framer.website/Work/AppProject1',
   timeline: 'Explorations to low-fidelity designs in 4 weeks, alongside other projects',
   expertise: 'UX research · System design',
   facts: ['UX researcher', '5.5M riders a day', '72% cite overcrowding', 'Three proposals'],
   summary: 'The Delhi Metro provides maps, signage and announcements in English and Hindi, plus a handful of apps. Yet tourists, first-time travellers and daily commuters all struggle to navigate a well-structured but complex system of colour-coded lines and multi-level stations. This project set out to understand the system’s shortcomings and its strengths, research travellers’ needs and grievances, and propose a mobile-first solution for navigating within it.',
+  glance: {
+    problem: 'The Delhi Metro carries 5.5 million people a day, and its interchanges jam at peak hours. In my survey, 72% named overcrowding their biggest frustration and 42% said the official app lacks real-time crowd information.',
+    role: 'UX researcher and designer. Research, synthesis, ideation and low-fidelity designs in four weeks, alongside other projects.',
+    did: ['Surveyed 32 people aged 17 to 43, including some who had never used the metro', 'Benchmarked how other metros around the world handle crowds and wayfinding', 'Mapped four stakeholders: commuters, security, train operators and the operating authority', 'Judged every idea from six directions with Six Thinking Hats, then by feasibility, impact and fit'],
+    outcome: 'Three proposals taken to low fidelity: a hybrid pre-booked carriage system, AR navigation inside stations, and top-up at the gate. A research and concept project, not a commissioned one; the next step would be a pilot at a single interchange.',
+  },
   preview: dmrcScenes,
   chapters: [
     { id: 'why', title: 'Why the Delhi Metro?', blocks: [
@@ -17,7 +22,7 @@ export const dmrc: Project = {
       { type: 'img', src: A + 'yLGSxN7kYnpboWYE5Dvz9HNf4jg.png', alt: 'Delhi Metro at a glance: 5.5 million daily passengers, 393 km of track, 288 stations', size: 'text', bg: '#0A1424', pad: true },
       { type: 'p', text: 'The network evolved in phases; some sections are over a decade old, creating disparities in infrastructure, technology and passenger-flow management. The goal: redesign and improve crowd management to make the metro experience smoother and safer.' },
     ]},
-    { id: 'world', title: 'Learning from metros around the world', blocks: [
+    { id: 'world', nav: 'Metros around the world', title: 'Learning from metros around the world', blocks: [
       { type: 'grid', cols: 3, images: [
         { src: A + '26ueH5rNumxl3TWRnuijwkKIGE.webp', alt: 'Tokyo Metro carriage map', caption: '🇯🇵 Tokyo. Station jingles, carriage maps that tell you which car to board for your exit, signage every 20 metres.' },
         { src: A + '0PI4IszNcA1gFqyM6o5m2WmlLA.webp', alt: 'Contactless tap at a gate', caption: '🇬🇧 London. Contactless payment at the gate, real-time disruption alerts, step-free access.' },
@@ -43,7 +48,6 @@ export const dmrc: Project = {
       { type: 'quote', text: 'Passengers face severe overcrowding at key interchange stations during peak hours: long waits, unsafe boarding, delays. The existing infrastructure and crowd-management systems cannot handle the demand.' },
     ]},
     { id: 'ideation', title: 'Ideation: Six Thinking Hats', kicker: 'Every idea judged from six directions', blocks: [
-      { type: 'img', src: A + 'JqtGUxeaq7ZbGxdpAgFmmdbvJB8.jpg', alt: 'Six Thinking Hats', size: 'text' },
       { type: 'cards', cols: 3, items: [
         { kicker: 'White · facts', title: 'Bottlenecks are measurable', text: '5.5M daily riders; Rajiv Chowk and Kashmere Gate jam at peak; 65% report delays at ticketing and security.' },
         { kicker: 'Yellow · benefits', title: 'Guide, reconfigure, inform', text: 'In-station navigation, better layouts and escalators, real-time crowd levels in the app.' },
@@ -69,10 +73,11 @@ export const dmrc: Project = {
         { src: A + 'RN2r3DBw4Fvr4fT8Ek9HKSrPvU.webp', alt: 'AR: keep following the path' },
         { src: A + 'bsIB2rlEr8B6s20GLK15DYoGhcQ.webp', alt: 'AR: take the escalator down to the subway' },
       ], caption: 'AR guidance, with a language translator for signboards and routes to lifts and wheelchair-accessible paths.' },
-      { type: 'img', src: A + 'fkEECPTXCEVTVMrlwe0geoxTiyg.png', alt: 'Smart card auto top-up feature', caption: 'Top-up at the gate: convenience, time saved at peak, fewer interruptions.', size: 'text' },
+      { type: 'img', src: A + 'fkEECPTXCEVTVMrlwe0geoxTiyg.jpg', alt: 'Smart card auto top-up feature', caption: 'Top-up at the gate: convenience, time saved at peak, fewer interruptions.', size: 'text' },
     ]},
-    { id: 'conclusion', title: 'Conclusion', blocks: [
-      { type: 'p', text: 'The Delhi Metro is a testament to urban innovation, and its growing ridership demands thoughtful, practical change. The Hybrid Carriage System, gate-side top-up and the enhanced app are actionable strategies to improve flow and elevate the experience. The project underscored something simpler too: listening to commuters and learning from other cities showed that small, thoughtful changes can have a large impact.' },
+    { id: 'conclusion', title: 'What I took from it', blocks: [
+      { type: 'p', text: '**Most of the crowd problem is an information problem.** Physical changes to old stations are slow and expensive; telling people which coach, which gate and which exit is cheap. Two of the three proposals are about moving people with information rather than concrete, which is why they are the ones I would pilot first.' },
+      { type: 'p', text: '**What I would do differently:** this stopped at low fidelity and never met a real platform. Next I would put the AR wayfinding and exit-gate flow in front of riders at one interchange, like Rajiv Chowk at peak, and measure how long it takes them to reach the right platform with and without it.' },
     ]},
   ],
 };

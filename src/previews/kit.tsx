@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import type { Scene } from './types';
 
 export const EASE = [0.22, 0.61, 0.36, 1] as const;
 
@@ -92,3 +93,26 @@ export const Clip = ({ src, style, className = '', fit = 'cover', position = 'ce
 export const Mono = ({ children, color = 'rgba(255,255,255,.6)', style }: { children: ReactNode; color?: string; style?: CSSProperties }) => (
   <div className="kicker" style={{ color, ...style }}>{children}</div>
 );
+
+/**
+ * The last beat of a reel: who I was on it, and where it landed. Hiring managers watch
+ * the reel first; this is the line they should leave with.
+ */
+export const outro = ({ bg, accent, role, lines, caption, duration = 3800 }:
+  { bg: string; accent: string; role: string; lines: string[]; caption: string; duration?: number }): Scene => ({
+  id: 'outro', duration, caption,
+  render: () => (
+    <Bg color={bg}>
+      <div className="absolute inset-0 flex flex-col justify-center px-[8%]">
+        <Slide delay={0.05} from="left" distance={30}>
+          <Mono color={accent} style={{ marginBottom: 'calc(var(--fw) * 0.022)' }}>{role}</Mono>
+        </Slide>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'calc(var(--fw) * 0.012)' }}>
+          {lines.map((t, i) => (
+            <Words key={t} text={t} size="clamp(18px, calc(var(--fw) * 0.0400), 54px)" color={i === lines.length - 1 ? accent : '#fff'} delay={0.25 + i * 0.5} stagger={0.045} />
+          ))}
+        </div>
+      </div>
+    </Bg>
+  ),
+});

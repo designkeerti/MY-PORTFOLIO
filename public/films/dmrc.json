@@ -1,0 +1,33 @@
+{
+ "duration": 153.652,
+ "chapters": [
+  {
+   "t": 0,
+   "label": "Intro"
+  },
+  {
+   "t": 23.044,
+   "label": "Benchmarks"
+  },
+  {
+   "t": 36.338,
+   "label": "Research"
+  },
+  {
+   "t": 74.244,
+   "label": "Ideation"
+  },
+  {
+   "t": 87.85,
+   "label": "Proposals"
+  },
+  {
+   "t": 121.58,
+   "label": "The insight"
+  },
+  {
+   "t": 135.066,
+   "label": "Looking back"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "duration": 213.63,
+ "chapters": [
+  {
+   "t": 0,
+   "label": "Intro"
+  },
+  {
+   "t": 14.998,
+   "label": "The problem"
+  },
+  {
+   "t": 40.49,
+   "label": "His role"
+  },
+  {
+   "t": 60.192,
+   "label": "The idea"
+  },
+  {
+   "t": 111.262,
+   "label": "Composition"
+  },
+  {
+   "t": 135.362,
+   "label": "Mobile"
+  },
+  {
+   "t": 150.888,
+   "label": "What he threw away"
+  },
+  {
+   "t": 173.374,
+   "label": "Outcome"
+  },
+  {
+   "t": 192.812,
+   "label": "Looking back"
+  }
+ ]
+}
